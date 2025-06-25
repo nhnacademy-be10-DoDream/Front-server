@@ -1,0 +1,33 @@
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header, footer {
+    background-color: #f4f4f4;
+    padding: 1rem;
+    text-align: center;
+}
+
+.banner {
+    background-color: #90c2ff;
+    text-align: center;
+    padding: 2rem;
+}
+
+.best-seller {
+    padding: 2rem;
+}
+
+.book-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.book-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    width: 200px;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>홈</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- 여기에 메인 콘텐츠 -->
+    <section class="banner">
+        <h1>두드림 책방</h1>
+        <p>지금 베스트셀러를 만나보세요</p>
+    </section>
+
+    <section class="best-seller">
+        <h2>🔥 베스트셀러</h2>
+        <div class="book-grid">
+            <div th:each="book : ${bestSellers}" class="book-card">
+                <img th:src="@{${book.imageUrl}}" alt="Book cover" />
+                <h3 th:text="${book.title}">제목제목제목</h3>
+                <p th:text="${book.author}">저자저자저자</p>
+                <span th:text="|₩${book.price}|">가격가격가격</span>
+            </div>
+        </div>
+    </section>
+    <!-- ... -->
+</div>
+</body>
+</html>
