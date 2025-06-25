@@ -1,0 +1,22 @@
+<div th:fragment="content">
+    <section class="cart">
+        <h2>🛒 장바구니</h2>
+        <table>
+            <thead>
+            <tr><th>도서명</th><th>수량</th><th>가격</th><th>합계</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${cartItems}">
+                <td th:text="${item.book.title}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="'₩' + ${item.book.price}"></td>
+                <td th:text="'₩' + ${item.book.price * item.quantity}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p th:text="'총 결제 금액: ₩' + ${totalPrice}"></p>
+        <form th:action="@{/order/checkout}" method="post">
+            <button type="submit">결제하기</button>
+        </form>
+    </section>
+</div>
