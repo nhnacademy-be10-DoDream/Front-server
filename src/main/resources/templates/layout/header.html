@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
+<!-- templates/fragments/header.html -->
 <div th:fragment="header">
-    <header class="site-header">
-        <div class="container">
-            <h1><a th:href="@{/}">두드림 책방</a></h1>
-            <nav>
-                <ul>
-                    <li><a th:href="@{/category/all}">전체도서</a></li>
-                    <li><a th:href="@{/category/bestseller}">베스트셀러</a></li>
-                    <li><a th:href="@{/cart}">🛒 장바구니</a></li>
-                </ul>
-            </nav>
+    <header class="header-container">
+        <div class="branding">
+            <a th:href="@{/}" class="logo">📚두드림 책방</a>
+            <a th:href="@{/publishers}" class="nav-item">출판사 소개</a>
+        </div>
+        <nav class="menu">
+            <a th:href="@{/category/all}" class="nav-item">전체 도서</a>
+            <a th:href="@{/events}" class="nav-item">이벤트</a>
+            <a th:href="@{/about}" class="nav-item">서점 소개</a>
+            <a th:href="@{/contact}" class="nav-item">문의하기</a>
+        </nav>
+        <div class="actions">
+            <a th:href="@{/login}" class="nav-item">로그인</a>
+            <a th:href="@{/cart}" class="cart-icon" aria-label="장바구니">
+                🛒 <span class="cart-count" th:text="${cartItemCount}">0</span>
+            </a>
         </div>
     </header>
 </div>
