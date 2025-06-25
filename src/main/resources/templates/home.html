@@ -2,9 +2,11 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/default}">
 <head>
     <title>홈</title>
+    <meta charset="UTF-8" />
+
 </head>
 <body>
 <div layout:fragment="content">
@@ -19,9 +21,9 @@
         <div class="book-grid">
             <div th:each="book : ${bestSellers}" class="book-card">
                 <img th:src="@{${book.imageUrl}}" alt="Book cover" />
-                <h3 th:text="${book.title}">제목제목제목</h3>
-                <p th:text="${book.author}">저자저자저자</p>
-                <span th:text="|₩${book.price}|">가격가격가격</span>
+                <h3 th:text="${book.title}" >제목</h3>
+                <p th:text="${book.author}">저자</p>
+                <span th:text="|₩${book.price}|">가격</span>
             </div>
         </div>
     </section>
