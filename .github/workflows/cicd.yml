@@ -126,4 +126,4 @@ jobs:
           username: ${{ secrets.SSH_ID }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script: "~/startup.sh ${{ env.SERVICE_NAME }}"
+          script: "~/frontstartup.sh ${{ env.SERVICE_NAME }}"
