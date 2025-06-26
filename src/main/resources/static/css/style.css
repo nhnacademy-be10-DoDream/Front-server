@@ -214,3 +214,76 @@ header, footer {
     opacity: 1;
 }
 
+#book-list {
+    background: var(--white-color);
+    border-radius: 1rem;
+    margin-top: -2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    padding: 2.5rem 0;
+}
+
+#book-list h3 {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.book-card {
+    background: var(--gray-color);
+    border-radius: 0.7rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1.5rem;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.2s;
+}
+
+.book-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.book-card img {
+    width: 120px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 0.3rem;
+    margin-bottom: 1rem;
+    background: #eee;
+}
+
+.book-card h4 {
+    font-size: 1.1rem;
+    margin: 0.5rem 0 0.2rem 0;
+}
+
+.book-card p {
+    color: var(--accent-color);
+    font-size: 0.98rem;
+    margin: 0 0 1rem 0;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 0.4rem;
+    background: var(--primary-color);
+    color: var(--white-color);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn:hover {
+    background: var(--black-color);
+}
+
