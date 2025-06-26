@@ -1,22 +1,67 @@
-<div th:fragment="content">
-    <section class="cart">
-        <h2>🛒 장바구니</h2>
-        <table>
-            <thead>
-            <tr><th>도서명</th><th>수량</th><th>가격</th><th>합계</th></tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${cartItems}">
-                <td th:text="${item.book.title}"></td>
-                <td th:text="${item.quantity}"></td>
-                <td th:text="'₩' + ${item.book.price}"></td>
-                <td th:text="'₩' + ${item.book.price * item.quantity}"></td>
-            </tr>
-            </tbody>
-        </table>
-        <p th:text="'총 결제 금액: ₩' + ${totalPrice}"></p>
-        <form th:action="@{/order/checkout}" method="post">
-            <button type="submit">결제하기</button>
-        </form>
-    </section>
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<head>
+    <title>장바구니</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <table cellspacing="0" cellpadding="0" width="866" align="center" border="0">
+        <tr>
+            <td valign="top" bgcolor="#ffffff">
+
+                <!-- 장바구니 항목 리스트 -->
+                <form th:action="@{/cart/order}" method="post">
+                    <input type="hidden" name="isHalfDeliveryOrder" value="0">
+                    <table class="table_shop_blue" width="100%">
+                        <thead>
+                        <tr>
+                            <th width="52" align="center">
+                                <input type="checkbox" onclick="revcheck(this)">
+                            </th>
+                            <th align="center">상품명</th>
+                            <th width="150" align="center">가격</th>
+                            <th width="120" align="center">수량</th>
+                            <th width="100" align="center">삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${cartItems}">
+                            <td align="center">
+                                <input type="checkbox" name="itemIds" th:value="${item.id}"
+                                       class="basket_CheckBox" th:checked="true">
+                            </td>
+                            <td>
+                                <a th:href="@{/product/{id}(id=${item.id})}" th:title="${item.name}">
+                                    <img th:src="@{${item.thumbnailUrl}}" style="width:48px;">
+                                </a>
+                            </td>
+                            <td>
+                                <div>
+                                    정가: <s th:text="${#numbers.formatInteger(item.originalPrice, 0, 'COMMA')} + '원'"></s><br>
+                                    판매가: <span class="p1"
+                                                th:text="${#numbers.formatInteger(item.discountedPrice, 0, 'COMMA')} + '원'"></span><br>
+                                </div>
+                            </td>
+                            <td align="center">
+                                <input type="number" name="quantities" th:value="${item.quantity}" min="1"
+                                       class="input1">
+                            </td>
+                            <td align="center">
+                                <button type="submit" formaction="#" name="delete"
+                                        th:formaction="@{/cart/delete/{id}(id=${item.id})}">삭제</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </td>
+        </tr>
+    </table>
 </div>
+</body>
+</html>
