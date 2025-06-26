@@ -3,24 +3,60 @@
 <body>
 <!-- templates/fragments/header.html -->
 <div th:fragment="header">
-    <header class="header-container">
+    <header class="header-container d-flex justify-content-between align-items-end px-4 py-3">
         <div class="branding">
-            <a th:href="@{/}" class="logo">📚두드림 책방</a>
-            <a th:href="@{/publishers}" class="nav-item">출판사 소개</a>
+            <a th:href="@{/}" class="logo fw-bold fs-4">📚두드림 책방</a>
         </div>
-        <nav class="menu">
+
+        <nav class="menu d-flex align-items-center gap-4">
             <a th:href="@{/category/all}" class="nav-item">전체 도서</a>
             <a th:href="@{/events}" class="nav-item">이벤트</a>
             <a th:href="@{/about}" class="nav-item">서점 소개</a>
             <a th:href="@{/contact}" class="nav-item">문의하기</a>
-        </nav>
-        <div class="actions">
+
+        <div class="actions d-flex align-items-center gap-3">
             <a th:href="@{/login}" class="nav-item">로그인</a>
-            <a th:href="@{/cart}" class="cart-icon" aria-label="장바구니">
-                🛒 <span class="cart-count" th:text="${cartItemCount}">0</span>
+            <a th:href="@{/cart}" class="cart-icon position-relative" aria-label="장바구니">
+                🛒<span class="cart-count position-absolute top-0 start-100 translate-middle badge bg-danger rounded-pill" th:text="${cartItemCount}">0</span>
             </a>
         </div>
+        </nav>
     </header>
+    <nav class="navbar navbar-expand-lg " style="background-color: #ffffff;" data-bs-theme="light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav  me-auto mb-2 mb-lg-0 ">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
 </div>
 </body>
 </html>
