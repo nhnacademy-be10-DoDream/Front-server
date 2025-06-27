@@ -270,20 +270,136 @@ header, footer {
     margin: 0 0 1rem 0;
 }
 
-.btn {
-    display: inline-block;
-    padding: 0.7rem 1.5rem;
-    border: none;
-    border-radius: 0.4rem;
-    background: var(--primary-color);
-    color: var(--white-color);
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.2s;
-}
 
 .btn:hover {
     background: var(--black-color);
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.login-container input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.login-container button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.login-container .oauth-btn {
+    margin-top: 1rem;
+    background-color: #ff2233;
+    color: white;
+}
+.forgot-password-link,
+.signup-link {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.forgot-password-link a,
+.signup-link a {
+    color: #0070f3;
+    text-decoration: none;
+    font-weight: bold;
+}
+.forgot-password-link a:hover,
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/*도로명주소*/
+.d_form {
+    margin: .2em 0;
+    font-size: 1em;
+    padding: .5em;
+    border: 1px solid #ccc;
+    border-color: #dbdbdb #d2d2d2 #d0d0d0 #d2d2d3;
+    box-shadow: inset .1em .1em .15em rgba(0, 0, 0, .1);
+    vertical-align: middle;
+    line-height: 1.25em;
+    outline: 0;
+    width: 20em;
+}
+.d_form.std {
+    width: 25em;
+}
+.d_form.mini {
+    width: 7em;
+}
+.d_btn {
+    display: inline-block;
+    padding: .5em 1em;
+    margin: .4em .15em;
+    border: 1px solid #ccc;
+    border-color: #dbdbdb #d2d2d2 #b2b2b2 #d2d2d3;
+    cursor: pointer;
+    color: #464646;
+    border-radius: .2em;
+    vertical-align: middle;
+    font-size: 1em;
+    line-height: 1.25em;
+}
+
+.signup-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.signup-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.signup-container form .signup-input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.signup-container form .signup-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #0070f3;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.signup-container form button:hover {
+    background-color: #005fcc;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
 }
 
