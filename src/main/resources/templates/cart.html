@@ -20,13 +20,13 @@
                     <table class="table_shop_blue" width="100%">
                         <thead>
                         <tr>
-                            <th width="52" align="center">
+                            <th width="52" style="text-align: center">
                                 <input type="checkbox" onclick="revcheck(this)">
                             </th>
                             <th align="center">상품명</th>
-                            <th width="150" align="center">가격</th>
-                            <th width="120" align="center">수량</th>
-                            <th width="100" align="center">삭제</th>
+                            <th width="150" style="text-align: center">가격</th>
+                            <th width="100" style="text-align: center">수량</th>
+                            <th width="100" style="text-align: center">삭제</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -40,16 +40,16 @@
                                     <img th:src="@{${item.thumbnailUrl}}" style="width:48px;">
                                 </a>
                             </td>
-                            <td>
+                            <td style="text-align: center">
                                 <div>
                                     정가: <s th:text="${#numbers.formatInteger(item.originalPrice, 0, 'COMMA')} + '원'"></s><br>
-                                    판매가: <span class="p1"
-                                                th:text="${#numbers.formatInteger(item.discountedPrice, 0, 'COMMA')} + '원'"></span><br>
+                                    판매가: <span th:text="${#numbers.formatInteger(item.discountedPrice, 0, 'COMMA')} + '원'"></span><br>
                                 </div>
                             </td>
                             <td align="center">
-                                <input type="number" name="quantities" th:value="${item.quantity}" min="1"
-                                       class="input1">
+                                <label>
+                                    <input type="number" name="quantities" th:value="${item.quantity}" min="1" style="width: 40px;">
+                                </label>
                             </td>
                             <td align="center">
                                 <button type="submit" formaction="#" name="delete"
