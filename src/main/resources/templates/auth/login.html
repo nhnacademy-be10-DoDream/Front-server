@@ -11,8 +11,8 @@
 <body>
 <div layout:fragment="content" class="login-container">
     <h2>로그인</h2>
-    <form th:action="@{/login}" method="post">
-        <input type="text" name="username" placeholder="아이디" required>
+    <form th:action="@{/auth/login}" method="post">
+        <input type="text" name="userId" placeholder="아이디" required>
         <input type="password" name="password" placeholder="비밀번호" required>
         <button type="submit">로그인</button>
     </form>
@@ -22,7 +22,7 @@
     </form>
 
     <div class="signup-link">
-        <p>회원이 아니신가요? <a th:href="@{/auth/signup}">회원가입</a></p>
+        <p>회원이 아니신가요? <a th:href="@{/auth/signup-form}">회원가입</a></p>
         <p>비밀번호를 잊으셨나요?<a th:href="@{/forgot-password}">비밀번호 찾기</a></p>
     </div>
 
