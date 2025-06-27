@@ -10,9 +10,10 @@ import shop.dodream.front.dto.UserAddressDto;
 
 @FeignClient(name = "userClient", url = "http://localhost:10320")
 public interface UserClient {
-    @PostMapping("/accounts")
+    @PostMapping("/accounts/signup")
     CreateAccountResponse createUserAccount(CreateAccountRequest request);
 
     @PostMapping("/users/{user-id}/address")
     Void createUserAddress(@PathVariable("user-id") String userId, @RequestBody UserAddressDto userAddressDto);
+
 }

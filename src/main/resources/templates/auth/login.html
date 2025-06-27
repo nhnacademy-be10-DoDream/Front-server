@@ -17,7 +17,7 @@
         <button type="submit">로그인</button>
     </form>
 
-    <form th:action="@{/oauth2/authorization/payco}" method="get">
+    <form th:action="@{/auth/payco/login}" method="get">
         <button type="submit" class="oauth-btn"><strong>PAYCO</strong> 로그인</button>
     </form>
 
@@ -27,8 +27,8 @@
     </div>
 
 
-    <div class="error-message" th:if="${param.error}">
-        <p>로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.</p>
+    <div class="error-message" th:if="${error}">
+        <p th:text="${error}"></p>
     </div>
 </div>
 </body>
