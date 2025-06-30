@@ -66,7 +66,7 @@ public class AuthController {
 
     @GetMapping("/payco/login")
     public String paycoLogin() {
-        return "redirect:http://localhost:10320/auth/payco/authorize";
+        return "redirect:http://s1.jav21.net/auth/payco/authorize";
     }
 
     @GetMapping("/payco/callback")
