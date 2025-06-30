@@ -13,8 +13,12 @@
             <a th:href="@{/about}" class="nav-item">주문/결제</a>
             <a th:href="@{/contact}" class="nav-item">쿠폰</a>
             <a th:href="@{/mypage}" class="nav-item">마이페이지</a>
-            <a th:href="@{/auth/signup-form}" class="nav-item">회원가입</a>
-            <a th:href="@{/auth/login-form}" class="nav-item">로그인</a>
+            <!-- 로그인 여부에 따라 출력 분기 -->
+            <span th:if="${session.user != null}" class="nav-item fw-semibold">
+                <span th:text="|${session.user.name}님 반갑습니다!|">사용자님 반갑습니다!</span>
+            </span>
+            <a th:if="${session.user == null}" th:href="@{/auth/signup-form}" class="nav-item">회원가입</a>
+            <a th:if="${session.user == null}" th:href="@{/auth/login-form}" class="nav-item">로그인</a>
             <a th:href="@{/cart}" class="nav-item">장바구니🛒</a>
 
         </nav>
