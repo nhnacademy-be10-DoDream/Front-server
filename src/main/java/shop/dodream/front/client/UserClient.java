@@ -9,7 +9,7 @@ import shop.dodream.front.dto.CreateAccountResponse;
 import shop.dodream.front.dto.SignupRequest;
 import shop.dodream.front.dto.UserAddressDto;
 
-@FeignClient(name = "userClient", url = "s1.java21.net:10320")
+@FeignClient(name = "userClient", url = "http://localhost:10320")
 public interface UserClient {
     @PostMapping("/users/signup")
     CreateAccountResponse createUserAccount(SignupRequest signupRequest);
