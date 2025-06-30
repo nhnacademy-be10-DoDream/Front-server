@@ -1,15 +1,22 @@
 package shop.dodream.front.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import shop.dodream.front.client.AuthClient;
 import shop.dodream.front.client.UserClient;
-import shop.dodream.front.dto.CreateAccountRequest;
-import shop.dodream.front.dto.CreateAccountResponse;
-import shop.dodream.front.dto.LoginRequest;
-import shop.dodream.front.dto.UserAddressDto;
+import shop.dodream.front.dto.*;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/auth")
@@ -18,15 +25,90 @@ public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
     @PostMapping("/login")
-    public String login(LoginRequest request) {
-        authClient.login(request);
-        return "redirect:/home";
+    public String login(@ModelAttribute LoginRequest request, HttpServletResponse response, Model model) {
+        try{
+            ResponseEntity<Void> result = authClient.login(request);
+
+            copyCookies(result, response);
+            return "redirect:/home";
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.LOCKED) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    Map<String, String> body = mapper.readValue(
+                            ex.getResponseBodyAsString(),
+                            new TypeReference<>() {}
+                    );
+                    if ("DORMANT".equals(body.get("status"))) {
+                        return "redirect:/dormant/verify-form?userId=" + request.getUserId();
+                    }
+                } catch (Exception e) {
+                    model.addAttribute("error", "휴면 계정 처리 중 오류 발생");
+                    return "auth/login";
+                }
+            } else if (ex.getStatusCode() == HttpStatus.FORBIDDEN) {
+                model.addAttribute("error", "탈퇴한 계정입니다. 다른 계정으로 로그인 해주세요.");
+                return "auth/login";
+            }
+
+            model.addAttribute("error", "로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.");
+            return "auth/login";
+        }
+    }
+
+    @GetMapping("/payco/login")
+    public String paycoLogin() {
+        return "redirect:http://localhost:10320/auth/payco/authorize";
+    }
+
+    @GetMapping("/payco/callback")
+    public String paycoCallback(
+            @RequestParam("code") String code,
+            @RequestParam("state") String state,
+            HttpServletResponse response,
+            Model model
+    ) {
+        try {
+            ResponseEntity<Void> result = authClient.paycoCallback(code, state);
+            copyCookies(result, response);
+            return "redirect:/home";
+        }catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.LOCKED) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    Map<String, String> body = mapper.readValue(
+                            ex.getResponseBodyAsString(),
+                            new TypeReference<>() {}
+                    );
+                    if ("DORMANT".equals(body.get("status"))) {
+                        return "redirect:/dormant/verify-form?userId=" + body.get("userId");
+                    }
+                } catch (Exception e) {
+                    model.addAttribute("error", "휴면 계정 처리 중 오류 발생");
+                    return "auth/login";
+                }
+            } else if (ex.getStatusCode() == HttpStatus.FORBIDDEN) {
+                model.addAttribute("error", "탈퇴한 계정입니다. 다른 계정으로 로그인해주세요.");
+                return "auth/login";
+            }
+
+            model.addAttribute("error", "로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.");
+            return "auth/login";
+        }
+    }
+
+    private void copyCookies(ResponseEntity<?> result, HttpServletResponse response) {
+        List<String> cookies = result.getHeaders().get(HttpHeaders.SET_COOKIE);
+        if (cookies != null) {
+            for (String cookie : cookies) {
+                response.addHeader(HttpHeaders.SET_COOKIE, cookie);
+            }
+        }
     }
 
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
-        CreateAccountResponse response = userClient.createUserAccount(request);
-        userClient.createUserAddress(response.getUserId(), userAddressDto);
+        CreateAccountResponse response = userClient.createUserAccount(new SignupRequest(request, userAddressDto));
         return "redirect:/home";
     }
 }
