@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
+    private final PasswordEncoder passwordEncoder;
     @PostMapping("/login")
     public String login(@ModelAttribute LoginRequest request, HttpServletResponse response, Model model) {
         try{
@@ -58,7 +60,7 @@ public class AuthController {
 
     @GetMapping("/payco/login")
     public String paycoLogin() {
-        return "redirect:http://localhost:10320/auth/payco/authorize";
+        return "redirect:s1.java21.net:10320/auth/payco/authorize";
     }
 
     @GetMapping("/payco/callback")
@@ -108,7 +110,9 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
-        CreateAccountResponse response = userClient.createUserAccount(new SignupRequest(request, userAddressDto));
+        String password = request.getPassword();
+        request.setPassword(passwordEncoder.encode(password));
+        userClient.createUserAccount(new SignupRequest(request, userAddressDto));
         return "redirect:/home";
     }
 }
