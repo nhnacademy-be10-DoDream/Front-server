@@ -65,8 +65,8 @@ public class AuthController {
     }
 
     @GetMapping("/payco/login")
-    public String paycoLogin() {
-        return "redirect:/auth/payco/authorize";
+    public void paycoLogin() {
+        authClient.authorize();
     }
 
     @GetMapping("/payco/callback")
