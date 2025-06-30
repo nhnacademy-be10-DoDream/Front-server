@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import shop.dodream.front.client.AuthClient;
 import shop.dodream.front.client.UserClient;
-import shop.dodream.front.dto.CreateAccountRequest;
-import shop.dodream.front.dto.CreateAccountResponse;
-import shop.dodream.front.dto.LoginRequest;
-import shop.dodream.front.dto.UserAddressDto;
+import shop.dodream.front.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -111,8 +108,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
-        CreateAccountResponse response = userClient.createUserAccount(request);
-        userClient.createUserAddress(response.getUserId(), userAddressDto);
+        CreateAccountResponse response = userClient.createUserAccount(new SignupRequest(request, userAddressDto));
         return "redirect:/home";
     }
 }
