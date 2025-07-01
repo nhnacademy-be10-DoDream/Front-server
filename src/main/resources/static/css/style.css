@@ -70,11 +70,34 @@ header, footer {
     font-weight: 500;
     color: #333;
     text-decoration: none;
+    position: relative;
+}
+
+.nav-link {
+    cursor: pointer;
 }
 
 .nav-item:hover {
     color: #0070f3;
 }
+
+.nav-item .dropdown-menu {
+    display: none; /* 기본 숨김 */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    min-width: 10rem;
+    padding: 0.5rem 0;
+    margin: 0;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.nav-item:hover .dropdown-menu {
+    display: block;
+}
+
 
 .menu {
     display: flex;
