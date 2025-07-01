@@ -4,7 +4,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.*;
 
-@FeignClient(name = "userClient", url = "http://localhost:10320")
+import java.util.List;
+
+@FeignClient(name = "userClient", url = "s1.java21.net:10320")
+//@FeignClient(name = "userClient", url = "http://localhost:10320")
 public interface UserClient {
     @PostMapping("/users/signup")
     void createUserAccount(SignupRequest signupRequest);
@@ -14,4 +17,7 @@ public interface UserClient {
 
     @GetMapping("/users/me")
     UserDto getUser(@CookieValue("accessToken") String accessToken);
+
+    @GetMapping("/users/me/addresses")
+    List<UserAddressDto> getUserAddresses(@CookieValue("accessToken") String accessToken);
 }
