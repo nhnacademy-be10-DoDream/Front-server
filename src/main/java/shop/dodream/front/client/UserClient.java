@@ -6,8 +6,7 @@ import shop.dodream.front.dto.*;
 
 import java.util.List;
 
-@FeignClient(name = "userClient", url = "s1.java21.net:10320")
-//@FeignClient(name = "userClient", url = "http://localhost:10320")
+@FeignClient(name = "userClient", url = "http://localhost:10320")
 public interface UserClient {
     @PostMapping("/users/signup")
     void createUserAccount(SignupRequest signupRequest);
