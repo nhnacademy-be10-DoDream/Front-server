@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+
+<head>
+  <title th:text="#{mypage.orders.title}">마이페이지 - 주문 내역</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+  <!-- 페이지 헤더 -->
+  <div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h2 th:text="#{mypage.orders.heading}">주문 내역</h2>
+      <div class="order-counter">
+        <span class="text-muted" th:text="#{pagination.showing(${orders.number * orders.size + 1}, ${orders.number * orders.size + orders.numberOfElements}, ${orders.totalElements})}">
+          표시 중: 1~10 / 총 25건
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 주문 내역 목록 -->
+  <div th:if="${orders.isEmpty()}" class="text-center py-5">
+    <i class="bi bi-bag text-muted" style="font-size: 3rem;"></i>
+    <p class="text-muted mt-3 mb-4" th:text="#{message.noOrders}">주문 내역이 없습니다.</p>
+    <a th:href="@{/}" class="btn btn-primary" th:text="#{button.startShopping}">쇼핑 시작하기</a>
+  </div>
+
+  <div th:if="${!orders.isEmpty()}" class="orders-list">
+    <div th:each="order : ${orders.content}" class="order-card mb-4">
+      <div class="card">
+        <div class="card-header bg-light">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h6 class="mb-0">
+                <span th:text="#{order.orderNumber}">주문번호</span>:
+                <span class="text-primary fw-bold" th:text="${order.orderNumber}">20241201001</span>
+              </h6>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <small class="text-muted">
+                <span th:text="#{order.orderDate}">주문일자</span>:
+                <span th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}">2024-12-01 14:30</span>
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- 주문 상품 목록 -->
+          <div class="order-items mb-3">
+            <div th:each="item, itemStat : ${order.orderItems}" class="order-item">
+              <div class="row align-items-center py-2" th:classappend="${!itemStat.last} ? 'border-bottom' : ''">
+                <div class="col-md-8">
+                  <div class="d-flex align-items-center">
+                    <img th:src="${item.bookImageUrl}"
+                         th:alt="${item.bookTitle}"
+                         class="order-item-image me-3"
+                         style="width: 60px; height: 80px; object-fit: cover; border-radius: 4px;">
+                    <div>
+                      <h6 class="mb-1" th:text="${item.bookTitle}">도서 제목</h6>
+                      <small class="text-muted">
+                        <span th:text="#{order.quantity}">수량</span>: <span th:text="${item.quantity}">1</span>개
+                      </small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                  <span class="fw-bold" th:text="${#numbers.formatCurrency(item.price * item.quantity)}">15,000원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 주문 정보 테이블 -->
+          <div class="row">
+            <div class="col-md-8">
+              <table class="info-table">
+                <tr>
+                  <th th:text="#{order.status}">주문상태</th>
+                  <td>
+                    <span class="grade-badge"
+                          th:classappend="${order.status.name() == 'DELIVERED'} ? 'grade-gold' :
+                                         (${order.status.name() == 'SHIPPING'} ? 'grade-silver' : 'grade-bronze')"
+                          th:text="#{${'order.status.' + order.status.name().toLowerCase()}}">
+                      배송완료
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <th th:text="#{order.paymentMethod}">결제방법</th>
+                  <td th:text="${order.paymentMethod}">신용카드</td>
+                </tr>
+                <tr>
+                  <th th:text="#{order.deliveryAddress}">배송지</th>
+                  <td th:text="${order.deliveryAddress}">서울특별시 강남구 테헤란로 123</td>
+                </tr>
+                <tr th:if="${order.trackingNumber}">
+                  <th th:text="#{order.trackingNumber}">운송장번호</th>
+                  <td>
+                    <span th:text="${order.trackingNumber}">1234567890</span>
+                    <a th:href="@{/order/tracking(number=${order.trackingNumber})}"
+                       class="btn btn-link btn-sm p-0 ms-2"
+                       th:text="#{order.tracking.check}">배송조회</a>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-4">
+              <div class="order-summary bg-light p-3 rounded">
+                <div class="d-flex justify-content-between mb-2">
+                  <span th:text="#{order.subtotal}">상품금액</span>
+                  <span th:text="${#numbers.formatCurrency(order.subtotalAmount)}">45,000원</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                  <span th:text="#{order.deliveryFee}">배송비</span>
+                  <span th:text="${#numbers.formatCurrency(order.deliveryFee)}">3,000원</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2" th:if="${order.discountAmount > 0}">
+                  <span th:text="#{order.discount}">할인금액</span>
+                  <span class="text-danger" th:text="'-' + ${#numbers.formatCurrency(order.discountAmount)}">-5,000원</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold fs-5">
+                  <span th:text="#{order.totalAmount}">총 결제금액</span>
+                  <span class="text-primary" th:text="${#numbers.formatCurrency(order.totalAmount)}">43,000원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 주문 관리 버튼 -->
+          <div class="order-actions mt-3 text-end">
+            <a th:href="@{/order/detail/{id}(id=${order.orderId})}"
+               class="btn btn-outline-secondary btn-sm me-2">
+              <i class="bi bi-eye me-1"></i><span th:text="#{button.detail}">상세보기</span>
+            </a>
+            <button th:if="${order.status.name() == 'DELIVERED'}"
+                    type="button"
+                    class="btn btn-primary btn-sm me-2"
+                    th:onclick="'writeReview(' + ${order.orderId} + ')'">
+              <i class="bi bi-star me-1"></i><span th:text="#{button.writeReview}">리뷰작성</span>
+            </button>
+            <button th:if="${order.status.name() == 'PENDING' or order.status.name() == 'PAID'}"
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    th:onclick="'cancelOrder(' + ${order.orderId} + ')'">
+              <i class="bi bi-x-circle me-1"></i><span th:text="#{button.cancel}">주문취소</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 페이지네이션 -->
+  <div th:if="${orders.totalPages > 1}" class="d-flex justify-content-center mt-4">
+    <nav aria-label="Order pagination">
+      <ul class="pagination">
+        <!-- 처음 페이지 -->
+        <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+          <a class="page-link" th:href="@{/mypage/orders(page=0, size=${orders.size})}" th:text="#{pagination.first}">처음</a>
+        </li>
+
+        <!-- 이전 페이지 -->
+        <li class="page-item" th:classappend="${!orders.hasPrevious()} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/mypage/orders(page=${orders.number - 1}, size=${orders.size})}"
+             th:text="#{pagination.previous}">이전</a>
+        </li>
+
+        <!-- 페이지 번호들 -->
+        <li th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, orders.number - 2),
+                                                   T(java.lang.Math).min(orders.totalPages - 1, orders.number + 2))}"
+            class="page-item"
+            th:classappend="${pageNum == orders.number} ? 'active'">
+          <a class="page-link"
+             th:href="@{/mypage/orders(page=${pageNum}, size=${orders.size})}"
+             th:text="${pageNum + 1}">1</a>
+        </li>
+
+        <!-- 다음 페이지 -->
+        <li class="page-item" th:classappend="${!orders.hasNext()} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/mypage/orders(page=${orders.number + 1}, size=${orders.size})}"
+             th:text="#{pagination.next}">다음</a>
+        </li>
+
+        <!-- 마지막 페이지 -->
+        <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/mypage/orders(page=${orders.totalPages - 1}, size=${orders.size})}"
+             th:text="#{pagination.last}">마지막</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+</body>
+</html>

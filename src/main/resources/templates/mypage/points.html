@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+
+<head>
+  <title th:text="#{mypage.points.title}">마이페이지 - 포인트 내역</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+  <!-- 페이지 헤더 -->
+  <div class="content-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h2 th:text="#{mypage.points.heading}">포인트 사용 내역</h2>
+      <div class="points-counter">
+        <span class="text-muted" th:text="#{pagination.showing(${points.number * points.size + 1}, ${points.number * points.size + points.numberOfElements}, ${points.totalElements})}">
+          표시 중: 1~10 / 총 45건
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 현재 포인트 요약 -->
+  <div class="points-summary mb-4">
+    <div class="card bg-light">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h5 class="mb-0" th:text="#{points.current}">현재 보유 포인트</h5>
+          </div>
+          <div class="col-md-4 text-end">
+            <span class="point-amount fs-3" th:text="${#numbers.formatInteger(currentPoints, 3, 'COMMA')} + 'P'">1,500P</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 포인트 이력 목록 -->
+  <div th:if="${points.isEmpty()}" class="text-center py-5">
+    <i class="bi bi-coin text-muted" style="font-size: 3rem;"></i>
+    <p class="text-muted mt-3 mb-4" th:text="#{message.noPointHistory}">포인트 내역이 없습니다.</p>
+    <a th:href="@{/}" class="btn btn-primary" th:text="#{button.startShopping}">쇼핑 시작하기</a>
+  </div>
+
+  <div th:if="${!points.isEmpty()}" class="points-list">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+              <th th:text="#{points.date}">날짜</th>
+              <th th:text="#{points.type}">구분</th>
+              <th th:text="#{points.description}">내용</th>
+              <th class="text-end" th:text="#{points.amount}">포인트</th>
+              <th class="text-end" th:text="#{points.balance}">잔액</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="point : ${points.content}" class="point-row">
+              <td class="point-date">
+                <div th:text="${#temporals.format(point.createdAt, 'yyyy-MM-dd')}">2024-12-01</div>
+                <small class="text-muted" th:text="${#temporals.format(point.createdAt, 'HH:mm')}">14:30</small>
+              </td>
+              <td class="point-type">
+                  <span class="grade-badge"
+                        th:classappend="${point.pointType.name() == 'EARN'} ? 'grade-gold' :
+                                       (${point.pointType.name() == 'USE'} ? 'grade-silver' : 'grade-bronze')"
+                        th:text="#{${'points.type.' + point.pointType.name().toLowerCase()}}">
+                    적립
+                  </span>
+              </td>
+              <td class="point-description">
+                <span th:text="${point.description}">구매 적립</span>
+              </td>
+              <td class="point-amount text-end">
+                  <span class="fw-bold"
+                        th:classappend="${point.pointType.name() == 'EARN'} ? 'text-success' : 'text-danger'"
+                        th:text="${point.pointType.name() == 'EARN' ? '+' : '-'} + ${#numbers.formatInteger(point.amount, 3, 'COMMA')} + 'P'">
+                    +1,500P
+                  </span>
+              </td>
+              <td class="point-balance text-end">
+                <span class="text-muted" th:text="${#numbers.formatInteger(point.balance, 3, 'COMMA')} + 'P'">15,000P</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 페이지네이션 -->
+  <div th:if="${points.totalPages > 1}" class="d-flex justify-content-center mt-4">
+    <nav aria-label="Points pagination">
+      <ul class="pagination">
+        <!-- 처음 페이지 -->
+        <li class="page-item" th:classappend="${points.first} ? 'disabled'">
+          <a class="page-link" th:href="@{/mypage/points(page=0, size=${points.size})}" th:text="#{pagination.first}">처음</a>
+        </li>
+
+        <!-- 이전 페이지 -->
+        <li class="page-item" th:classappend="${!points.hasPrevious()} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/mypage/points(page=${points.number - 1}, size=${points.size})}"
+             th:text="#{pagination.previous}">이전</a>
+        </li>
+
+        <!-- 페이지 번호들 -->
+        <li th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, points.number - 2),
+                                                   T(java.lang.Math).min(points.totalPages - 1, points.number + 2))}"
+            class="page-item"
+            th:classappend="${pageNum == points.number} ? 'active'">
+          <a class="page-link"
+             th:href="@{/mypage/points(page=${pageNum}, size=${points.size})}"
+             th:text="${pageNum + 1}">1</a>
+        </li>
+
+        <!-- 다음 페이지 -->
+        <li class="page-item" th:classappend="${!points.hasNext()} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/mypage/points(page=${points.number + 1}, size=${points.size})}"
+             th:text="#{pagination.next}">다음</a>
+        </li>
+
+        <!-- 마지막 페이지 -->
+        <li class="page-item" th:classappend="${points.last} ? 'disabled'">
+          <a class="page-link"
+             th:href="@{/mypage/points(page=${points.totalPages - 1}, size=${points.size})}"
+             th:text="#{pagination.last}">마지막</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- 포인트 적립 안내 -->
+  <div class="points-info mt-4">
+    <div class="card border-primary">
+      <div class="card-header bg-primary text-white">
+        <h6 class="mb-0">
+          <i class="bi bi-info-circle me-2"></i>
+          <span th:text="#{points.info.title}">포인트 적립 안내</span>
+        </h6>
+      </div>
+      <div class="card-body">
+        <ul class="mb-0">
+          <li th:text="#{points.info.purchase}">도서 구매 시 구매 금액의 1% 적립</li>
+          <li th:text="#{points.info.review}">리뷰 작성 시 100P 적립</li>
+          <li th:text="#{points.info.signup}">회원가입 시 1,000P 적립</li>
+          <li th:text="#{points.info.expire}">포인트는 적립일로부터 2년간 유효</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
