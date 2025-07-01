@@ -66,6 +66,7 @@ public class AuthController {
         }
     }
 
+
     @GetMapping("/payco/login")
     public void paycoLogin(HttpServletResponse response)throws IOException {
         String url = authClient.getAuthorizeUrl().getBody();

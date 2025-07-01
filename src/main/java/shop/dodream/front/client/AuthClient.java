@@ -25,4 +25,7 @@ public interface AuthClient {
     @GetMapping("/auth/payco/authorize")
     ResponseEntity<String> getAuthorizeUrl();
 
+    @GetMapping("/auth/payco/authorize")
+    ResponseEntity<String> getAuthorizeUrl();
+
 }
