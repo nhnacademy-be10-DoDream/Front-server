@@ -22,5 +22,10 @@ public interface AuthClient {
             @RequestParam("code") String code,
             @RequestParam("state") String state
     );
+    @GetMapping("/auth/payco/authorize")
+    ResponseEntity<Void> authorize();
+
+    @GetMapping("/auth/payco/authorize")
+    ResponseEntity<String> getAuthorizeUrl();
 
 }

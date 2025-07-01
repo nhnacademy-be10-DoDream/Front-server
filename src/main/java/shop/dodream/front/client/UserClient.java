@@ -7,7 +7,6 @@ import shop.dodream.front.dto.*;
 @FeignClient(name = "userClient", url = "http://localhost:10320")
 public interface UserClient {
     @PostMapping("/users/signup")
-
     void createUserAccount(SignupRequest signupRequest);
 
     @PostMapping("/users/{user-id}/address")
