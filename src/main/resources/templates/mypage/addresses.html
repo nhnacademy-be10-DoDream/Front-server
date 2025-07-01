@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+
+<head>
+    <title th:text="#{mypage.address.title}">My Page - Address</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+    <!-- 페이지 헤더 -->
+    <!-- 페이지 헤더 -->
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <!-- 제목 -->
+            <h2 class="section-title section-title-lg mb-2" th:text="#{mypage.address.heading}"></h2>
+
+            <!-- 메시지 + 버튼 정렬 -->
+            <div class="d-flex align-items-center gap-3">
+
+                <!-- 경고 또는 주소 개수 -->
+                <div>
+                    <!-- 경고 메시지 (10개 이상) -->
+                    <div th:if="${#lists.size(addresses) >= 10}" class="text-warning d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        <small>
+                            <span class="counter-text" th:text="#{address.limit.warning}"></span>
+                        </small>
+                    </div>
+
+                    <!-- 주소 개수 메시지 (10개 미만) -->
+                    <div th:if="${#lists.size(addresses) < 10}" class="address-counter">
+                    <span class="counter-text"
+                          th:text="#{address.count.format(${#lists.size(addresses)})}"></span>
+                    </div>
+                </div>
+
+                <!-- 주소 추가 버튼 -->
+                <button type="button"
+                        class="btn btn-custom-dark"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addressModal"
+                        th:disabled="${#lists.size(addresses) >= 10}"
+                        th:text="#{address.add.button}">
+                    <i class="bi bi-plus-circle me-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 주소 없음 -->
+    <div th:if="${#lists.isEmpty(addresses)}" class="text-center py-5">
+        <i class="bi bi-geo-alt text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted mt-3 mb-4" th:text="#{message.noAddress}"></p>
+        <button type="button"
+                class="btn btn-custom-dark"
+                data-bs-toggle="modal"
+                data-bs-target="#addressModal"
+                th:text="#{address.register.first}">
+        </button>
+    </div>
+
+    <!-- 주소 목록 - CSS Only 분할 뷰 -->
+    <div th:if="${!#lists.isEmpty(addresses)}" class="address-split-view">
+        <h6 class="section-title section-title-md mb-3" th:text="#{address.list}"></h6>
+
+        <div class="address-split-container d-flex">
+            <!-- 왼쪽: Alias 목록 -->
+            <div class="col-md-4">
+                <div class="address-list-panel">
+                    <div class="address-list">
+                        <label th:each="address, iterStat : ${addresses}"
+                               th:for="|address-radio-${address.addressId}|"
+                               class="address-item"
+                               th:classappend="${iterStat.first} ? 'active' : ''">
+                            <!-- Hidden radio -->
+                            <input type="radio" name="address-radio"
+                                   th:id="|address-radio-${address.addressId}|"
+                                   th:value="${address.addressId}"
+                                   class="d-none"
+                                   th:checked="${iterStat.first}" />
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span th:text="${address.alias}"></span>
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오른쪽: 상세 정보 -->
+            <div class="col-8">
+                <div class="address-detail-panel">
+                    <div th:each="address : ${addresses}"
+                         class="address-detail card-style mb-4"
+                         th:id="|address-detail-${address.addressId}|">
+
+                        <div class="info-detail p-4">
+                            <table class="info-table">
+                                <tbody>
+                                <tr>
+                                    <th>도로명 주소</th>
+                                    <td th:text="${address.roadAddress}"></td>
+                                </tr>
+                                <tr>
+                                    <th>우편번호</th>
+                                    <td th:text="${address.zipcode}"></td>
+                                </tr>
+                                <tr th:if="${address.detailAddress}">
+                                    <th>상세 주소</th>
+                                    <td th:text="${address.detailAddress}"></td>
+                                </tr>
+                                <tr th:if="${address.jibunAddress}">
+                                    <th>지번 주소</th>
+                                    <td th:text="${address.jibunAddress}"></td>
+                                </tr>
+                                <tr th:if="${address.extraAddress}">
+                                    <th>참고 항목</th>
+                                    <td th:text="${address.extraAddress}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+                                <button type="button" class="btn-outline-gray me-2"
+                                        data-bs-toggle="modal" data-bs-target="#addressModal"
+                                        th:onclick="editAddress([[${address.addressId}]])">
+                                    <i class="bi bi-pencil me-1"></i>수정
+                                </button>
+                                <button type="button" class="btn-dark-custom"
+                                        th:onclick="deleteAddress([[${address.addressId}]])">
+                                    <i class="bi bi-trash me-1"></i>삭제
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- 주소 등록/수정 모달 (기존) -->
+    <div class="modal fade" id="addressModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title section-title section-title-md"
+                        id="addressModalTitle"
+                        th:text="#{address.modal.add.title}"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form id="addressForm" th:action="@{/mypage/address}" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="addressId" name="addressId">
+
+                        <!-- 별칭 -->
+                        <div class="mb-3">
+                            <label for="alias" class="form-label section-title">
+                                <span th:text="#{address.alias}"></span> <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="alias" name="alias"
+                                   th:placeholder="#{address.alias.placeholder}"
+                                   maxlength="50" required>
+                            <div class="invalid-feedback" th:text="#{address.alias.required}"></div>
+                        </div>
+
+                        <!-- 도로명 주소 + 우편번호 -->
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="roadAddress" class="form-label section-title">
+                                    <span th:text="#{address.roadAddress}"></span> <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="roadAddress" name="roadAddress"
+                                       th:placeholder="#{address.road.placeholder}"
+                                       readonly required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="zipcode" class="form-label section-title">
+                                    <span th:text="#{address.zipcode}"></span> <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="zipcode" name="zipcode"
+                                           placeholder="12345" pattern="\\d{5}" readonly required>
+                                    <button type="button" class="btn btn-custom-dark" onclick="searchAddress()"
+                                            th:text="#{address.search}">
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 지번 주소 -->
+                        <div class="mb-3">
+                            <label for="jibunAddress" class="form-label section-title"
+                                   th:text="#{address.jibunAddress}"></label>
+                            <input type="text" class="form-control" id="jibunAddress" name="jibunAddress"
+                                   th:placeholder="#{address.jibun.placeholder}" readonly>
+                        </div>
+
+                        <!-- 상세 주소 -->
+                        <div class="mb-3">
+                            <label for="detailAddress" class="form-label section-title"
+                                   th:text="#{address.detailAddress}"></label>
+                            <input type="text" class="form-control" id="detailAddress" name="detailAddress"
+                                   th:placeholder="#{address.detail.placeholder}" maxlength="255">
+                        </div>
+
+                        <!-- 참고 항목 -->
+                        <div class="mb-3">
+                            <label for="extraAddress" class="form-label section-title"
+                                   th:text="#{address.extraAddress}"></label>
+                            <input type="text" class="form-control" id="extraAddress" name="extraAddress"
+                                   th:placeholder="#{address.extra.placeholder}" maxlength="255" readonly>
+                        </div>
+                    </div>
+
+                    <!-- 모달 하단 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                th:text="#{modal.cancel}"></button>
+                        <button type="submit" class="btn btn-custom-dark" th:text="#{modal.save}"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const radios = document.querySelectorAll("input[name='address-radio']");
+        const details = document.querySelectorAll(".address-detail");
+
+        function showDetail(id) {
+            // 상세 뷰 전환
+            details.forEach(detail => {
+                detail.style.display = (detail.id === `address-detail-${id}`) ? 'block' : 'none';
+            });
+
+            // 좌측 alias active 처리
+            document.querySelectorAll(".address-item").forEach(label => {
+                label.classList.remove("active");
+            });
+            const label = document.querySelector(`label[for='address-radio-${id}']`);
+            if (label) label.classList.add("active");
+        }
+
+        // 이벤트 바인딩
+        radios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                showDetail(this.value);
+            });
+        });
+
+        // 첫 번째 초기 표시
+        const firstChecked = document.querySelector("input[name='address-radio']:checked");
+        if (firstChecked) {
+            showDetail(firstChecked.value);
+        }
+    });
+</script>
