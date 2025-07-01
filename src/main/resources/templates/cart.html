@@ -15,7 +15,7 @@
             <td valign="top" bgcolor="#ffffff">
 
                 <!-- 장바구니 항목 리스트 -->
-                <form th:action="@{/cart/order}" method="post">
+                <form th:action="@{/order}" method="post">
                     <input type="hidden" name="isHalfDeliveryOrder" value="0">
                     <table class="table_shop_blue" width="100%">
                         <thead>
@@ -58,6 +58,9 @@
                         </tr>
                         </tbody>
                     </table>
+                    <div style="text-align: right; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary">주문하기</button>
+                    </div>
                 </form>
             </td>
         </tr>
