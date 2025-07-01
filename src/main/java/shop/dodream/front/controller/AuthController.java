@@ -18,6 +18,7 @@ import shop.dodream.front.client.AuthClient;
 import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
     private final PasswordEncoder passwordEncoder;
+
     @PostMapping("/login")
     public String login(@ModelAttribute LoginRequest request, HttpServletResponse response, Model model, HttpServletRequest httpServletRequest) {
         try{
@@ -64,9 +66,9 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/payco/login")
-    public void paycoLogin() {
-        authClient.authorize();
+    public void paycoLogin(HttpServletResponse response)throws IOException {
+        String url = authClient.getAuthorizeUrl().getBody();
+        response.sendRedirect(url);
     }
 
     @GetMapping("/payco/callback")
