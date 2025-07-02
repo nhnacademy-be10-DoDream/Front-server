@@ -15,7 +15,7 @@
             <td valign="top" bgcolor="#ffffff">
 
                 <!-- 장바구니 항목 리스트 -->
-                <form th:action="@{/order}" method="post">
+                <form th:action="@{/cart/order}" method="post">
                     <input type="hidden" name="isHalfDeliveryOrder" value="0">
                     <table class="table_shop_blue" width="100%">
                         <thead>
@@ -26,23 +26,26 @@
                             <th align="center">상품명</th>
                             <th width="150" style="text-align: center">가격</th>
                             <th width="100" style="text-align: center">수량</th>
+                            <th width="100" style="text-align: center">쿠폰</th>
                             <th width="100" style="text-align: center">삭제</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="item : ${cartItems}">
                             <td align="center">
-                                <input type="checkbox" name="itemIds" th:value="${item.id}"
-                                       class="basket_CheckBox" th:checked="true">
+                                <label>
+                                    <input type="checkbox" name="itemIds" th:value="${item.cartItemId}"
+                                           class="basket_CheckBox" th:checked="true">
+                                </label>
                             </td>
                             <td>
-                                <a th:href="@{/product/{id}(id=${item.id})}" th:title="${item.name}">
-                                    <img th:src="@{${item.thumbnailUrl}}" style="width:48px;">
+                                <a th:href="@{/product/{id}(id=${item.id})}" th:title="${item.title}">
+                                    <img th:src="@{${item.bookUrl}}" style="width:48px;" >
                                 </a>
                             </td>
                             <td style="text-align: center">
                                 <div>
-                                    정가: <s th:text="${#numbers.formatInteger(item.originalPrice, 0, 'COMMA')} + '원'"></s><br>
+                                    정가: <s th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></s><br>
                                     판매가: <span th:text="${#numbers.formatInteger(item.discountedPrice, 0, 'COMMA')} + '원'"></span><br>
                                 </div>
                             </td>
@@ -52,15 +55,20 @@
                                 </label>
                             </td>
                             <td align="center">
+                                <button type="button"
+                                        th:attr="data-cart-item-id=${item.cartItemId},
+                                                 data-coupons=${#lists.size(couponsMap[item.cartItemId])}"
+                                        onclick="openCouponModal(this)">
+                                    쿠폰 선택
+                                </button>
+                            </td>
+                            <td align="center">
                                 <button type="submit" formaction="#" name="delete"
-                                        th:formaction="@{/cart/delete/{id}(id=${item.id})}">삭제</button>
+                                        th:formaction="@{/cart/delete/{id}(id=${item.cartItemId})}">삭제</button>
                             </td>
                         </tr>
                         </tbody>
                     </table>
-                    <div style="text-align: right; margin-top: 1rem;">
-                        <button type="submit" class="btn btn-primary">주문하기</button>
-                    </div>
                 </form>
             </td>
         </tr>
