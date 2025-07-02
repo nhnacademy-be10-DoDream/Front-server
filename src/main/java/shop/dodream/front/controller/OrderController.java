@@ -5,12 +5,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.CartItem;
-import shop.dodream.front.dto.UserAddressResponse;
+import shop.dodream.front.dto.UserAddressDto;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class OrderController {
             if ("accessToken".equals(cookie.getName())) {
                 accessToken = cookie.getValue();
                 // 사용자 주소 목록 가져오기
-                List<UserAddressResponse> addressList = userClient.getAddresses(accessToken);
+                List<UserAddressDto> addressList = userClient.getUserAddresses(accessToken);
                 model.addAttribute("addressList", addressList);
                 model.addAttribute("shippingPolicies", orderClient.getShippingPolicies(accessToken)); // 배송 정책 정보 가져오기
                 break;
