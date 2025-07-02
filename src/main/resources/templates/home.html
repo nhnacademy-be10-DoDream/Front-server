@@ -16,14 +16,11 @@
 
         <div id="carouselExampleAutoplaying" class="carousel slide w-50 h-100" data-bs-ride="carousel">
             <div class="carousel-inner h-100 overflow-hidden">
-                <div class="carousel-item active">
-                    <img src="/images/item-image9.jpg" class="d-block mx-auto" style="max-height: 200px; object-fit: contain;" alt="슬라이드1">
-                </div>
-                <div class="carousel-item">
-                    <img src="/images/item-image8.jpg" class="d-block mx-auto" style="max-height: 200px; object-fit: contain;" alt="슬라이드2">
-                </div>
-                <div class="carousel-item">
-                    <img src="/images/item-image10.jpg" class="d-block mx-auto" style="max-height: 200px; object-fit: contain;" alt="슬라이드3">
+                <div th:each="book, stat : ${books}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
+                    <img th:src="@{${book.bookUrl}}"
+                         class="d-block mx-auto"
+                         style="max-height: 200px; object-fit: contain;"
+                         th:alt="${book.title}" />
                 </div>
             </div>
 
@@ -43,71 +40,30 @@
 
         <div id="carouselExample" class="carousel slide">
             <div class="carousel-inner">
-                <!-- 슬라이드 1 -->
-                <div class="carousel-item active">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image1.jpg" alt="Book 1">
-                            <h3>데미안</h3><p>헤르만 헤세</p><span>₩13,500</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image2.jpg" alt="Book 2">
-                            <h3>자기 앞의 생</h3><p>에밀 아자르</p><span>₩12,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image3.jpg" alt="Book 3">
-                            <h3>연금술사</h3><p>파울로 코엘료</p><span>₩11,000</span>
-                        </div>
-                        <div class="book-card flex-fill d-none d-md-block">
-                            <img src="/images/item-image4.jpg" alt="Book 4">
-                            <h3>1984</h3><p>조지 오웰</p><span>₩10,500</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image5.jpg" alt="Book 5">
-                            <h3>모모</h3><p>미하엘 엔데</p><span>₩13,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image6.jpg" alt="Book 6">
-                            <h3>호밀밭의 파수꾼</h3><p>J.D. 샐린저</p><span>₩9,800</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- bookList를 6개씩 자른 조각(chunk)을 슬라이드로 반복 -->
 
-                <!-- 슬라이드 2 -->
-                <div class="carousel-item">
+                <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
                     <div class="d-flex justify-content-between gap-3">
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image5.jpg" alt="Book 5">
-                            <h3>모모</h3><p>미하엘 엔데</p><span>₩13,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image6.jpg" alt="Book 6">
-                            <h3>호밀밭의 파수꾼</h3><p>J.D. 샐린저</p><span>₩9,800</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image1.jpg" alt="Book 1">
-                            <h3>데미안</h3><p>헤르만 헤세</p><span>₩13,500</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image2.jpg" alt="Book 2">
-                            <h3>자기 앞의 생</h3><p>에밀 아자르</p><span>₩12,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image3.jpg" alt="Book 3">
-                            <h3>연금술사</h3><p>파울로 코엘료</p><span>₩11,000</span>
-                        </div>
-                        <div class="book-card flex-fill d-none d-md-block">
-                            <img src="/images/item-image4.jpg" alt="Book 4">
-                            <h3>1984</h3><p>조지 오웰</p><span>₩10,500</span>
+                        <div th:each="book : ${chunk}" class="book-card flex-fill">
+                            <a th:href="@{${book.bookUrl}}">
+                                <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
+                            </a>
+                            <h3 th:text="${book.title}">책 제목</h3>
+                            <p th:text="${book.author}">작가</p>
+                            <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
+
+                            <form th:action="@{/cart/add}" method="post" class="mt-2">
+                                <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                                <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
 
-
+            <!-- 슬라이드 이동 버튼 -->
             <div class="white_circle_prev" data-bs-slide="prev" data-bs-target="#carouselExample"></div>
             <div class="white_circle_next" data-bs-slide="next" data-bs-target="#carouselExample"></div>
-
         </div>
     </section>
 
@@ -116,93 +72,75 @@
         <div id="carouselExample2" class="carousel slide">
             <div class="carousel-inner">
                 <!-- 슬라이드 1 -->
-                <div class="carousel-item active">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image1.jpg" alt="Book 1">
-                            <h3>데미안</h3><p>헤르만 헤세</p><span>₩13,500</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image2.jpg" alt="Book 2">
-                            <h3>자기 앞의 생</h3><p>에밀 아자르</p><span>₩12,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image3.jpg" alt="Book 3">
-                            <h3>연금술사</h3><p>파울로 코엘료</p><span>₩11,000</span>
-                        </div>
-                        <div class="book-card flex-fill d-none d-md-block">
-                            <img src="/images/item-image4.jpg" alt="Book 4">
-                            <h3>1984</h3><p>조지 오웰</p><span>₩10,500</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image5.jpg" alt="Book 5">
-                            <h3>모모</h3><p>미하엘 엔데</p><span>₩13,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image6.jpg" alt="Book 6">
-                            <h3>호밀밭의 파수꾼</h3><p>J.D. 샐린저</p><span>₩9,800</span>
-                        </div>
-                    </div>
-                </div>
+                <div id="carousel-item" class="carousel slide">
+                    <div class="carousel-inner">
+                        <!-- bookList를 6개씩 자른 조각(chunk)을 슬라이드로 반복 -->
 
-                <!-- 슬라이드 2 -->
-                <div class="carousel-item">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image5.jpg" alt="Book 5">
-                            <h3>모모</h3><p>미하엘 엔데</p><span>₩13,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image6.jpg" alt="Book 6">
-                            <h3>호밀밭의 파수꾼</h3><p>J.D. 샐린저</p><span>₩9,800</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image1.jpg" alt="Book 1">
-                            <h3>데미안</h3><p>헤르만 헤세</p><span>₩13,500</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image2.jpg" alt="Book 2">
-                            <h3>자기 앞의 생</h3><p>에밀 아자르</p><span>₩12,000</span>
-                        </div>
-                        <div class="book-card flex-fill">
-                            <img src="/images/item-image3.jpg" alt="Book 3">
-                            <h3>연금술사</h3><p>파울로 코엘료</p><span>₩11,000</span>
-                        </div>
-                        <div class="book-card flex-fill d-none d-md-block">
-                            <img src="/images/item-image4.jpg" alt="Book 4">
-                            <h3>1984</h3><p>조지 오웰</p><span>₩10,500</span>
+                        <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
+                            <div class="d-flex justify-content-between gap-3">
+                                <div th:each="book : ${chunk}" class="book-card flex-fill">
+                                    <a th:href="@{${book.bookUrl}}">
+                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
+                                    </a>
+                                    <h3 th:text="${book.title}">책 제목</h3>
+                                    <p th:text="${book.author}">작가</p>
+                                    <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
+
+                                    <form th:action="@{/cart/add}" method="post" class="mt-2">
+                                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                                        <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
 
             <div class="white_circle_prev" data-bs-slide="prev" data-bs-target="#carouselExample2"></div>
             <div class="white_circle_next" data-bs-slide="next" data-bs-target="#carouselExample2"></div>
+                </div>
+            </div>
         </div>
+
     </section>
 
     <!-- 도서 추천/리스트 섹션 -->
-    <section id="book-list" class="padding-medium">
-        <div class="container">
-            <h3>추천 도서</h3>
-            <!-- 실제 도서 리스트/카드 컴포넌트로 교체 -->
-            <div class="recommend-row">
-                <!-- 예시 도서 카드 -->
-                <div class="col">
-                    <div class="book-card">
-                        <img src="/images/review-image2.jpg" alt="샘플 도서">
-                        <h4>도서명</h4>
-                        <p>저자</p>
-                        <button class="btn btn-primary">장바구니 담기</button>
+    <section class="best-seller container my-5">
+        <h2 class="container mb-4 fw-bold">추천 도서</h2>
+        <div id="carouselExample3" class="carousel slide">
+            <div class="carousel-inner">
+                <!-- 슬라이드 1 -->
+                <div id="carousel-item2" class="carousel slide">
+                    <div class="carousel-inner">
+                        <!-- bookList를 6개씩 자른 조각(chunk)을 슬라이드로 반복 -->
+
+                        <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
+                            <div class="d-flex justify-content-between gap-3">
+                                <div th:each="book : ${chunk}" class="book-card flex-fill">
+                                    <a th:href="@{${book.bookUrl}}">
+                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
+                                    </a>
+                                    <h3 th:text="${book.title}">책 제목</h3>
+                                    <p th:text="${book.author}">작가</p>
+                                    <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
+
+                                    <form th:action="@{/cart/add}" method="post" class="mt-2">
+                                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                                        <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
+                    <div class="white_circle_prev" data-bs-slide="prev" data-bs-target="#carouselExample3"></div>
+                    <div class="white_circle_next" data-bs-slide="next" data-bs-target="#carouselExample3"></div>
                 </div>
-                <!-- ... 더 많은 도서 카드 ... -->
             </div>
         </div>
     </section>
 
-    <!-- ... -->
 </div>
 </body>
 </html>

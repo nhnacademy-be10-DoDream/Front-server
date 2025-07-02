@@ -36,6 +36,7 @@ public class OrderController {
                 // 사용자 주소 목록 가져오기
                 List<UserAddressResponse> addressList = userClient.getAddresses(accessToken);
                 model.addAttribute("addressList", addressList);
+                model.addAttribute("shippingPolicies", orderClient.getShippingPolicies(accessToken)); // 배송 정책 정보 가져오기
                 break;
             }
         }
@@ -47,7 +48,6 @@ public class OrderController {
                 .mapToInt(CartItem::getTotalPrice)
                 .sum();
         model.addAttribute("totalAmount", totalAmount);
-        model.addAttribute("shippingPolicies", orderClient.getShippingPolicies()); // 배송 정책 정보 가져오기
 
 
         return "order/order-sheet"; // 주문서 페이지로 이동
