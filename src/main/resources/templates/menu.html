@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<head>
+    <title>카테고리 메뉴 테스트</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown" th:each="category : ${categories}">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" th:text="${category.categoryName}"></a>
+                <ul class="dropdown-menu">
+                    <li th:each="child : ${category.children}">
+                        <a class="dropdown-item" href="#" th:text="${child.categoryName}"></a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
+
+
+
+

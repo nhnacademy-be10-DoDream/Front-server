@@ -98,6 +98,19 @@ header, footer {
     display: block;
 }
 
+.dropdown-header {
+    font-weight: bold;
+    padding: 0.5rem 0;
+}
+
+.dropdown-header + ul {
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.nav-item {
+    position: relative;
+}
 
 .menu {
     display: flex;

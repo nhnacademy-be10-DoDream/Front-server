@@ -20,7 +20,6 @@
             <a th:if="${session.user == null}" th:href="@{/auth/signup-form}" class="nav-item">회원가입</a>
             <a th:if="${session.user == null}" th:href="@{/auth/login-form}" class="nav-item">로그인</a>
             <a th:href="@{/cart}" class="nav-item">장바구니🛒</a>
-
         </nav>
     </header>
     <nav class="navbar navbar-expand-lg " style="background-color: #ffffff;" data-bs-theme="light">
@@ -41,9 +40,19 @@
                             <li><a class="dropdown-item" href="#">eBook</a></li>
                             <li><a class="dropdown-item" href="#">음반</a></li>
                             <li><a class="dropdown-item" href="#">블루레이</a></li>
-
                         </ul>
                     </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#">분야보기</a>
+                        <ul class="dropdown-menu">
+                            <li th:each="category : ${categories}">
+                                <a class="dropdown-item" href="#" th:text="${category.categoryName}"></a>
+                            </li>
+                        </ul>
+                    </li>
+
+
                     <li class="nav-item">
                         <a class="nav-link active" role="button" aria-disabled="true">베스트</a>
                     </li>
