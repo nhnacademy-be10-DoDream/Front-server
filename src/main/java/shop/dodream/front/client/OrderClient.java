@@ -19,7 +19,8 @@ public interface OrderClient {
 //    WrappingDto getGiftWrapById(@PathVariable("gift-wrap-id") Long giftWrapId);
 
     @GetMapping("/orders/shipping")
-    List<ShippingPolicyDto> getShippingPolicies(); // Assuming you want to fetch shipping policies as well
+    List<ShippingPolicyDto> getShippingPolicies(@CookieValue("accessToken")String accessToken);
+    // Assuming you want to fetch shipping policies as well
 
 //    @GetMapping("/orders")
 //    List<OrderListResponse> getOrders(@RequestHeader("X-USER-ID") String userId); // 주문 목록 조회
