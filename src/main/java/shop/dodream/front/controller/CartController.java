@@ -2,6 +2,7 @@ package shop.dodream.front.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +22,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/cart")
 public class CartController {
 	
-	@Autowired
-	private CouponClient couponClient;
-	
-	@Autowired
-	private CartClient cartClient;
+	private final CouponClient couponClient;
+	private final CartClient cartClient;
 	
 	@GetMapping
 	public String showCart(Model model, HttpServletRequest request) {

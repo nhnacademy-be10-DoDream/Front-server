@@ -10,7 +10,7 @@ import shop.dodream.front.dto.GuestCartResponse;
 
 import java.util.List;
 
-@FeignClient(name = "cart")
+@FeignClient(name = "cart", url = "http://localhost:10320")
 public interface CartClient {
 	
 	@GetMapping("/carts/users")
