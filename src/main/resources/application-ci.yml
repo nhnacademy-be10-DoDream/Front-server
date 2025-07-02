@@ -6,7 +6,14 @@ spring:
       name: ${spring.application.name}
       profile: ${spring.profiles.active}
       label: main
-  data:
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    db:
+      enabled: false
     redis:
-      host: localhost
-      port: 6379
+      enabled: false

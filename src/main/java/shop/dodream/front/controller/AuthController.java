@@ -32,9 +32,15 @@ public class AuthController {
     private final RedisUserSessionService redisUserSessionService;
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, Model model) {
+    public String login(@ModelAttribute LoginRequest request, Model model, HttpServletResponse response) throws IOException {
         try{
             ResponseEntity<Void> result = authClient.login(request);
+            HttpHeaders gatewayHeaders = result.getHeaders();
+            if (gatewayHeaders.containsKey(HttpHeaders.SET_COOKIE)) {
+                for (String cookieHeader : gatewayHeaders.get(HttpHeaders.SET_COOKIE)) {
+                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
+                }
+            }
             String accessToken = extractAccessTokenFromCookies(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
@@ -77,10 +83,17 @@ public class AuthController {
     public String paycoCallback(
             @RequestParam("code") String code,
             @RequestParam("state") String state,
+            HttpServletResponse response,
             Model model
     ) {
         try {
             ResponseEntity<Void> result = authClient.paycoCallback(code, state);
+            HttpHeaders gatewayHeaders = result.getHeaders();
+            if (gatewayHeaders.containsKey(HttpHeaders.SET_COOKIE)) {
+                for (String cookieHeader : gatewayHeaders.get(HttpHeaders.SET_COOKIE)) {
+                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
+                }
+            }
             String accessToken = extractAccessTokenFromCookies(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
