@@ -1,0 +1,52 @@
+<div th:fragment="userUpdateModalFragment">
+    <div class="modal fade" id="userUpdateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="#{mypage.profile.title}"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="userUpdateForm" th:action="@{/mypage/profile}" method="post" novalidate>
+                    <input type="hidden" name="_method" value="put" />
+
+                    <div class="modal-body">
+
+                        <!-- 이메일 -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label" th:text="#{user.email}"></label>
+                            <input type="email" class="form-control" id="email" name="email" maxlength="100" required>
+                            <div class="invalid-feedback" th:text="#{validation.email.invalid}"></div>
+                        </div>
+
+                        <!-- 이름 -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label" th:text="#{user.name}"></label>
+                            <input type="text" class="form-control" id="name" name="name" maxlength="50" required>
+                            <div class="invalid-feedback" th:text="#{validation.required}"></div>
+                        </div>
+
+                        <!-- 전화번호 -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label" th:text="#{user.phone}"></label>
+                            <input type="text" class="form-control" id="phone" name="phone" maxlength="20" required>
+                            <div class="invalid-feedback" th:text="#{validation.phone.invalid}"></div>
+                        </div>
+
+                        <!-- 생년월일 -->
+                        <div class="mb-3">
+                            <label for="birthDate" class="form-label" th:text="#{user.birth}"></label>
+                            <input type="date" class="form-control" id="birthDate" name="birthDate" required>
+                            <div class="invalid-feedback" th:text="#{validation.required}"></div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" th:text="#{modal.cancel}"></button>
+                        <button type="submit" class="btn btn-custom-dark" th:text="#{modal.save}"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

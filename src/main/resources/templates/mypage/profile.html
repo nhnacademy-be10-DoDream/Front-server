@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+
+<head>
+    <title th:text="#{mypage.profile.title}"></title>
+</head>
+
+<body>
+<div layout:fragment="content" class="content-area">
+    <div class="content-header">
+        <h2 class="section-title section-title-lg" th:text="#{mypage.profile.heading}"></h2>
+    </div>
+
+    <table class="info-table table-default">
+        <!-- 테이블 내용 동일 -->
+        <tr>
+            <th th:text="#{user.userId}"></th>
+            <td th:text="${user.userId}"></td>
+        </tr>
+        <tr>
+            <th th:text="#{user.name}"></th>
+            <td th:text="${user.name}"></td>
+        </tr>
+        <tr>
+            <th th:text="#{user.email}"></th>
+            <td th:text="${user.email}"></td>
+        </tr>
+        <tr>
+            <th th:text="#{user.phone}"></th>
+            <td th:text="${user.phone}"></td>
+        </tr>
+        <tr>
+            <th th:text="#{user.birth}"></th>
+            <td th:text="${#dates.format(user.birthDate, 'yyyy-MM-dd')}"></td>
+        </tr>
+        <tr>
+            <th th:text="#{user.grade}"></th>
+            <td>
+                <span class="grade-badge"
+                      th:classappend="'grade-' + ${#strings.toLowerCase(user.grade)}"
+                      th:text="${user.grade}"></span>
+            </td>
+        </tr>
+        <tr>
+            <th th:text="#{user.point}"></th>
+            <td>
+                <span class="point-amount" th:text="${#numbers.formatInteger(user.point, 0, 'COMMA')} + 'P'"></span>
+            </td>
+        </tr>
+        <tr>
+            <th th:text="#{user.joinDate}"></th>
+            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+        <tr>
+            <th th:text="#{user.lastLogin}"></th>
+            <td th:text="${#temporals.format(user.lastLoginAt, 'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+    </table>
+
+    <div class="mt-4 d-flex justify-content-end">
+        <button type="button" class="btn btn-custom-dark me-2 open-edit-modal"
+                data-bs-toggle="modal" data-bs-target="#userUpdateModal"
+                th:data-email="${user.email}"
+                th:data-name="${user.name}"
+                th:data-phone="${user.phone}"
+                th:data-birthdate="${#dates.format(user.birthDate, 'yyyy-MM-dd')}">
+            <span th:text="#{button.edit}">수정</span>
+        </button>
+        <button type="button" class="btn-outline-gray" th:text="#{button.changePassword}"></button>
+    </div>
+
+    <div th:replace="~{mypage/fragments/user-update-modal :: userUpdateModalFragment}"></div>
+
+</div>
+</body>
+</html>

@@ -13,13 +13,13 @@
 
 </head>
 <body>
-<header th:replace="layout/header :: header"></header>
+<header th:replace="~{layout/header :: header}"></header>
 
 <main>
     <div layout:fragment="content"></div>
 </main>
 
-<footer th:replace="layout/footer :: footer"></footer>
+<footer th:replace="~{layout/footer :: footer}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="/js/daumPostCode.js"></script>

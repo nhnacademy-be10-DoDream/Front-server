@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,6 @@ import java.util.Map;
 public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
-    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public String login(@ModelAttribute LoginRequest request, HttpServletResponse response, Model model, HttpServletRequest httpServletRequest) {
@@ -120,8 +118,6 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
-        String password = request.getPassword();
-        request.setPassword(passwordEncoder.encode(password));
         userClient.createUserAccount(new SignupRequest(request, userAddressDto));
         return "redirect:/home";
     }

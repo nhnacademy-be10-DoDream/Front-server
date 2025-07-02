@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+
+<head>
+    <title th:text="#{mypage.points.title}"></title>
+</head>
+
+<body>
+<div layout:fragment="content" class="content-area">
+     페이지 헤더
+    <div class="content-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 th:text="#{mypage.points.heading}"></h2>
+        <div class="points-counter">
+          <span class="text-muted" th:text="#{pagination.showing(${points.number * points.size + 1}, ${points.number * points.size + points.numberOfElements}, ${points.totalElements})}">
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 포인트 이력 없음 -->
+    <div th:if="${points.isEmpty()}" class="text-center py-5">
+        <i class="bi bi-coin text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted mt-3 mb-4" th:text="#{message.noPointHistory}"></p>
+        <a th:href="@{/}" class="btn-dark-custom" th:text="#{button.startShopping}"></a>
+    </div>
+
+    <!-- 포인트 이력 존재 -->
+    <div th:if="${!points.isEmpty()}" class="points-list">
+        <div class="card card-style">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 table-default">
+                        <thead>
+                        <tr>
+                            <th th:text="#{points.date}"></th>
+                            <th th:text="#{points.type}"></th>
+                            <th th:text="#{points.description}"></th>
+                            <th class="text-end" th:text="#{points.amount}"></th>
+                            <th class="text-end" th:text="#{points.balance}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="point : ${points.content}" class="point-row">
+                            <td>
+                                <div th:text="${#temporals.format(point.createdAt, 'yyyy-MM-dd')}"></div>
+                                <small class="text-muted"
+                                       th:text="${#temporals.format(point.createdAt, 'HH:mm')}"></small>
+                            </td>
+                            <td>
+                  <span class="grade-badge"
+                        th:classappend="${point.pointType == 'EARN'} ? 'points-earn' :
+                                        (${point.pointType == 'USE'} ? 'points-use')"
+                        th:text="#{${'points.type.' + point.pointType.toLowerCase()}}">
+                  </span>
+                            </td>
+                            <td>
+                                <span th:text="${point.description}"></span>
+                            </td>
+                            <td class="text-end">
+                  <span class="fw-bold"
+                        th:classappend="${point.pointType == 'EARN'} ? 'text-success' : 'text-danger'"
+                        th:text="${point.amount + 'P'}">
+                  </span>
+                            </td>
+                            <td class="text-end">
+                                <span class="text-muted" th:text="${point.balance + 'P'}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div th:if="${points.totalPages > 1}" class="d-flex justify-content-center mt-4">
+        <nav aria-label="Points pagination">
+            <ul class="custom-pagination">
+                <!-- 처음 페이지 -->
+                <li th:classappend="${points.first} ? 'disabled'">
+                    <a class="pagination-link" th:href="@{/mypage/points(page=0)}" th:text="#{pagination.first}"></a>
+                </li>
+
+                <!-- 이전 페이지 -->
+                <li th:classappend="${!points.hasPrevious()} ? 'disabled'">
+                    <a class="pagination-link"
+                       th:href="@{/mypage/points(page=${points.number - 1})}"
+                       th:text="#{pagination.previous}"></a>
+                </li>
+
+                <!-- 페이지 번호들 -->
+                <li th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, points.number - 2), T(java.lang.Math).min(points.totalPages - 1, points.number + 2))}"
+                    th:classappend="${pageNum == points.number} ? 'active'">
+                    <a class="pagination-link"
+                       th:href="@{/mypage/points(page=${pageNum})}"
+                       th:text="${pageNum + 1}"></a>
+                </li>
+
+                <!-- 다음 페이지 -->
+                <li th:classappend="${!points.hasNext()} ? 'disabled'">
+                    <a class="pagination-link"
+                       th:href="@{/mypage/points(page=${points.number + 1})}"
+                       th:text="#{pagination.next}"></a>
+                </li>
+
+                <!-- 마지막 페이지 -->
+                <li th:classappend="${points.last} ? 'disabled'">
+                    <a class="pagination-link"
+                       th:href="@{/mypage/points(page=${points.totalPages - 1})}"
+                       th:text="#{pagination.last}"></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+    <!-- 포인트 적립 안내 -->
+    <div class="points-info mt-4">
+        <div class="card border-0 card-style">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span th:text="#{points.info.title}"></span>
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li th:text="#{points.info.purchase}"></li>
+                    <li th:text="#{points.info.review}"></li>
+                    <li th:text="#{points.info.signup}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
