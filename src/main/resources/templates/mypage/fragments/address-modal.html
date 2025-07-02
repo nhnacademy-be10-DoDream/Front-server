@@ -1,0 +1,97 @@
+<div th:fragment="addressModalFragment">
+    <div class="modal fade" id="addressModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title section-title section-title-md"
+                        id="addressModalTitle"
+                        th:text="#{address.modal.add.title}"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form id="addressForm" th:action="@{/mypage/addresses}" method="post">
+                    <input type="hidden" id="_method" name="_method" value="post" />
+                    <div class="modal-body">
+                        <input type="hidden" id="addressId" name="addressId">
+
+                        <!-- 별칭 -->
+                        <div class="mb-3">
+                            <label for="alias" class="form-label section-title">
+                                <span th:text="#{address.alias}"></span> <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="alias" name="alias"
+                                   th:placeholder="#{address.alias.placeholder}"
+                                   maxlength="50" required>
+                            <div class="invalid-feedback" th:text="#{address.alias.required}"></div>
+                        </div>
+
+                        <!-- 도로명 주소 + 우편번호 -->
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label for="roadAddress" class="form-label section-title">
+                                    <span th:text="#{address.roadAddress}"></span> <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="roadAddress" name="roadAddress"
+                                       th:placeholder="#{address.road.placeholder}"
+                                       readonly required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="zipcode" class="form-label section-title">
+                                    <span th:text="#{address.zipcode}"></span> <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="12345" readonly required>
+                                    <button type="button" class="btn btn-custom-dark"
+                                            onclick="execDaumPostcode(event)"
+                                            th:text="#{address.search}">
+                                    </button>
+
+                                    <div id="postcodeLayer" style="display:none; position:fixed; overflow:hidden; z-index:9999;
+-webkit-overflow-scrolling:touch; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8);">
+                                        <div id="postcodeLayerInner" style="position:absolute; top:10%; left:10%; right:10%; bottom:10%;
+        background:white; border-radius:5px; overflow:hidden;">
+                                            <img src="//t1.daumcdn.net/postcode/resource/images/close.png"
+                                                 id="btnCloseLayer" style="cursor:pointer; position:absolute;
+             right:10px; top:10px; z-index:100" onclick="closeDaumPostcode()" alt="닫기 버튼">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 지번 주소 -->
+                        <div class="mb-3">
+                            <label for="jibunAddress" class="form-label section-title"
+                                   th:text="#{address.jibunAddress}"></label>
+                            <input type="text" class="form-control" id="jibunAddress" name="jibunAddress"
+                                   th:placeholder="#{address.jibun.placeholder}" readonly>
+                        </div>
+
+                        <!-- 상세 주소 -->
+                        <div class="mb-3">
+                            <label for="detailAddress" class="form-label section-title"
+                                   th:text="#{address.detailAddress}"></label>
+                            <input type="text" class="form-control" id="detailAddress" name="detailAddress"
+                                   th:placeholder="#{address.detail.placeholder}" maxlength="255">
+                        </div>
+
+                        <!-- 참고 항목 -->
+                        <div class="mb-3">
+                            <label for="extraAddress" class="form-label section-title"
+                                   th:text="#{address.extraAddress}"></label>
+                            <input type="text" class="form-control" id="extraAddress" name="extraAddress"
+                                   th:placeholder="#{address.extra.placeholder}" maxlength="255" readonly>
+                        </div>
+                    </div>
+
+                    <!-- 모달 하단 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                th:text="#{modal.cancel}"></button>
+                        <button type="submit" class="btn btn-custom-dark" th:text="#{modal.save}"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
