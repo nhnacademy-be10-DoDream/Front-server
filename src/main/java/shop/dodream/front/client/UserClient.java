@@ -18,4 +18,7 @@ public interface UserClient {
     @GetMapping("/users/me")
     UserDto getUser();
 
+    @GetMapping("/users/me/addresses")
+    List<UserAddressDto> getUserAddresses(@CookieValue("accessToken") String accessToken);
+
 }
