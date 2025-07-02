@@ -83,7 +83,6 @@ public class AuthController {
     public String paycoCallback(
             @RequestParam("code") String code,
             @RequestParam("state") String state,
-            HttpServletResponse response,
             Model model
     ) {
         try {

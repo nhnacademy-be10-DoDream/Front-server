@@ -6,7 +6,6 @@ spring:
       name: ${spring.application.name}
       profile: ${spring.profiles.active}
       label: main
-
 management:
   endpoints:
     web:
