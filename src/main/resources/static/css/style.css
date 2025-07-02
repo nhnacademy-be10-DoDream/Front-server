@@ -73,10 +73,6 @@ header, footer {
     position: relative;
 }
 
-.nav-link {
-    cursor: pointer;
-}
-
 .nav-item:hover {
     color: #0070f3;
 }
@@ -87,15 +83,21 @@ header, footer {
     top: 100%;
     left: 0;
     z-index: 1000;
-    min-width: 10rem;
-    padding: 0.5rem 0;
+    min-width: 100%;
+    padding: 1rem;
     margin: 0;
     background-color: white;
     border: 1px solid rgba(0, 0, 0, 0.15);
+    flex-wrap: nowrap;
 }
 
 .nav-item:hover .dropdown-menu {
-    display: block;
+    display: flex;
+}
+
+.nav-link {
+    cursor: pointer;
+    color: #000 !important
 }
 
 .dropdown-header {
@@ -107,9 +109,37 @@ header, footer {
     padding-left: 1rem;
     margin-bottom: 1rem;
 }
+.dropdown-menu > li {
+    padding: 0 1rem;
+}
 
-.nav-item {
-    position: relative;
+/* 부모 카테고리명 스타일 */
+.dropdown-menu .fw-bold {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* 자식 카테고리 리스트 */
+.dropdown-menu .list-unstyled li {
+    margin-bottom: 0.3rem;
+}
+
+/* 링크 hover 효과 */
+.dropdown-item:hover {
+    color: #0070f3;
+    text-decoration: underline;
+}
+
+/* 메뉴 전체 수평 정렬 강제 */
+.dropdown-menu {
+    display: none;
+    flex-direction: row; /* 핵심: 수평 정렬 */
+}
+
+.parent-category {
+    color: #333;
 }
 
 .menu {

@@ -33,21 +33,21 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#">분야보기</a>
+                        <a class="nav-link">분야보기</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">국내도서</a></li>
-                            <li><a class="dropdown-item" href="#">외국도서</a></li>
-                            <li><a class="dropdown-item" href="#">eBook</a></li>
-                            <li><a class="dropdown-item" href="#">음반</a></li>
-                            <li><a class="dropdown-item" href="#">블루레이</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#">분야보기</a>
-                        <ul class="dropdown-menu">
-                            <li th:each="category : ${categories}">
-                                <a class="dropdown-item" href="#" th:text="${category.categoryName}"></a>
+                            <li th:each="entry : ${categories}">
+                                <div class="p-3">
+                                    <a class="fw-bold text-decoration-none parent-category"
+                                       th:href="@{'/category/' + ${#strings.replace(entry.key, ' ', '')}}"
+                                       th:text="${entry.key}"></a>
+                                    <ul class="list-unstyled mt-2">
+                                        <li th:each="child : ${entry.value}">
+                                            <a class="dropdown-item"
+                                               th:href="@{'/category/' + ${child.categoryId}}"
+                                               th:text="${child.categoryName}"></a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
                         </ul>
                     </li>
@@ -58,9 +58,6 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" role="button" aria-disabled="true">신상품</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" role="button" aria-disabled="true">이벤트</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" role="button" aria-disabled="true">추천도서</a>

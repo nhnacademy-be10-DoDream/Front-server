@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.CategoryResponse;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -14,17 +16,21 @@ public class CategoryController {
 
     private final BookClient bookClient;
 
-//    @ModelAttribute("categories")
-//    public List<CategoryResponse> getCategories() {
-//        return bookClient.getCategoriesByDepth(1L);
-//    }
     @ModelAttribute("categories")
-    public List<CategoryResponse> getCategories() {
-        List<CategoryResponse> categories = bookClient.getCategoriesByDepth(1L);
-        System.out.println("✅ [카테고리 호출 성공] 조회된 카테고리 개수: " + categories.size());
-        for (CategoryResponse category : categories) {
-            System.out.println("카테고리명: " + category.getCategoryName());
+    public Map<String, List<CategoryResponse>> categories() {
+        List<CategoryResponse> parentCategories = bookClient.getCategoriesByDepth(1L);
+
+        List<CategoryResponse> childCategories = bookClient.getCategoriesByDepth(2L);
+
+        Map<String, List<CategoryResponse>> categoryMap = new LinkedHashMap<>();
+
+        for (CategoryResponse parent : parentCategories) {
+            List<CategoryResponse> children = childCategories.stream()
+                    .filter(child -> child.getParentId().equals(parent.getCategoryId()))
+                    .toList();
+            categoryMap.put(parent.getCategoryName(), children);
         }
-        return categories;
+
+        return categoryMap;
     }
 }
