@@ -8,7 +8,7 @@ public class BookDto {
     private String title;
     private String author;
     private String isbn;
-    private int regularPrice;
-    private int salePrice;
+    private Long regularPrice;
+    private Long salePrice;
     private String bookUrl; // 책 상세 페이지 URL
 }
