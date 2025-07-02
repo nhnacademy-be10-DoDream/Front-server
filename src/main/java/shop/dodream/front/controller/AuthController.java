@@ -2,9 +2,7 @@ package shop.dodream.front.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +15,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import shop.dodream.front.client.AuthClient;
 import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.*;
+import shop.dodream.front.holder.AccessTokenHolder;
+import shop.dodream.front.service.RedisUserSessionService;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,17 +29,17 @@ public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
     private final PasswordEncoder passwordEncoder;
+    private final RedisUserSessionService redisUserSessionService;
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, HttpServletResponse response, Model model, HttpServletRequest httpServletRequest) {
+    public String login(@ModelAttribute LoginRequest request, Model model) {
         try{
             ResponseEntity<Void> result = authClient.login(request);
-            copyCookies(result, response);
-            List<String> cookies = result.getHeaders().get(HttpHeaders.SET_COOKIE);
-            String accessToken = cookies.get(0).split("=")[1];
-            UserDto user = userClient.getUser(accessToken);
-            HttpSession session = httpServletRequest.getSession();
-            session.setAttribute("user", user);
+            String accessToken = extractAccessTokenFromCookies(result.getHeaders().get(HttpHeaders.SET_COOKIE));
+            AccessTokenHolder.set(accessToken);
+            UserDto user = userClient.getUser();
+            AccessTokenHolder.clear();
+            redisUserSessionService.saveUser(accessToken,user);
             return "redirect:/home";
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.LOCKED) {
@@ -77,12 +77,15 @@ public class AuthController {
     public String paycoCallback(
             @RequestParam("code") String code,
             @RequestParam("state") String state,
-            HttpServletResponse response,
             Model model
     ) {
         try {
             ResponseEntity<Void> result = authClient.paycoCallback(code, state);
-            copyCookies(result, response);
+            String accessToken = extractAccessTokenFromCookies(result.getHeaders().get(HttpHeaders.SET_COOKIE));
+            AccessTokenHolder.set(accessToken);
+            UserDto user = userClient.getUser();
+            AccessTokenHolder.clear();
+            redisUserSessionService.saveUser(accessToken,user);
             return "redirect:/home";
         }catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.LOCKED) {
@@ -109,20 +112,21 @@ public class AuthController {
         }
     }
 
-    private void copyCookies(ResponseEntity<?> result, HttpServletResponse response) {
-        List<String> cookies = result.getHeaders().get(HttpHeaders.SET_COOKIE);
-        if (cookies != null) {
-            for (String cookie : cookies) {
-                response.addHeader(HttpHeaders.SET_COOKIE, cookie);
-            }
-        }
-    }
-
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
         String password = request.getPassword();
         request.setPassword(passwordEncoder.encode(password));
         userClient.createUserAccount(new SignupRequest(request, userAddressDto));
         return "redirect:/home";
+    }
+
+    private String extractAccessTokenFromCookies(List<String> cookies) {
+        if (cookies == null) return null;
+        for (String cookie : cookies) {
+            if (cookie.startsWith("accessToken=")) {
+                return cookie.split("=")[1].split(";")[0];
+            }
+        }
+        return null;
     }
 }
