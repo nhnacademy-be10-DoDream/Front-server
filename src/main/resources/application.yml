@@ -3,3 +3,7 @@ spring:
     name: front
   profiles:
     active: dev
+
+  cloud:
+    config:
+      enabled: false

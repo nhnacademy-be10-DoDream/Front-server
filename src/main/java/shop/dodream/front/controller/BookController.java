@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.BookDto;
 
@@ -40,4 +41,16 @@ public class BookController {
         model.addAttribute("bookChunks", chunks);
         return "home";
     }
+
+
+    @GetMapping("/books")
+    public String bookDetail(Model model){
+
+//        model.addAttribute("bookId", bookId);
+        return "book/detail";
+    }
+
+
+
+
 }

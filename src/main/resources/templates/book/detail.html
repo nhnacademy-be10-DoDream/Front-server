@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<head>
+    <title>책 상세</title>
+    <style>
+        .book-detail-container {
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 5%;
+        }
+
+        .book-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .book-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-meta {
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .book-content {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+        }
+
+        .book-image,
+        .book-detail {
+            flex: 0 0 320px;
+        }
+
+        .book-image img {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .book-detail {
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .price-info div {
+            margin-bottom: 0.5rem;
+        }
+
+        .price-info strong {
+            color: #d32f2f;
+            font-size: 1.2rem;
+        }
+
+        .price-info del {
+            color: #999;
+        }
+
+        .rating {
+            margin: 1rem 0;
+        }
+
+        .stars {
+            display: inline-block;
+            color: #ccc;
+            font-size: 1.3rem;
+        }
+
+        .stars .filled {
+            color: #ffc107;
+        }
+
+        .rating-text {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .quantity-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .quantity-box input {
+            width: 50px;
+            text-align: center;
+            padding: 0.3rem;
+            font-size: 1rem;
+        }
+
+        .quantity-box button {
+            width: 30px;
+            height: 30px;
+            font-size: 1.1rem;
+            border: none;
+            background-color: #eee;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .total-price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-top: 0.5rem;
+        }
+
+        .btns {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btns button {
+            flex: 1;
+            padding: 0.8rem 0;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .btn-cart {
+            background-color: #ff4081;
+            color: white;
+        }
+
+        .btn-buy {
+            background-color: #d32f2f;
+            color: white;
+        }
+
+        .review-section {
+            max-width: 700px;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .review-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .review {
+            background-color: #fff;
+            padding: 1rem 1.2rem;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-header strong {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .review-header .stars {
+            color: #ffc107;
+            font-size: 1rem;
+        }
+
+        .review p {
+            font-size: 0.95rem;
+            color: #555;
+            margin: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="book-detail-container">
+        <!-- 상단 제목/저자/출판사/날짜 -->
+        <div class="book-header">
+            <h1>이것이 스프링 부트다 with 자바</h1>
+            <div class="book-meta">
+                김철선 (지은이) | 한빛미디어 | 2025-06-20
+            </div>
+        </div>
+
+        <!-- 좌: 이미지 / 우: 정보 -->
+        <div class="book-content">
+            <div class="book-image">
+                <img src="http://storage.java21.net:8000/dodream-images/book/0524d09f-0fb9-4671-8611-ef6e00983628.png"
+                     alt="이것이 스프링 부트다">
+            </div>
+
+            <div class="book-detail">
+                <div class="price-info">
+                    <div><strong>정가:</strong> <del>36,000원</del></div>
+                    <div><strong>판매가:</strong> <span style="color: #d32f2f;">32,400원</span> (10% 할인)</div>
+                    <div><strong>마일리지:</strong> 1,800원 (5%)</div>
+                    <div><strong>배송료:</strong> 무료</div>
+                    <div><strong>포장가격:</strong> 1000원</div>
+                </div>
+
+                <!-- 평점 영역 -->
+                <div class="rating">
+                    <div class="stars">
+                        <span class="filled">★</span>
+                        <span class="filled">★</span>
+                        <span class="filled">★</span>
+                        <span>★</span>
+                        <span>★</span>
+                    </div>
+                    <span class="rating-text">3.0 | 리뷰(10)</span>
+                </div>
+
+                <!-- 수량 -->
+                <div>
+                    <strong>수량:</strong>
+                    <div class="quantity-box">
+                        <button type="button" onclick="changeQty(-1)">-</button>
+                        <input type="text" id="quantity" value="1" readonly>
+                        <button type="button" onclick="changeQty(1)">+</button>
+                    </div>
+                    <div class="total-price">
+                        총 상품금액 <span id="totalPrice">32,400</span>원
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="btns">
+                    <button class="btn-cart">장바구니 담기</button>
+                    <button class="btn-buy">바로구매</button>
+                </div>
+
+                <!-- 리뷰 영역 -->
+                <div class="review-section">
+                    <h2>리뷰</h2>
+                    <div class="review-list">
+                        <div class="review">
+                            <div class="review-header">
+                                <strong>사용자1</strong>
+                                <span class="stars">
+                    ★★★★☆
+                </span>
+                            </div>
+                            <p>정말 유용한 책입니다. 예제도 잘 구성되어 있고 설명도 친절합니다!</p>
+                        </div>
+                        <div class="review">
+                            <div class="review-header">
+                                <strong>사용자2</strong>
+                                <span class="stars">
+                    ★★★☆☆
+                </span>
+                            </div>
+                            <p>전반적으로 좋았지만 초반 부분이 조금 난해했어요.</p>
+                        </div>
+                        <div class="review">
+                            <div class="review-header">
+                                <strong>사용자3</strong>
+                                <span class="stars">
+                    ★★★★★
+                </span>
+                            </div>
+                            <p>스프링 부트를 처음 공부하는 사람에게 강력 추천합니다!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 수량 조절 스크립트 -->
+    <script>
+        const unitPrice = 32400;
+
+        function changeQty(diff) {
+            const input = document.getElementById("quantity");
+            let qty = parseInt(input.value);
+            qty += diff;
+            if (qty < 1) qty = 1;
+            input.value = qty;
+            document.getElementById("totalPrice").innerText = (qty * unitPrice).toLocaleString();
+        }
+    </script>
+</div>
+</body>
+</html>
