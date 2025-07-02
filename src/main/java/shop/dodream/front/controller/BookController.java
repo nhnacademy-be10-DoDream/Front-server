@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import shop.dodream.front.client.BookClient;
+import shop.dodream.front.dto.BookDetailDto;
 import shop.dodream.front.dto.BookDto;
 
 import java.util.ArrayList;
@@ -42,10 +43,12 @@ public class BookController {
     }
 
 
-    @GetMapping("/books")
-    public String bookDetail(Model model){
+    @GetMapping("/books/{book-id}")
+    public String bookDetail(@PathVariable("book-id") Long bookId, Model model){
 
-//        model.addAttribute("bookId", bookId);
+        BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
+
+        model.addAttribute("book", bookDetailDto);
         return "book/detail";
     }
 
