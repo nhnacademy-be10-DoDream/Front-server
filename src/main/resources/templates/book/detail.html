@@ -140,9 +140,71 @@
             color: white;
         }
 
-        .review-section {
-            max-width: 700px;
+        /* 리뷰 작성 전체 영역 */
+        .review-write-wrapper {
+            max-width: 1100px;
             margin: 4rem auto 2rem;
+            padding: 2rem;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .review-write-wrapper h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .review-write-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .review-write-box .star-box {
+            font-size: 1.8rem;
+            color: #ccc;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .review-write-box .star-box span {
+            padding: 0 4px;
+        }
+
+        .review-write-box .star-box .filled {
+            color: #ffc107;
+        }
+
+        .review-write-box textarea {
+            flex: 1;
+            min-width: 400px;
+            height: 100px;
+            font-size: 1rem;
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+
+        .review-write-box button {
+            background-color: #1976d2;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* 마이리뷰 영역 */
+        .review-section {
+            max-width: 1100px;
+            margin: 2rem auto;
             padding: 2rem;
             background-color: #fafafa;
             border: 1px solid #ddd;
@@ -151,8 +213,13 @@
 
         .review-section h2 {
             font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .review-section .filter-info {
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #555;
         }
 
         .review-list {
@@ -182,8 +249,8 @@
         }
 
         .review-header .stars {
+            font-size: 1.1rem;
             color: #ffc107;
-            font-size: 1rem;
         }
 
         .review p {
@@ -192,21 +259,45 @@
             margin: 0;
         }
 
+
+        /* 책 소개 영역*/
+        .book-intro-wrapper {
+            max-width: 1100px;
+            margin: 4rem auto 2rem;
+            display: flex;
+            gap: 2rem;
+            padding: 1.5rem 1rem;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #eee;
+        }
+
+        .book-intro-title {
+            width: 100px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .book-intro-content {
+            flex: 1;
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.6;
+        }
+
     </style>
 </head>
 
 <body>
 <div layout:fragment="content">
     <div class="book-detail-container">
-        <!-- 상단 제목/저자/출판사/날짜 -->
+        <!-- 상단 정보 -->
         <div class="book-header">
             <h1>이것이 스프링 부트다 with 자바</h1>
-            <div class="book-meta">
-                김철선 (지은이) | 한빛미디어 | 2025-06-20
-            </div>
+            <div class="book-meta">김철선 (지은이) | 한빛미디어 | 2025-06-20</div>
         </div>
 
-        <!-- 좌: 이미지 / 우: 정보 -->
+        <!-- 이미지 + 상세정보 -->
         <div class="book-content">
             <div class="book-image">
                 <img src="http://storage.java21.net:8000/dodream-images/book/0524d09f-0fb9-4671-8611-ef6e00983628.png"
@@ -222,7 +313,6 @@
                     <div><strong>포장가격:</strong> 1000원</div>
                 </div>
 
-                <!-- 평점 영역 -->
                 <div class="rating">
                     <div class="stars">
                         <span class="filled">★</span>
@@ -234,7 +324,6 @@
                     <span class="rating-text">3.0 | 리뷰(10)</span>
                 </div>
 
-                <!-- 수량 -->
                 <div>
                     <strong>수량:</strong>
                     <div class="quantity-box">
@@ -242,55 +331,86 @@
                         <input type="text" id="quantity" value="1" readonly>
                         <button type="button" onclick="changeQty(1)">+</button>
                     </div>
-                    <div class="total-price">
-                        총 상품금액 <span id="totalPrice">32,400</span>원
-                    </div>
+                    <div class="total-price">총 상품금액 <span id="totalPrice">32,400</span>원</div>
                 </div>
 
-                <!-- 버튼 -->
                 <div class="btns">
                     <button class="btn-cart">장바구니 담기</button>
                     <button class="btn-buy">바로구매</button>
-                </div>
-
-                <!-- 리뷰 영역 -->
-                <div class="review-section">
-                    <h2>리뷰</h2>
-                    <div class="review-list">
-                        <div class="review">
-                            <div class="review-header">
-                                <strong>사용자1</strong>
-                                <span class="stars">
-                    ★★★★☆
-                </span>
-                            </div>
-                            <p>정말 유용한 책입니다. 예제도 잘 구성되어 있고 설명도 친절합니다!</p>
-                        </div>
-                        <div class="review">
-                            <div class="review-header">
-                                <strong>사용자2</strong>
-                                <span class="stars">
-                    ★★★☆☆
-                </span>
-                            </div>
-                            <p>전반적으로 좋았지만 초반 부분이 조금 난해했어요.</p>
-                        </div>
-                        <div class="review">
-                            <div class="review-header">
-                                <strong>사용자3</strong>
-                                <span class="stars">
-                    ★★★★★
-                </span>
-                            </div>
-                            <p>스프링 부트를 처음 공부하는 사람에게 강력 추천합니다!</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 수량 조절 스크립트 -->
+
+    <!-- 책 소개 영역 -->
+    <div class="book-intro-wrapper">
+        <div class="book-intro-title">책소개</div>
+        <div class="book-intro-content">
+            부모가 된다는 것은 하늘이 내려준 축복이다. 신의 축복 같은 아이가 태어나면 시기별로 발달에 대한 중요한 문제들이 생기는데
+            신생아 때는 성장에 관한 문제가 가장 중요하다. 그리고 신생아를 둔 많은 부모들은 궁금한 것이 많기 때문에 노트에 수북하게 적어놓았다가
+            예방접종을 하기 위해 병원을 찾아갔을 때 해결하곤 한다.<br><br>
+
+            왜 아이 머리모양이 동그랗지 않고 비대칭일까? 신생아의 두개골은 성인과 달리 매우 말랑말랑하다. 그래서 신생아를 안을 때는 꼭 머리를 받치고
+            조심스럽게 안아야 한다. 이때 압력에 의해 두개골이 눌리면 성장에 제한을 받게 되어 비대칭적이고 편평해진다. 특히 지속적으로 압력을 받으면
+            머리 한 부분이 눌려 사두증이 발생한다. 즉 아이 머리모양이 비대칭이고 편평하지 않으면 사두증을 의심해봐야 한다.<br><br>
+
+            이 책은 생후 1개월에서 12개월까지 첫날 아이에게 중요한 문제가 될 수 있는 사두증과 귀 연골 이상, 사경에 대한 치료 방법(교정 방법)을 담았다.
+            앞으로 아이를 키우게 될 예비부모들, 현재 신생아를 키우고 있는 부모들, 아이를 봐주시는 조부모들뿐만 아니라 그 외 보호자들이나 소아청소년과
+            의사가 인지하고 있어야 할 내용이다.
+        </div>
+    </div>
+
+    <!-- 리뷰 작성 영역 -->
+    <div class="review-write-wrapper">
+        <h2>리뷰 작성</h2>
+        <div class="review-write-box">
+            <div class="star-box" id="rating-stars">
+                <span onclick="setRating(1)">★</span>
+                <span onclick="setRating(2)">★</span>
+                <span onclick="setRating(3)">★</span>
+                <span onclick="setRating(4)">★</span>
+                <span onclick="setRating(5)">★</span>
+                <input type="hidden" id="rating" value="0">
+            </div>
+            <textarea placeholder="리뷰를 입력해주세요 (최대 100자)" maxlength="100"></textarea>
+            <button>등록</button>
+        </div>
+    </div>
+
+
+
+
+    <!-- 마이리뷰 -->
+    <div class="review-section">
+        <h2>마이리뷰</h2>
+        <div class="filter-info">구매자 (0) | <strong>전체 (3)</strong> | 공감순 ▼</div>
+        <div class="review-list">
+            <div class="review">
+                <div class="review-header">
+                    <strong>북러버</strong>
+                    <span class="stars">★★★★★</span>
+                </div>
+                <p>초보자가 보기 정말 좋은 책이에요. 실습 위주 구성이라 이해가 잘 됩니다!</p>
+            </div>
+            <div class="review">
+                <div class="review-header">
+                    <strong>개발꿈나무</strong>
+                    <span class="stars">★★★★☆</span>
+                </div>
+                <p>대체로 좋았지만 몇몇 설명이 부족한 부분이 있어요. 그래도 만족!</p>
+            </div>
+            <div class="review">
+                <div class="review-header">
+                    <strong>리뷰왕</strong>
+                    <span class="stars">★★★☆☆</span>
+                </div>
+                <p>내용이 방대해서 초반에 따라가기 힘들었습니다. 반복 학습 필요해요.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 스크립트 -->
     <script>
         const unitPrice = 32400;
 
@@ -301,6 +421,14 @@
             if (qty < 1) qty = 1;
             input.value = qty;
             document.getElementById("totalPrice").innerText = (qty * unitPrice).toLocaleString();
+        }
+
+        function setRating(score) {
+            document.getElementById("rating").value = score;
+            const stars = document.querySelectorAll("#rating-stars span");
+            stars.forEach((star, index) => {
+                star.classList.toggle("filled", index < score);
+            });
         }
     </script>
 </div>

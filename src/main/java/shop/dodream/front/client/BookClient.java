@@ -2,6 +2,7 @@ package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import shop.dodream.front.dto.BookDetailDto;
 import shop.dodream.front.dto.BookDto;
 
 import java.util.List;
@@ -10,4 +11,7 @@ import java.util.List;
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();
+
+//    @GetMapping("/public/books/{book-id}")
+//    BookDetailDto getBookD()
 }
