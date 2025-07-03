@@ -98,7 +98,7 @@ public class AuthController {
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
             redisUserSessionService.saveUser(accessToken,user);
-            return "redirect:/home";
+            return "redirect:/";
         }catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.LOCKED) {
                 try {
@@ -129,7 +129,7 @@ public class AuthController {
 //        String password = request.getPassword();
 //        request.setPassword(passwordEncoder.encode(password));
         userClient.createUserAccount(new SignupRequest(request, userAddressDto));
-        return "redirect:/home";
+        return "redirect:/";
     }
 
     private String extractAccessTokenFromCookies(List<String> cookies) {
