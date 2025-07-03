@@ -1,5 +1,6 @@
 package shop.dodream.front.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.time.Duration;
 public class RedisUserSessionService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     private static final Duration EXPIRATION = Duration.ofHours(1);
 
@@ -21,7 +23,7 @@ public class RedisUserSessionService {
 
     public UserDto getUser(String accessToken) {
         Object obj = redisTemplate.opsForValue().get("LOGIN:"+ accessToken);
-        return (obj instanceof UserDto) ? (UserDto) obj : null;
+        return objectMapper.convertValue(obj, UserDto.class);
     }
 
     public void deleteUser(String accessToken) {
