@@ -33,7 +33,7 @@
     /*<![CDATA[*/
     const amount = {
         currency: "KRW",
-        value: Number([[${totalPrice}]]) // 총 결제 금액
+        value: Number([[${param.totalPrice}]]) // 총 결제 금액
     };
 
     let selectedPaymentMethod = null;
@@ -53,7 +53,7 @@
     const payment = tossPayments.payment({ customerKey });
 
     async function requestPayment() {
-        const orderId = [[${orderId}]]
+        const orderId = [[${param.orderId}]].toString();
         const orderName = 'test';
         const customerName ='test';
         const customerEmail = 'test@gmail.com';
