@@ -28,7 +28,6 @@ import java.util.Map;
 public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
-    private final PasswordEncoder passwordEncoder;
     private final RedisUserSessionService redisUserSessionService;
 
     @PostMapping("/login")
@@ -46,7 +45,7 @@ public class AuthController {
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
             redisUserSessionService.saveUser(accessToken,user);
-            return "redirect:/home";
+            return "redirect:/";
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.LOCKED) {
                 try {
@@ -127,8 +126,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
-        String password = request.getPassword();
-        request.setPassword(passwordEncoder.encode(password));
+//        String password = request.getPassword();
+//        request.setPassword(passwordEncoder.encode(password));
         userClient.createUserAccount(new SignupRequest(request, userAddressDto));
         return "redirect:/home";
     }
