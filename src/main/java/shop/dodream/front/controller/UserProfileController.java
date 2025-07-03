@@ -21,7 +21,7 @@ public class UserProfileController {
 	@GetMapping(path = {"/profile", ""})
 	public String getProfile(@CookieValue("accessToken") String accessToken,
 							 Model model) {
-		model.addAttribute(accessToken, userClient.getUser("user"));
+		model.addAttribute(accessToken, userClient.getUser());
 		model.addAttribute("activeMenu", "profile");
 		return "mypage/profile";
 	}
@@ -30,54 +30,53 @@ public class UserProfileController {
 	public String updateProfile(@CookieValue("accessToken") String accessToken,
 							 UserUpdateDto userUpdateDto,
 							 Model model) {
-		userClient.updateUser(accessToken, userUpdateDto);
+		userClient.updateUser( userUpdateDto);
 		model.addAttribute("activeMenu", "profile");
 		return "redirect:mypage/profile";
 	}
 
 	@GetMapping("/addresses")
-	public String getAddresses(@CookieValue("accessToken") String accessToken,
+	public String getAddresses(
 							   Model model) {
-		model.addAttribute("addresses", userClient.getAddresses(accessToken));
+		model.addAttribute("addresses", userClient.getAddresses());
 		model.addAttribute("activeMenu", "addresses");
 		return "mypage/addresses";
 	}
 
 	@PostMapping("/addresses")
-	public String createAddress(@CookieValue("accessToken") String accessToken,
+	public String createAddress(
 								UserAddressDto userAddressDto) {
-		userClient.createUserAddress(accessToken, userAddressDto);
+		userClient.createUserAddress( userAddressDto);
 		return "redirect:/mypage/addresses";
 	}
 
 	@PutMapping("/addresses/{address-id}")
-	public String updateAddress(@CookieValue("accessToken") String accessToken,
+	public String updateAddress(
 								@PathVariable("address-id") Long addressId,
 								UserAddressDto userAddressDto) {
-		userClient.updateUserAddress(accessToken, addressId, userAddressDto);
+		userClient.updateUserAddress( addressId, userAddressDto);
 		return "redirect:/mypage/addresses";
 	}
 
 	@DeleteMapping("/addresses/{address-id}")
-	public String deleteAddress(@CookieValue("accessToken") String accessToken,
+	public String deleteAddress(
 								@PathVariable("address-id") Long addressId) {
-		userClient.deleteAddress(accessToken, addressId);
+		userClient.deleteAddress( addressId);
 		return "redirect:/mypage/addresses";
 	}
 
 	@GetMapping("/points")
-	public String getPointHistories(@CookieValue("accessToken") String accessToken,
+	public String getPointHistories(
 							@PageableDefault Pageable pageable,
 							Model model) {
-		model.addAttribute("points", userClient.getPointHistories(accessToken, pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
+		model.addAttribute("points", userClient.getPointHistories( pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
 		model.addAttribute("activeMenu", "points");
 		return "mypage/points";
 	}
 
 	@GetMapping("/orders")
-	public String getOrders(@CookieValue("accessToken") String accessToken,
-							Model model) {
-		model.addAttribute("orders", orderClient.getOrders(accessToken));
+	public String getOrders(Model model) {
+		model.addAttribute("orders", orderClient.getOrders());
 		model.addAttribute("activeMenu", "orders");
 		return "mypage/orders";
 	}

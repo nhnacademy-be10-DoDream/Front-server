@@ -9,6 +9,7 @@ import shop.dodream.front.dto.*;
 
 import java.util.List;
 
+
 @FeignClient(name = "bookClient", url = "s1.java21.net:10325")
 //@FeignClient(name = "bookClient", url = "http://localhost:8090")
 public interface BookClient {
