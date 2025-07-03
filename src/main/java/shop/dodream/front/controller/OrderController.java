@@ -66,6 +66,7 @@ public class OrderController {
         HttpSession session = request.getSession();
         session.setAttribute("orderResponse", orderResponse);
         //결제창 리다이렉트
-        return "redirect:/payment";
+        return "redirect:/payment?orderId=%s&totalPrice=%s"
+                .formatted(orderResponse.get("orderId"), orderResponse.get("totalPrice"));
     }
 }
