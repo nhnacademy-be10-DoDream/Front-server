@@ -1,7 +1,6 @@
 package shop.dodream.front.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,16 +55,16 @@ public class OrderController {
     @PostMapping("/payment")
     public String pay(@ModelAttribute OrderRequest orderRequest,
                       @RequestParam("wantedDateRaw") String wantedDateRaw,
-                      HttpServletRequest request) {
+                      @RequestParam("userId") String userId) {
         ZonedDateTime zoned = LocalDate.parse(wantedDateRaw)
                 .atStartOfDay(ZoneId.of("Asia/Seoul"));
         orderRequest.setWantedDate(zoned);
-        orderRequest.setUserId("user");
-        //주문서 저장
+
+        orderRequest.setUserId(userId);
+
         Map<String, Object> orderResponse = orderClient.createOrder(orderRequest);
-        HttpSession session = request.getSession();
-        session.setAttribute("orderResponse", orderResponse);
         //결제창 리다이렉트
-        return "redirect:/payment";
+        return "redirect:/payment?orderId=%s&totalPrice=%s"
+                .formatted(orderResponse.get("orderId"), orderResponse.get("totalPrice"));
     }
 }
