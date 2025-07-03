@@ -5,18 +5,38 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final BookClient bookClient;
+
+    @ModelAttribute("categories")
+    public Map<CategoryResponse, List<CategoryResponse>> categories() {
+        List<CategoryResponse> parentCategories = bookClient.getCategoriesByDepth(1L);
+        List<CategoryResponse> childCategories = bookClient.getCategoriesByDepth(2L);
+
+        Map<CategoryResponse, List<CategoryResponse>> categoryMap = new LinkedHashMap<>();
+
+        for (CategoryResponse parent : parentCategories) {
+            List<CategoryResponse> children = childCategories.stream()
+                    .filter(child -> child.getParentId().equals(parent.getCategoryId()))
+                    .toList();
+            categoryMap.put(parent, children);
+        }
+
+        return categoryMap;
+    }
 
     @GetMapping("/categories/{category-id}")
     public String getBooksByCategory(@PathVariable("category-id") Long categoryId,
