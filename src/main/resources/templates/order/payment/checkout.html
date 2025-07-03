@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
+    <link rel="stylesheet" type="text/css" href="/css/toss.css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>두드림 결제창</title>
+    <!-- SDK 추가 -->
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+
+<body>
+<!-- 주문서 영역 -->
+<div class="wrapper">
+    <div class="box_section" style="padding: 40px 30px 50px 30px; margin-top: 30px; margin-bottom: 50px">
+        <h1>일반 결제</h1>
+        <!-- 결제 UI -->
+        <div id="payment-method" style="display: flex">
+            <button id="CARD" class="button2" onclick="selectPaymentMethod('CARD')">카드</button>
+            <button id="TRANSFER" class="button2" onclick="selectPaymentMethod('TRANSFER')">계좌이체</button>
+            <button id="VIRTUAL_ACCOUNT" class="button2" onclick="selectPaymentMethod('VIRTUAL_ACCOUNT')">가상계좌</button>
+            <button id="MOBILE_PHONE" class="button2" onclick="selectPaymentMethod('MOBILE_PHONE')">휴대폰</button>
+            <button id="CULTURE_GIFT_CERTIFICATE" class="button2" onclick="selectPaymentMethod('CULTURE_GIFT_CERTIFICATE')">문화상품권</button>
+            <button id="FOREIGN_EASY_PAY" class="button2" onclick="selectPaymentMethod('FOREIGN_EASY_PAY')">해외간편결제</button>
+        </div>
+        <!-- 결제하기 버튼 -->
+        <button class="button" style="margin-top: 30px" onclick="requestPayment()">결제하기</button>
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const amount = {
+        currency: "KRW",
+        value: Number([[${totalPrice}]]) // 총 결제 금액
+    };
+
+    let selectedPaymentMethod = null;
+
+    function selectPaymentMethod(method) {
+        if (selectedPaymentMethod != null) {
+            document.getElementById(selectedPaymentMethod).style.backgroundColor = "#ffffff";
+        }
+
+        selectedPaymentMethod = method;
+        document.getElementById(selectedPaymentMethod).style.backgroundColor = "rgb(229 239 255)";
+    }
+
+    const clientKey = "test_ck_kYG57Eba3G9ZZWLJKO1zrpWDOxmA";
+    const customerKey = generateRandomString();
+    const tossPayments = TossPayments(clientKey);
+    const payment = tossPayments.payment({ customerKey });
+
+    async function requestPayment() {
+        const orderId = [[${orderId}]]
+        const orderName = 'test';
+        const customerName ='test';
+        const customerEmail = 'test@gmail.com';
+
+        switch (selectedPaymentMethod) {
+            case "CARD":
+                await payment.requestPayment({
+                    method: "CARD",
+                    amount,
+                    orderId,
+                    orderName,
+                    successUrl: window.location.origin + "/payment/success",
+                    failUrl: window.location.origin + "/payment/fail",
+                    customerEmail,
+                    customerName,
+                    card: {
+                        useEscrow: false,
+                        flowMode: "DEFAULT",
+                        useCardPoint: false,
+                        useAppCardOnly: false,
+                    },
+                });
+                break;
+
+            case "TRANSFER":
+                await payment.requestPayment({
+                    method: "TRANSFER",
+                    amount,
+                    orderId,
+                    orderName,
+                    successUrl: window.location.origin + "/payment/success",
+                    failUrl: window.location.origin + "/payment/fail",
+                    customerEmail,
+                    customerName,
+                    transfer: {
+                        cashReceipt: { type: "소득공제" },
+                        useEscrow: false,
+                    },
+                });
+                break;
+
+            case "VIRTUAL_ACCOUNT":
+                await payment.requestPayment({
+                    method: "VIRTUAL_ACCOUNT",
+                    amount,
+                    orderId,
+                    orderName,
+                    successUrl: window.location.origin + "/payment/success",
+                    failUrl: window.location.origin + "/payment/fail",
+                    customerEmail,
+                    customerName,
+                    virtualAccount: {
+                        cashReceipt: { type: "소득공제" },
+                        useEscrow: false,
+                        validHours: 24,
+                    },
+                });
+                break;
+
+            case "MOBILE_PHONE":
+                await payment.requestPayment({
+                    method: "MOBILE_PHONE",
+                    amount,
+                    orderId,
+                    orderName,
+                    successUrl: window.location.origin + "/payment/success",
+                    failUrl: window.location.origin + "/payment/fail",
+                    customerEmail,
+                    customerName,
+                });
+                break;
+
+            case "CULTURE_GIFT_CERTIFICATE":
+                await payment.requestPayment({
+                    method: "CULTURE_GIFT_CERTIFICATE",
+                    amount,
+                    orderId,
+                    orderName,
+                    successUrl: window.location.origin + "/payment/success",
+                    failUrl: window.location.origin + "/payment/fail",
+                    customerEmail,
+                    customerName,
+                });
+                break;
+
+            case "FOREIGN_EASY_PAY":
+                await payment.requestPayment({
+                    method: "FOREIGN_EASY_PAY",
+                    amount: { value: 100, currency: "USD" },
+                    orderId,
+                    orderName,
+                    successUrl: window.location.origin + "/payment/success",
+                    failUrl: window.location.origin + "/payment/fail",
+                    customerEmail,
+                    customerName,
+                    foreignEasyPay: {
+                        provider: "PAYPAL",
+                        country: "KR",
+                    },
+                });
+                break;
+        }
+    }
+
+
+    function generateRandomString() {
+      return window.btoa(Math.random()).slice(0, 20);
+    }
+</script>
+</body>
+</html>

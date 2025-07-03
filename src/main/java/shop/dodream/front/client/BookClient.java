@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+
 @FeignClient(name = "bookClient", url = "s1.java21.net:10325")
 public interface BookClient {
     @GetMapping("/admin/books")

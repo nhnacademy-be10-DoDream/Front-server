@@ -6,3 +6,13 @@ spring:
       name: ${spring.application.name}
       profile: ${spring.profiles.active}
       label: main
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    db:
+      enabled: false
+    redis:
+      enabled: false
