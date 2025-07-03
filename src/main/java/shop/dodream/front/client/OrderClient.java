@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.OrderRequest;
 import shop.dodream.front.dto.OrderResponse;
 import shop.dodream.front.dto.ShippingPolicyDto;
+import shop.dodream.front.dto.WrappingDto;
 
 import java.util.List;
 import java.util.Map;
@@ -14,13 +15,13 @@ public interface OrderClient {
     @PostMapping("/orders")
     Map<String, Object> createOrder(@RequestBody OrderRequest orderRequest);
 //
-//    @GetMapping("/orders/gift-wrap")
-//    List<WrappingDto> getGiftWraps();
+    @GetMapping("/public/orders/gift-wrap")
+    List<WrappingDto> getGiftWraps();
 
 //    @GetMapping("/orders/gift-wrap/{gift-wrap-id}")
 //    WrappingDto getGiftWrapById(@PathVariable("gift-wrap-id") Long giftWrapId);
 
-    @GetMapping("/orders/shipping")
+    @GetMapping("/public/orders/shipping")
     List<ShippingPolicyDto> getShippingPolicies();
 
     @GetMapping("/orders")

@@ -7,7 +7,7 @@ import shop.dodream.front.dto.BookDto;
 import java.util.List;
 
 
-@FeignClient(name = "bookClient", url = "http://s1.java21.net:10325")
+@FeignClient(name = "bookClient", url = "s1.java21.net:10325")
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();
