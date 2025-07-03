@@ -1,0 +1,368 @@
+/* ---------- 공통 유틸리티 ---------- */
+.card-style {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-style:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+}
+
+.section-title {
+    margin: 0;
+    font-weight: 600;
+    color: #212529;
+}
+.section-title-lg {
+    font-size: 1.5rem;
+}
+.section-title-md {
+    font-size: 1.2rem;
+}
+
+.counter-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.btn-custom-dark {
+    background: #343a40;
+    border-color: #343a40;
+    color: #fff;
+}
+.btn-custom-dark:hover {
+    background: #23272b;
+    border-color: #1d2124;
+}
+
+.table-default th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+.table-default td {
+    color: #212529;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.thumbnail-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: border-color 0.2s ease;
+}
+.thumbnail-image:hover {
+    border-color: #343a40;
+}
+
+/* ---------- 레이아웃 ---------- */
+.mypage-container {
+    align-items: stretch;
+    background: #f8f9fa;
+}
+
+.mypage-sidebar {
+    padding: 0;
+    top: 20px;
+    height: max-content;
+}
+
+.sidebar-header {
+    background: #343a40;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+}
+.sidebar-header h5 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.sidebar-nav {
+    padding: 10px 0;
+}
+.sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.sidebar-nav .nav-link:hover {
+    background: #f8f9fa;
+    color: #212529;
+}
+.sidebar-nav .nav-link.active {
+    background: #e9ecef;
+    color: #212529;
+    border-right: 4px solid #343a40;
+    font-weight: 600;
+}
+.sidebar-nav .nav-link i {
+    margin-right: 12px;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+/* ---------- 콘텐츠 영역 ---------- */
+.content-area {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+    padding: 30px;
+    min-height: 500px;
+}
+.content-header {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+.content-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+/* ---------- 정보 테이블 ---------- */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.info-table th,
+.info-table td {
+    padding: 15px 20px;
+    text-align: left;
+}
+.info-table th {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    width: 30%;
+    border-right: 1px solid #e9ecef;
+}
+.info-table td {
+    color: #212529;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* CSS 전용 모달 스타일 (mypage.css에 추가) */
+.css-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; /* 기본적으로 숨김 */
+    z-index: 1050;
+    align-items: center;
+    justify-content: center;
+}
+
+/* :target으로 모달 표시 */
+.css-modal:target {
+    display: flex;
+}
+
+/* 모달 콘텐츠 - 기존 card-style 활용 */
+.css-modal-content {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.15);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* 커스텀 버튼 - 검정색 */
+.btn-dark-custom {
+    background-color: #212529;
+    color: #fff;
+    border: 1px solid #212529;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.btn-dark-custom:hover {
+    background-color: #121416;
+    border-color: #121416;
+}
+
+/* 버튼*/
+.btn-outline-gray {
+    background-color: #fff;
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+.btn-outline-gray:hover {
+    background-color: #f1f3f5;
+    color: #343a40;
+    border-color: #343a40;
+}
+
+/* Pagination */
+.custom-pagination {
+    list-style: none;
+    display: flex;
+    gap: 6px;
+    padding: 0;
+}
+.pagination-link {
+    display: block;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #495057;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.pagination-link:hover {
+    background-color: #f1f3f5;
+    border-color: #adb5bd;
+}
+
+.custom-pagination li.active .pagination-link {
+    background-color: #212529;
+    color: white;
+    border-color: #212529;
+    font-weight: bold;
+
+}
+
+
+/* panel */
+.split-view {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 0 24px;
+}
+
+.list-panel {
+    flex: 0 0 280px;
+    min-width: 250px;
+    max-width: 320px;
+}
+
+.detail-panel {
+    flex: 1;
+    min-width: 400px;
+    width: auto;
+}
+
+/* 회원 주소 CSS */
+.address-item {
+    display: block;
+    padding: 15px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: white;
+    transition: background-color 0.2s;
+}
+
+.address-item.active {
+    background-color: #f2f2f2;
+}
+.address-item:hover {
+    background-color: #f8f9fa;
+}
+
+.address-detail {
+    display: none;
+}
+
+
+/* 회원 주문 CSS */
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.order-content {
+    padding: 20px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    margin-right: 20px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: white;
+
+}
+
+.status-대기 {background-color: #6c757d;}
+.status-배송중 {background-color: #007bff;}
+.status-배송완료 {background-color: #28a745;}
+.status-반품 {background-color: #fd7e14;}
+.status-취소 {background-color: #dc3545;}
+
+/* 애니메이션 효과 */
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+/* ---------- 배지 ---------- */
+.grade-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.grade-bronze { background: #cd7f32; color: #fff; }
+.grade-silver { background: #c0c0c0; color: #333; }
+.grade-gold   { background: #ffd700; color: #333; }
+
+.grade-badge.points-earn   { background-color: #28a745; color: #fff; }
+.grade-badge.points-use    { background-color: #dc3545; color: #fff; }
+.grade-badge.points-expire { background-color: #6c757d; color: #fff; }
+
+.point-amount {
+    color: #28a745;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
