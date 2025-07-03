@@ -12,6 +12,7 @@ import shop.dodream.front.dto.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -82,8 +83,12 @@ public class BookController {
                              @ModelAttribute ReviewCreateRequest reviewCreateRequest,
                              @RequestParam(value = "files", required = false)List<MultipartFile> files){
 
-        String id = "testUser";
-        bookClient.creteReview(bookId, reviewCreateRequest, files);
+
+        List<MultipartFile> nonEmptyFiles = files.stream()
+                .filter(file -> !file.isEmpty())
+                .toList();
+
+        bookClient.createReview("1234",bookId, reviewCreateRequest, nonEmptyFiles);
 
 
         return "redirect:/books/"+bookId;
