@@ -18,7 +18,7 @@ public class PaymentController {
     private final PaymentClient paymentClient;
     @RequestMapping(method = RequestMethod.GET)
     public String checkOut() {
-        return "/order/payment/checkout";
+        return "order/payment/checkout";
     }
 
     @RequestMapping(value = "/confirm")
@@ -34,7 +34,7 @@ public class PaymentController {
     public String failPayment(HttpServletRequest request, Model model) {
         model.addAttribute("errorCode", request.getParameter("code"));
         model.addAttribute("errorMessage", request.getParameter("message"));
-        return "/order/payment/fail";
+        return "order/payment/fail";
     }
 
     @RequestMapping(value = "/success", method = RequestMethod.GET)
@@ -42,6 +42,6 @@ public class PaymentController {
         model.addAttribute("code", request.getParameter("code"));
         model.addAttribute("message", request.getParameter("message"));
 
-        return "/order/payment/success";
+        return "order/payment/success";
     }
 }
