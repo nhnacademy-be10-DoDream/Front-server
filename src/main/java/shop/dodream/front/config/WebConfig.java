@@ -5,9 +5,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import shop.dodream.front.interceptor.LoginUserInterceptor;
 import shop.dodream.front.interceptor.RequestInterceptor;
@@ -25,12 +23,6 @@ public class WebConfig implements WebMvcConfigurer {
         messageSource.setBasenames("message");
 
         return messageSource;
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/auth/login-form").setViewName("auth/login");
-        registry.addViewController("/auth/signup-form").setViewName("auth/signup");
     }
 
     @Override
