@@ -14,65 +14,197 @@
         <tr>
             <td valign="top" bgcolor="#ffffff">
 
-                <!-- 장바구니 항목 리스트 -->
-                <form th:action="@{/cart/order}" method="post">
-                    <input type="hidden" name="isHalfDeliveryOrder" value="0">
-                    <table class="table_shop_blue" width="100%">
-                        <thead>
-                        <tr>
-                            <th width="52" style="text-align: center">
-                                <input type="checkbox" onclick="revcheck(this)">
-                            </th>
-                            <th align="center">상품명</th>
-                            <th width="150" style="text-align: center">가격</th>
-                            <th width="100" style="text-align: center">수량</th>
-                            <th width="100" style="text-align: center">쿠폰</th>
-                            <th width="100" style="text-align: center">삭제</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="item : ${cartItems}">
-                            <td align="center">
-                                <label>
-                                    <input type="checkbox" name="itemIds" th:value="${item.cartItemId}"
-                                           class="basket_CheckBox" th:checked="true">
-                                </label>
-                            </td>
-                            <td>
-                                <a th:href="@{/product/{id}(id=${item.id})}" th:title="${item.title}">
-                                    <img th:src="@{${item.bookUrl}}" style="width:48px;" >
-                                </a>
-                            </td>
-                            <td style="text-align: center">
-                                <div>
-                                    정가: <s th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></s><br>
-                                    판매가: <span th:text="${#numbers.formatInteger(item.discountedPrice, 0, 'COMMA')} + '원'"></span><br>
-                                </div>
-                            </td>
-                            <td align="center">
-                                <label>
-                                    <input type="number" name="quantities" th:value="${item.quantity}" min="1" style="width: 40px;">
-                                </label>
-                            </td>
-                            <td align="center">
-                                <button type="button"
-                                        th:attr="data-cart-item-id=${item.cartItemId},
-                                                 data-coupons=${#lists.size(couponsMap[item.cartItemId])}"
-                                        onclick="openCouponModal(this)">
-                                    쿠폰 선택
-                                </button>
-                            </td>
-                            <td align="center">
-                                <button type="submit" formaction="#" name="delete"
-                                        th:formaction="@{/cart/delete/{id}(id=${item.cartItemId})}">삭제</button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </form>
+                <table class="table_shop_blue" width="100%">
+                    <thead>
+                    <tr>
+                        <th align="center">상품명</th>
+                        <th style="text-align: center">가격</th>
+                        <th style="text-align: center">수량</th>
+                        <th style="text-align: center">쿠폰</th>
+                        <th style="text-align: center">포장여부</th>
+                        <th style="text-align: center">개별 합계</th>
+                        <th style="text-align: center">삭제</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${cartItems}"
+                        th:attr="data-sale-price=${item.salePrice}, data-coupon-discount=${item.couponDiscount}">
+
+                        <td>
+                            <a th:href="@{/product/{id}(id=${item.id})}" th:title="${item.title}">
+                                <img th:src="@{${item.bookUrl}}" style="width:48px;">
+                            </a>
+                        </td>
+
+                        <td style="text-align: center">
+                            정가: <s th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></s><br>
+                            <span th:id="'priceDisplay-' + ${item.cartItemId}" th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></span>
+                        </td>
+
+                        <td align="center">
+                            <input type="number" th:id="'quantity-' + ${item.cartItemId}" class="quantity-input" th:value="${item.quantity}" min="1" style="width: 40px;">
+                        </td>
+
+                        <td align="center">
+                            <button type="button"
+                                    th:attr="data-cart-item-id=${item.cartItemId}, data-book-id=${item.bookId}, data-sale-price=${item.salePrice}"
+                                    onclick="openCouponModal(this)">쿠폰 선택</button>
+                            <input type="hidden" th:name="'selectedCouponId_' + ${item.cartItemId}" th:id="'selectedCouponId-' + ${item.cartItemId}" />
+                        </td>
+
+                        <td align="center">
+                            <select class="wrapping-select">
+                                <option data-price="0" value="">선택 안 함</option>
+                                <option th:each="wrap : ${wrappingOptions}"
+                                        th:value="${wrap.id}"
+                                        th:data-price="${wrap.price}"
+                                        th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
+                                </option>
+                            </select>
+                        </td>
+
+                        <td align="center">
+                            <span class="item-total">0원</span>
+                        </td>
+
+                        <td align="center">
+                            <form th:action="@{/cart/{id}(id=${item.cartItemId})}" method="post">
+                                <input type="hidden" name="_method" value="delete"/>
+                                <button type="submit">삭제</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- 장바구니 요약 정보 -->
+                <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px;">
+                    <p><strong>총 제품 금액:</strong> <span id="totalProductPrice">0원</span></p>
+                    <p><strong>할인 금액:</strong> <span id="totalDiscount">0원</span></p>
+                    <p><strong>적립 금액 (10%):</strong> <span id="rewardPoint">0원</span></p>
+                    <p><strong>총 주문 금액:</strong> <span id="orderTotal">0원</span></p>
+                </div>
+
             </td>
         </tr>
     </table>
 </div>
 </body>
 </html>
+
+<script th:inline="javascript">
+    const couponsMap = /*[[${couponsMap}]]*/ {};
+
+    function formatPrice(val) {
+        return val.toLocaleString() + '원';
+    }
+
+    function recalculateTotal() {
+        let totalProductPrice = 0;
+        let totalDiscount = 0;
+        let totalWrapping = 0;
+
+        document.querySelectorAll('tr[th\\:each]').forEach(row => {
+            const quantityInput = row.querySelector('.quantity-input');
+            const quantity = parseInt(quantityInput?.value || 1);
+
+            const priceSpan = row.querySelector('[id^="priceDisplay-"]');
+            const salePrice = parseInt(priceSpan?.dataset.originalPrice || 0);
+            const finalPrice = parseInt(priceSpan?.innerText.replace(/[^0-9]/g, '') || 0);
+
+            totalProductPrice += salePrice * quantity;
+            totalDiscount += (salePrice - finalPrice) * quantity;
+
+            // wrapping price
+            const wrappingSelect = row.querySelector('.wrapping-select');
+            const selectedOption = wrappingSelect?.selectedOptions[0];
+            const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
+            totalWrapping += wrappingPrice;
+        });
+
+        const discountedPrice = totalProductPrice - totalDiscount;
+        const orderTotal = discountedPrice + totalWrapping;
+        const rewardPoint = Math.floor(orderTotal * 0.1);
+
+        document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
+        document.getElementById("totalDiscount").innerText = formatPrice(totalDiscount);
+        document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
+        document.getElementById("rewardPoint").innerText = formatPrice(rewardPoint);
+    }
+
+    function openCouponModal(button) {
+        const cartItemId = button.dataset.cartItemId;
+        const coupons = couponsMap[cartItemId];
+        const couponListDiv = document.getElementById("couponList");
+        couponListDiv.innerHTML = "";
+
+        if (coupons && coupons.length > 0) {
+            coupons.forEach(coupon => {
+                const couponDiv = document.createElement("div");
+                couponDiv.style.border = "1px solid #ccc";
+                couponDiv.style.padding = "10px";
+                couponDiv.style.marginBottom = "10px";
+
+                couponDiv.innerHTML = `
+                    <strong>쿠폰 이름:</strong> ${coupon.couponName}<br>
+                    <strong>${coupon.discountValue <= 100 ? '할인 율' : '할인 금액'}:</strong> ${
+                    coupon.discountValue <= 100
+                        ? coupon.discountValue + '%'
+                        : coupon.discountValue.toLocaleString() + '원'
+                }<br>
+                    <strong>최소 구매 금액:</strong> ${coupon.minPurchaseAmount}원<br>
+                    <strong>최대 할인 금액:</strong> ${coupon.maxDiscountAmount}원<br>
+                    <strong>할인 적용 후 가격:</strong> ${coupon.finalPrice}원<br>
+                    <button onclick="selectCoupon(${cartItemId}, ${coupon.couponId}, ${coupon.finalPrice})">적용</button>
+                `;
+                couponListDiv.appendChild(couponDiv);
+            });
+        } else {
+            couponListDiv.innerHTML = "<p>사용 가능한 쿠폰이 없습니다.</p>";
+        }
+
+        document.getElementById("couponModal").style.display = "block";
+    }
+
+    function selectCoupon(cartItemId, couponId, finalPrice) {
+        document.getElementById("selectedCouponId-" + cartItemId).value = couponId;
+
+        const priceSpan = document.getElementById("priceDisplay-" + cartItemId);
+        if (priceSpan) {
+            priceSpan.innerText = finalPrice.toLocaleString() + "원";
+        }
+
+        fetch(`/coupons/me/${couponId}/apply`, {
+            method: 'PUT'
+        }).then(response => {
+            if (!response.ok) throw new Error("쿠폰 적용 실패");
+            recalculateTotal(); // ⬅ 쿠폰 적용 후 금액 다시 계산
+        }).catch(error => {
+            alert("쿠폰 적용 중 오류가 발생했습니다.");
+        });
+
+        closeCouponModal();
+    }
+
+    function closeCouponModal() {
+        document.getElementById("couponModal").style.display = "none";
+    }
+
+    window.onload = () => {
+        // 각 가격 요소에 data-original-price 등록
+        document.querySelectorAll('[id^="priceDisplay-"]').forEach(span => {
+            const rawPrice = span.textContent.replace(/[^0-9]/g, '');
+            span.dataset.originalPrice = rawPrice;
+        });
+
+        recalculateTotal();
+    };
+</script>
+
+
+<!-- 쿠폰 선택 모달 -->
+<div id="couponModal" style="display:none; position:fixed; top:20%; left:30%; background:white; border:1px solid #aaa; padding:20px;">
+    <h3>쿠폰 선택</h3>
+    <div id="couponList"></div>
+    <button onclick="closeCouponModal()">닫기</button>
+</div>
