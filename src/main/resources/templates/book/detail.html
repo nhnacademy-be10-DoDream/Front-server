@@ -5,7 +5,7 @@
       layout:decorate="~{layout/default}">
 
 <head>
-    <title>책 상세</title>
+    <title th:text="${book.title} + ' 상세'">책 상세</title>
     <style>
         body {
             font-family: sans-serif;
@@ -71,15 +71,20 @@
             margin: 1rem 0;
         }
 
-        .stars {
-            display: inline-block;
-            color: #ccc;
-            font-size: 1.3rem;
+        /* 책 평점평균 별*/
+        .star {
+            color: #ddd;
+            font-size: 1.2rem;
         }
-
-        .stars .filled {
+        .star.filled {
             color: #ffc107;
         }
+        .star.half-filled {
+            background: linear-gradient(90deg, #ffc107 50%, #ddd 50%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
 
         .rating-text {
             font-size: 0.9rem;
@@ -213,6 +218,9 @@
             border-radius: 4px;
             border: 1px solid #ccc;
             resize: none;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .review-btns {
@@ -279,8 +287,16 @@
 
         .review-header .stars {
             font-size: 1.1rem;
+        }
+
+        .review-header .stars span {
+            color: #ccc;
+        }
+
+        .review-header .stars span.filled {
             color: #ffc107;
         }
+
 
         .review p {
             font-size: 0.95rem;
@@ -294,35 +310,41 @@
 <div layout:fragment="content">
     <div class="book-detail-container">
         <div class="book-header">
-            <h1>이것이 스프링 부트다 with 자바</h1>
-            <div class="book-meta">김철선 (지은이) | 한빛미디어 | 2025-06-20</div>
+            <h1 th:text="${book.title}">책 제목</h1>
+            <div class="book-meta" th:text="${book.author} + ' | ' + ${book.publisher} + ' | ' + ${book.publishedAt}">저자 | 출판사 | 출판일</div>
         </div>
 
         <div class="book-content">
             <div class="book-image">
-                <img src="http://storage.java21.net:8000/dodream-images/book/0524d09f-0fb9-4671-8611-ef6e00983628.png"
-                     alt="이것이 스프링 부트다">
+                <img th:src="@{${book.bookUrls[0]}}" th:alt="${book.title}">
             </div>
 
             <div class="book-detail">
                 <div class="price-info">
-                    <div><strong>정가:</strong> <del>36,000원</del></div>
-                    <div><strong>판매가:</strong> <span style="color: #d32f2f;">32,400원</span> (10% 할인)</div>
-                    <div><strong>마일리지:</strong> 1,800원 (5%)</div>
-                    <div><strong>배송료:</strong> 무료</div>
-                    <div><strong>포장가격:</strong> 1000원</div>
+                    <div><strong>정가:</strong><del th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">정가</del></div>
+                    <div><strong>판매가:</strong><span style="color: #d32f2f;" th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">판매가</span></div>
+<!--                    <div><strong>마일리지:</strong> <span th:text="|\u20A9${#numbers.formatInteger(book.mileage, 0, 'COMMA')}|">마일리지</span></div>-->
+                    <div><strong>카테고리??:</strong> ???</div>
+                    <div><strong>isbn??:</strong> ???</div>
                 </div>
 
+                <!-- 별점 및 평점 -->
                 <div class="rating">
                     <div class="stars">
-                        <span class="filled">★</span>
-                        <span class="filled">★</span>
-                        <span class="filled">★</span>
-                        <span>★</span>
-                        <span>★</span>
+                        <span th:each="i : ${#numbers.sequence(1, 5)}"
+                              th:class="${i <= T(java.lang.Math).floor(reviewSummary.ratingAvg)} ? 'star filled' :
+                                        (${i - reviewSummary.ratingAvg < 1} ? 'star half-filled' : 'star')">
+                            ★
+                        </span>
+
                     </div>
-                    <span class="rating-text">3.0 | 리뷰(10)</span>
+                    <span class="rating-text"
+                          th:text="|${#numbers.formatDecimal(reviewSummary.ratingAvg, 1, 1)}| + ' | 리뷰(' + ${reviewSummary.reviewCount} + ')'">
+                        0.0 | 리뷰(0)
+                    </span>
                 </div>
+
+
 
                 <div>
                     <strong>수량:</strong>
@@ -331,7 +353,11 @@
                         <input type="text" id="quantity" value="1" readonly>
                         <button type="button" onclick="changeQty(1)">+</button>
                     </div>
-                    <div class="total-price">총 상품금액 <span id="totalPrice">32,400</span>원</div>
+                    <div class="total-price"
+                         id="totalPrice"
+                         th:text="'총 상품금액 ' + ${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">
+                        총 상품금액
+                    </div>
                 </div>
 
                 <div class="btns">
@@ -344,47 +370,52 @@
         <!-- 책 소개 -->
         <div class="book-intro">
             <div class="book-intro-title">책소개</div>
-            <div class="book-intro-content">
-                부모가 된다는 것은 하늘이 내려준 축복이다... (생략)
-            </div>
+            <div class="book-intro-content" th:text="${book.description}">책 소개 내용</div>
         </div>
 
         <!-- 리뷰 작성 -->
         <div class="review-write-section">
             <h2>리뷰 작성</h2>
-            <div class="review-write-inner">
+            <form th:action="@{'/books/' + ${book.bookId} + '/reviews'}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="review-write-inner">
+
                 <div class="star-box" id="rating-stars">
                     <span onclick="setRating(1)">★</span>
                     <span onclick="setRating(2)">★</span>
                     <span onclick="setRating(3)">★</span>
                     <span onclick="setRating(4)">★</span>
                     <span onclick="setRating(5)">★</span>
-                    <input type="hidden" id="rating" value="0">
+                    <input type="hidden" name="rating" id="rating" value="0">
                 </div>
-                <textarea placeholder="리뷰를 입력해주세요 (최대 200자)" maxlength="200"></textarea>
+
+                <textarea name="content" placeholder="리뷰를 입력해주세요 (최대 200자)" maxlength="200" wrap="soft"></textarea>
+
                 <div class="review-btns">
-                    <button>등록</button>
-                    <button>파일 업로드</button>
+                    <button type="submit">등록</button>
+                    <input type="file" name="files" multiple>
                 </div>
-            </div>
+            </form>
         </div>
+
 
         <!-- 마이리뷰 -->
         <div class="review-section">
             <h2>마이리뷰</h2>
-            <div class="filter-info">구매자 (0) | <strong>전체 (3)</strong> | 공감순 ▼</div>
+            <div class="filter-info">
+                전체 (<span th:text="${reviewCount}">0</span>)
+            </div>
             <div class="review-list">
-                <div class="review">
-                    <div class="review-header"><strong>북러버</strong><span class="stars">★★★★★</span></div>
-                    <p>초보자가 보기 정말 좋은 책이에요. 실습 위주 구성이라 이해가 잘 됩니다!</p>
-                </div>
-                <div class="review">
-                    <div class="review-header"><strong>개발꿈나무</strong><span class="stars">★★★★☆</span></div>
-                    <p>대체로 좋았지만 몇몇 설명이 부족한 부분이 있어요. 그래도 만족!</p>
-                </div>
-                <div class="review">
-                    <div class="review-header"><strong>리뷰왕</strong><span class="stars">★★★☆☆</span></div>
-                    <p>내용이 방대해서 초반에 따라가기 힘들었습니다. 반복 학습 필요해요.</p>
+                <div class="review" th:each="review : ${reviews}">
+                    <div class="review-header">
+                        <strong th:text="${review.userId}">작성자</strong>
+                        <span class="stars">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                  th:class="${i <= review.rating} ? 'filled' : ''">★</span>
+                        </span>
+                    </div>
+                    <p th:text="${review.content}">리뷰 내용</p>
                 </div>
             </div>
         </div>
@@ -392,7 +423,7 @@
 
     <!-- JS -->
     <script>
-        const unitPrice = 32400;
+        const unitPrice = [[${book.salePrice}]];
 
         function changeQty(diff) {
             const input = document.getElementById("quantity");
@@ -400,7 +431,9 @@
             qty += diff;
             if (qty < 1) qty = 1;
             input.value = qty;
-            document.getElementById("totalPrice").innerText = (qty * unitPrice).toLocaleString();
+
+            document.getElementById("totalPrice").innerText =
+                '총 상품금액 ' + (qty * unitPrice).toLocaleString() + '원';
         }
 
         function setRating(score) {
@@ -411,6 +444,7 @@
             });
         }
     </script>
+
 </div>
 </body>
 </html>
