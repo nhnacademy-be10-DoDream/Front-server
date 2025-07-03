@@ -25,15 +25,15 @@ public class BookController {
         List<BookDto> books = bookClient.getBooks();
         for( BookDto book : books) {
             // 이미지 URL을 BOOK_API_URL과 결합
-            String bookUrlPrefix = "http://storage.java21.net:8000/dodream-images/book/";
+            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
             String imageUrl = bookUrlPrefix + book.getBookUrl();
             book.setBookUrl(imageUrl);
         }
         model.addAttribute("books", books);
         // 책 리스트를 6개씩 나누기
         List<List<BookDto>> chunks = new ArrayList<>();
-        for (int i = 0; i < books.size(); i += 6) {
-            chunks.add(books.subList(i, Math.min(i + 6, books.size())));
+        for (int i = 0; i < books.size(); i += 5) {
+            chunks.add(books.subList(i, Math.min(i + 5, books.size())));
         }
 
         model.addAttribute("bookChunks", chunks);
