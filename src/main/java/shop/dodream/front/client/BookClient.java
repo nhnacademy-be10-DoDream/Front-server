@@ -2,9 +2,9 @@ package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import shop.dodream.front.dto.BookDto;
+import org.springframework.web.bind.annotation.RequestParam;
+import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
-import shop.dodream.front.dto.CategoryResponse;
 
 import java.util.List;
 
@@ -14,4 +14,17 @@ public interface BookClient {
     List<BookDto> getBooks();
     @GetMapping("/public/categories/{depth}/depth")
     List<CategoryResponse> getCategoriesByDepth(@PathVariable("depth") Long depth);
+
+    @GetMapping("/public/categories/{category-id}/books")
+    PageResponse<BookListResponseRecord> getBooksByCategoryId(@PathVariable("category-id") Long categoryId,
+                                                                     @RequestParam("page") int page,
+                                                                     @RequestParam("size") int size);
+
+    @GetMapping("/public/categories/{category-id}/children")
+    List<CategoryTreeResponse> getCategoriesChildren(@PathVariable("category-id") Long categoryId);
+
+    @GetMapping("/public/categories/{category-id}")
+    CategoryResponse getCategory(@PathVariable("category-id") Long categoryId);
+
+
 }

@@ -125,4 +125,5 @@ public class AuthController {
         userClient.createUserAccount(new SignupRequest(request, userAddressDto));
         return "redirect:/home";
     }
+
 }

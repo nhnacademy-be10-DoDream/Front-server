@@ -30,7 +30,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav  me-auto mb-2 mb-lg-0 ">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link">분야보기</a>
@@ -38,12 +38,12 @@
                             <li th:each="entry : ${categories}">
                                 <div class="p-3">
                                     <a class="fw-bold text-decoration-none parent-category"
-                                       th:href="@{'/category/' + ${#strings.replace(entry.key, ' ', '')}}"
-                                       th:text="${entry.key}"></a>
+                                       th:href="@{'/categories/' + ${entry.key.categoryId}}"
+                                       th:text="${entry.key.categoryName}"></a>
                                     <ul class="list-unstyled mt-2">
                                         <li th:each="child : ${entry.value}">
                                             <a class="dropdown-item"
-                                               th:href="@{'/category/' + ${child.categoryId}}"
+                                               th:href="@{'/categories/' + ${child.categoryId}}"
                                                th:text="${child.categoryName}"></a>
                                         </li>
                                     </ul>

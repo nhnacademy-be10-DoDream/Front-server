@@ -142,6 +142,85 @@ header, footer {
     color: #333;
 }
 
+.booklist-container {
+    display: flex;
+    position: relative;
+}
+
+.category-sidebar {
+    width: 250px;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    position: relative;
+}
+
+.sidebar-parent-item {
+    position: relative;
+}
+
+.subcategory-box {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: calc(100% - 50%);
+    width: 200px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    z-index: 100;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-parent-item:hover .subcategory-box {
+    display: block;
+}
+
+.sidebar-parent {
+    display: block;
+    padding: 5px 0;
+    text-decoration: none;
+    color: black;
+}
+
+.sidebar-parent:hover {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.subcategory-list a {
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 3px 0;
+}
+
+.subcategory-list a:hover {
+    font-weight: bold;
+    color: #007bff;
+}
+
+
+.book-grid {
+    display: flex;
+    flex-wrap: wrap; /* 줄바꿈 허용 */
+    gap: 20px; /* 카드 간 간격 */
+}
+
+.book-card {
+    flex: 1 1 calc(25% - 20px); /* 가로 20% - 간격 (5개씩 한 줄) */
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.book-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
 .menu {
     display: flex;
     gap: 1rem;
