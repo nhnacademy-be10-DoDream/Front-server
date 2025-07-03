@@ -17,7 +17,7 @@ public interface BookClient {
     List<CategoryResponse> getCategoriesByDepth(@PathVariable("depth") Long depth);
 
     @GetMapping("/public/categories/{category-id}/books")
-    PageResponse<BookListResponseRecord> getBooksByCategoryId(@PathVariable("category-id") Long categoryId,
+    PageResponse<BookDto> getBooksByCategoryId(@PathVariable("category-id") Long categoryId,
                                                                      @RequestParam("page") int page,
                                                                      @RequestParam("size") int size);
 

@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.client.BookClient;
-import shop.dodream.front.dto.BookListResponseRecord;
-import shop.dodream.front.dto.CategoryResponse;
-import shop.dodream.front.dto.CategoryTreeResponse;
-import shop.dodream.front.dto.PageResponse;
+import shop.dodream.front.dto.*;
 
 import java.util.List;
 
@@ -26,11 +23,13 @@ public class CategoryController {
                                      @RequestParam(value = "page", defaultValue = "0") int page,
                                      Model model) {
         int size  = 8;
-        PageResponse<BookListResponseRecord> bookPage = bookClient.getBooksByCategoryId(categoryId, page, size);
-        //System.out.println("응답 content: " + bookPage.getContent());
-
+        PageResponse<BookDto> bookPage = bookClient.getBooksByCategoryId(categoryId, page, size);
+        for( BookDto book : bookPage.getContent()) {
+            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
+            String imageUrl = bookUrlPrefix + book.getBookUrl();
+            book.setBookUrl(imageUrl);
+        }
         model.addAttribute("books", bookPage.getContent());
-        List<BookListResponseRecord> books = bookPage.getContent();
 
         model.addAttribute("currentPage", bookPage.getNumber());
         model.addAttribute("totalPages", bookPage.getTotalPages());
@@ -44,21 +43,10 @@ public class CategoryController {
         Long baseCategoryId = (category.getParentId() == null) ? categoryId : category.getParentId();
         List<CategoryTreeResponse> response = bookClient.getCategoriesChildren(baseCategoryId);
 
-        // 현재 카테고리의 최상위 노드
         CategoryTreeResponse root = response.get(0);
         model.addAttribute("categoryTree", root);
 
-//        model.addAttribute("children", root.getChildren());
-//        model.addAttribute("root", root.getCategoryName());
 
         return "book/bookList";
     }
-
-    private String getFirstAuthor(String author) {
-        if (author == null || author.isEmpty()) return "";
-        return author.split(",")[0].trim();
-    }
-
-
-
 }
