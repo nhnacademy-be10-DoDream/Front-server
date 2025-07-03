@@ -221,16 +221,61 @@
     border-color: #343a40;
 }
 
-/* 회원 주소 CSS */
-.address-list {
+/* Pagination */
+.custom-pagination {
+    list-style: none;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 6px;
+    padding: 0;
+}
+.pagination-link {
+    display: block;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #495057;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.pagination-link:hover {
+    background-color: #f1f3f5;
+    border-color: #adb5bd;
 }
 
+.custom-pagination li.active .pagination-link {
+    background-color: #212529;
+    color: white;
+    border-color: #212529;
+    font-weight: bold;
+
+}
+
+
+/* panel */
+.split-view {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 0 24px;
+}
+
+.list-panel {
+    flex: 0 0 280px;
+    min-width: 250px;
+    max-width: 320px;
+}
+
+.detail-panel {
+    flex: 1;
+    min-width: 400px;
+    width: auto;
+}
+
+/* 회원 주소 CSS */
 .address-item {
     display: block;
-    padding: 12px;
+    padding: 15px;
+    margin: 8px 0;
     border: 1px solid #ddd;
     border-radius: 8px;
     cursor: pointer;
@@ -238,24 +283,52 @@
     transition: background-color 0.2s;
 }
 
-.address-detail-panel {
-    max-width: 800px;
-    height: 100%;
-}
-
-.address-detail {
-    display: none;
-}
 .address-item.active {
     background-color: #f2f2f2;
 }
 .address-item:hover {
     background-color: #f8f9fa;
 }
-.address-split-container {
-    display: flex;
-    gap: 20px;
+
+.address-detail {
+    display: none;
 }
+
+
+/* 회원 주문 CSS */
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.order-content {
+    padding: 20px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    margin-right: 20px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: white;
+
+}
+
+.status-대기 {background-color: #6c757d;}
+.status-배송중 {background-color: #007bff;}
+.status-배송완료 {background-color: #28a745;}
+.status-반품 {background-color: #fd7e14;}
+.status-취소 {background-color: #dc3545;}
 
 /* 애니메이션 효과 */
 @keyframes modalSlideIn {
@@ -292,3 +365,4 @@
     font-weight: 700;
     font-size: 1.1rem;
 }
+
