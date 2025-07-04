@@ -31,10 +31,10 @@ public interface BookClient {
 
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Void createReview(
-            @RequestHeader("X-USER-ID") String userId,
             @PathVariable("book-id") Long bookId,
+            @RequestHeader("X-USER-ID") String userId,
             @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files
+            @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 
 

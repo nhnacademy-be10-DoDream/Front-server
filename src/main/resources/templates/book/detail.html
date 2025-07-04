@@ -321,11 +321,24 @@
 
             <div class="book-detail">
                 <div class="price-info">
-                    <div><strong>정가:</strong><del th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">정가</del></div>
-                    <div><strong>판매가:</strong><span style="color: #d32f2f;" th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">판매가</span></div>
-<!--                    <div><strong>마일리지:</strong> <span th:text="|\u20A9${#numbers.formatInteger(book.mileage, 0, 'COMMA')}|">마일리지</span></div>-->
-                    <div><strong>카테고리??:</strong> ???</div>
-                    <div><strong>isbn??:</strong> ???</div>
+                    <div>
+                        <strong>정가:</strong>
+                        <del th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">정가</del></div>
+                    <div>
+                        <strong>판매가:</strong>
+                        <span style="color: #d32f2f;" th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">판매가</span>
+                        <span style="color: #388e3c; margin-left: 10px;"
+                              th:with="discountAmount=${book.regularPrice - book.salePrice}"
+                              th:text="'(' + ${book.discountRate} + '%, ' + ${#numbers.formatInteger(discountAmount, 0, 'COMMA')} + '원 할인)'">
+                            (10%, 2,000원 할인)
+                        </span>
+                    </div>
+                    <div><strong>마일리지:</strong> 무엇을 넣을까요? </div>
+                    <div><strong>카테고리??:</strong> 넣을까요? </div>
+                    <div>
+                        <strong>ISBN:</strong>
+                        <span th:text="${book.isbn}">ISBN 값</span>
+                    </div>
                 </div>
 
                 <!-- 별점 및 평점 -->
@@ -336,7 +349,6 @@
                                         (${i - reviewSummary.ratingAvg < 1} ? 'star half-filled' : 'star')">
                             ★
                         </span>
-
                     </div>
                     <span class="rating-text"
                           th:text="|${#numbers.formatDecimal(reviewSummary.ratingAvg, 1, 1)}| + ' | 리뷰(' + ${reviewSummary.reviewCount} + ')'">
@@ -394,7 +406,7 @@
 
                 <div class="review-btns">
                     <button type="submit">등록</button>
-                    <input type="file" name="files" multiple>
+                    <input type="file" name="files" multiple accept=".png, .jpeg, .jpg,">
                 </div>
             </form>
         </div>

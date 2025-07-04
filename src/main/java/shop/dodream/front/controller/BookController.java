@@ -10,6 +10,7 @@ import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -84,11 +85,14 @@ public class BookController {
                              @RequestParam(value = "files", required = false)List<MultipartFile> files){
 
 
-        List<MultipartFile> nonEmptyFiles = files.stream()
+        MultipartFile[] nonEmptyFiles = files.stream()
                 .filter(file -> !file.isEmpty())
-                .toList();
+                .toList().toArray(MultipartFile[]::new);
 
-        bookClient.createReview("1234",bookId, reviewCreateRequest, nonEmptyFiles);
+
+
+
+        bookClient.createReview(bookId,"1234", reviewCreateRequest, nonEmptyFiles);
 
 
         return "redirect:/books/"+bookId;
