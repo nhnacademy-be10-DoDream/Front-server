@@ -28,5 +28,6 @@ public class RedisConfig {
         sessionRedisTemplate.setHashValueSerializer(serializer);
         return sessionRedisTemplate;
     }
+
 }
 
