@@ -31,7 +31,6 @@ import java.util.Map;
 public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
-    private final PasswordEncoder passwordEncoder;
     private final RedisUserSessionService redisUserSessionService;
 
     @PostMapping("/login")
@@ -86,6 +85,7 @@ public class AuthController {
     public String paycoCallback(
             @RequestParam("code") String code,
             @RequestParam("state") String state,
+            HttpServletResponse response,
             Model model
     ) {
         try {
@@ -155,10 +155,10 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
-        String password = request.getPassword();
-        request.setPassword(passwordEncoder.encode(password));
+//        String password = request.getPassword();
+//        request.setPassword(passwordEncoder.encode(password));
         userClient.createUserAccount(new SignupRequest(request, userAddressDto));
-        return "redirect:/home";
+        return "redirect:/";
     }
 
 }

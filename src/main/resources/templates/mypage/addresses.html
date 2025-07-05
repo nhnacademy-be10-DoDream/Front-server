@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+
+<head>
+    <title th:text="#{mypage.address.title}"></title>
+</head>
+
+<body>
+
+<div layout:fragment="content" class="content-area">
+
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h2 class="section-title section-title-lg mb-2" th:text="#{mypage.address.heading}"></h2>
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div>
+                    <div th:if="${#lists.size(addresses) >= 10}" class="text-warning d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        <small><span class="counter-text" th:text="#{address.limit.warning}"></span></small>
+                    </div>
+                    <div th:if="${#lists.size(addresses) < 10}" class="address-counter">
+                        <span class="counter-text" th:text="#{address.count.format(${#lists.size(addresses)})}"></span>
+                    </div>
+                </div>
+
+                <button type="button"
+                        class="btn btn-custom-dark"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addressModal"
+                        th:disabled="${#lists.size(addresses) >= 10}"
+                        th:text="#{address.add.button}">
+                    <i class="bi bi-plus-circle me-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(addresses)}" class="text-center py-5">
+        <i class="bi bi-geo-alt text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted mt-3 mb-4" th:text="#{message.noAddress}"></p>
+        <button type="button"
+                class="btn btn-custom-dark"
+                data-bs-toggle="modal"
+                data-bs-target="#addressModal"
+                th:text="#{address.register.first}">
+        </button>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(addresses)}">
+        <h6 class="section-title section-title-md mb-3" th:text="#{address.list}"></h6>
+        <div class="split-view">
+            <div class="list-panel">
+                <label th:each="address, iterStat : ${addresses}"
+                       th:for="|address-radio-${address.addressId}|"
+                       class="address-item"
+                       th:classappend="${iterStat.first} ? 'active' : ''">
+                    <input type="radio" name="address-radio"
+                           th:id="|address-radio-${address.addressId}|"
+                           th:value="${address.addressId}"
+                           class="d-none"
+                           th:checked="${iterStat.first}" />
+                    <span class="d-flex justify-content-between align-items-center w-100">
+                        <span th:text="${address.alias}"></span>
+                        <i class="bi bi-chevron-right"></i>
+                    </span>
+                </label>
+            </div>
+
+            <div class="detail-panel">
+                <div th:each="address : ${addresses}"
+                     class="address-detail card-style"
+                     th:id="|address-detail-${address.addressId}|">
+
+                    <div class="info-detail p-4">
+                        <table class="info-table">
+                            <tbody>
+                            <tr>
+                                <th th:text="#{address.roadAddress}"></th>
+                                <td th:text="${address.roadAddress}"></td>
+                            </tr>
+                            <tr>
+                                <th th:text="#{address.zipcode}"></th>
+                                <td th:text="${address.zipcode}"></td>
+                            </tr>
+                            <tr th:if="${address.detailAddress}">
+                                <th th:text="#{address.detailAddress}"></th>
+                                <td th:text="${address.detailAddress}"></td>
+                            </tr>
+                            <tr th:if="${address.jibunAddress}">
+                                <th th:text="#{address.jibunAddress}"></th>
+                                <td th:text="${address.jibunAddress}"></td>
+                            </tr>
+                            <tr th:if="${address.extraAddress}">
+                                <th th:text="#{address.extraAddress}"></th>
+                                <td th:text="${address.extraAddress}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
+                            <button type="button" class="btn-outline-gray me-2 open-edit-modal"
+                                    data-bs-toggle="modal" data-bs-target="#addressModal"
+                                    th:data-address-id="${address.addressId}"
+                                    th:data-alias="${address.alias}"
+                                    th:data-road-address="${address.roadAddress}"
+                                    th:data-zipcode="${address.zipcode}"
+                                    th:data-jibun-address="${address.jibunAddress}"
+                                    th:data-detail-address="${address.detailAddress}"
+                                    th:data-extra-address="${address.extraAddress}">
+                                <i class="bi bi-pencil me-1" th:text="#{button.edit}"></i>
+                            </button>
+                            <form th:action="@{/mypage/addresses/{id}(id=${address.addressId})}" method="post"
+                                  th:data-confirm-message="#{confirm.address.delete}"
+                                  onsubmit="return confirm(this.dataset.confirmMessage);">
+                                <input type="hidden" name="_method" value="delete" />
+                                <button type="submit" class="btn btn-dark-custom">
+                                    <i class="bi bi-trash me-1" th:text="#{button.delete}"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{mypage/fragments/address-modal :: addressModalFragment}"></div>
+
+</div>
+</body>
+</html>
