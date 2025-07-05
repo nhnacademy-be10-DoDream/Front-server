@@ -3,5 +3,3 @@ spring:
     name: front
   profiles:
     active: dev
-
-

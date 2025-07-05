@@ -21,10 +21,10 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}")
     BookDetailDto getBookDetail(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/books/{book-id}/reviews")
+    @GetMapping("/public/books/{book-id}/reviews")
     List<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/reviews/{book-id}/review-summary")
+    @GetMapping("/admin/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
 

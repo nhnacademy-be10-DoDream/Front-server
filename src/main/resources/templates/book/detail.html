@@ -5,7 +5,7 @@
       layout:decorate="~{layout/default}">
 
 <head>
-    <title th:text="${book.title} + ' 상세'">책 상세</title>
+    <title th:text="${book.title} + #{book.detail.title.suffix}">책 상세</title>
     <style>
         body {
             font-family: sans-serif;
@@ -311,7 +311,9 @@
     <div class="book-detail-container">
         <div class="book-header">
             <h1 th:text="${book.title}">책 제목</h1>
-            <div class="book-meta" th:text="${book.author} + ' | ' + ${book.publisher} + ' | ' + ${book.publishedAt}">저자 | 출판사 | 출판일</div>
+            <div class="book-meta" th:text="${book.author} + #{book.meta.separator} + ${book.publisher} + #{book.meta.separator} + ${book.publishedAt}">
+                저자 | 출판사 | 출판일
+            </div>
         </div>
 
         <div class="book-content">
@@ -322,20 +324,23 @@
             <div class="book-detail">
                 <div class="price-info">
                     <div>
-                        <strong>정가:</strong>
+                        <strong th:text="#{book.price.original}">정가:</strong>
                         <del th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">정가</del></div>
                     <div>
-                        <strong>판매가:</strong>
+                        <strong th:text="#{book.price.sale}">판매가:</strong>
                         <span style="color: #d32f2f;" th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">판매가</span>
                         <span style="color: #388e3c; margin-left: 10px;"
                               th:with="discountAmount=${book.regularPrice - book.salePrice}"
-                              th:text="'(' + ${book.discountRate} + '%, ' + ${#numbers.formatInteger(discountAmount, 0, 'COMMA')} + '원 할인)'">
+                              th:text="#{book.price.discount.format(${book.discountRate}, ${#numbers.formatInteger(discountAmount, 0, 'COMMA')})}">
                             (10%, 2,000원 할인)
                         </span>
                     </div>
-                    <div><strong>마일리지:</strong> 무엇을 넣을까요? </div>
-                    <div><strong>카테고리??:</strong> 넣을까요? </div>
                     <div>
+                        <strong th:text="#{book.price.mileage}">마일리지:</strong> <!-- 값 필요 -->
+                    </div>
+                    <div>
+                        <strong th:text="#{book.price.category}">카테고리??:</strong> <!-- 값 필요 -->
+                    </div>                    <div>
                         <strong>ISBN:</strong>
                         <span th:text="${book.isbn}">ISBN 값</span>
                     </div>
@@ -351,7 +356,7 @@
                         </span>
                     </div>
                     <span class="rating-text"
-                          th:text="|${#numbers.formatDecimal(reviewSummary.ratingAvg, 1, 1)}| + ' | 리뷰(' + ${reviewSummary.reviewCount} + ')'">
+                          th:text="#{book.rating.label(${#numbers.formatDecimal(reviewSummary.ratingAvg, 1, 1)}, ${reviewSummary.reviewCount})}">
                         0.0 | 리뷰(0)
                     </span>
                 </div>
@@ -359,7 +364,7 @@
 
 
                 <div>
-                    <strong>수량:</strong>
+                    <strong th:text="#{book.quantity.label}">수량:</strong>
                     <div class="quantity-box">
                         <button type="button" onclick="changeQty(-1)">-</button>
                         <input type="text" id="quantity" value="1" readonly>
@@ -367,27 +372,27 @@
                     </div>
                     <div class="total-price"
                          id="totalPrice"
-                         th:text="'총 상품금액 ' + ${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">
+                         th:text="#{book.price.total(${#numbers.formatInteger(book.salePrice, 0, 'COMMA')})}">
                         총 상품금액
                     </div>
                 </div>
 
                 <div class="btns">
-                    <button class="btn-cart">장바구니 담기</button>
-                    <button class="btn-buy">바로구매</button>
+                    <button class="btn-cart" th:text="#{button.cart}">장바구니 담기</button>
+                    <button class="btn-buy" th:text="#{button.buy}">바로구매</button>
                 </div>
             </div>
         </div>
 
         <!-- 책 소개 -->
         <div class="book-intro">
-            <div class="book-intro-title">책소개</div>
+            <div class="book-intro-title" th:text="#{book.intro.title}">책소개</div>
             <div class="book-intro-content" th:text="${book.description}">책 소개 내용</div>
         </div>
 
         <!-- 리뷰 작성 -->
         <div class="review-write-section">
-            <h2>리뷰 작성</h2>
+            <h2 th:text="#{review.write.title}">리뷰 작성</h2>
             <form th:action="@{'/books/' + ${book.bookId} + '/reviews'}"
                   method="post"
                   enctype="multipart/form-data"
@@ -402,10 +407,13 @@
                     <input type="hidden" name="rating" id="rating" value="0">
                 </div>
 
-                <textarea name="content" placeholder="리뷰를 입력해주세요 (최대 200자)" maxlength="200" wrap="soft"></textarea>
+                <textarea name="content"
+                          th:placeholder="#{review.write.placeholder}"
+                          maxlength="200"
+                          wrap="soft"></textarea>
 
                 <div class="review-btns">
-                    <button type="submit">등록</button>
+                    <button type="submit" th:text="#{button.review.submit}">등록</button>
                     <input type="file" name="files" multiple accept=".png, .jpeg, .jpg,">
                 </div>
             </form>
@@ -414,9 +422,9 @@
 
         <!-- 마이리뷰 -->
         <div class="review-section">
-            <h2>마이리뷰</h2>
-            <div class="filter-info">
-                전체 (<span th:text="${reviewCount}">0</span>)
+            <h2 th:text="#{review.my.title}">마이리뷰</h2>
+            <div class="filter-info" th:text="#{review.count.label(${reviewCount})}">
+                전체 (0)
             </div>
             <div class="review-list">
                 <div class="review" th:each="review : ${reviews}">

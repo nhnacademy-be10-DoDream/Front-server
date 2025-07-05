@@ -58,17 +58,8 @@ public class BookController {
 
         bookDetailDto.setBookUrls(convertedUrls);
 
-//        List<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId);
-
-        List<ReviewResponse> reviewResponse = new ArrayList<>();
-
-        reviewResponse.add(new ReviewResponse("북러버",  (short) 5, "초보자가 보기 정말 좋은 책이에요. 실습 위주 구성이라 이해가 잘 됩니다!"));
-        reviewResponse.add(new ReviewResponse("개발꿈나무",  (short) 4, "대체로 좋았지만 몇몇 설명이 부족한 부분이 있어요. 그래도 만족!"));
-        reviewResponse.add(new ReviewResponse("리뷰왕",  (short) 3, "내용이 방대해서 초반에 따라가기 힘들었습니다. 반복 학습 필요해요."));
-
-//        ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
-
-        ReviewSummaryResponse reviewSummaryResponse = new ReviewSummaryResponse(2.5, 10L);
+        List<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId);
+        ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
 
 
         model.addAttribute("book", bookDetailDto);
