@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.LoginRequest;
 
 //fixme : 배포전 주석 수정 필요
-@FeignClient(name = "authClient", url = "http://localhost:10320")
+@FeignClient(name = "authClient", url = "s1.java21.net:10320")
 public interface AuthClient {
     @PostMapping("/auth/login")
     ResponseEntity<Void> login(@RequestBody LoginRequest request);

@@ -45,8 +45,8 @@
                 <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
                     <div class="d-flex justify-content-between gap-3">
                         <div th:each="book : ${chunk}" class="book-card flex-fill">
-                            <a th:href="@{${book.bookUrl}}">
-                                <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
+                            <a th:href="@{/books/{id}(id=${book.bookId})}">
+                                <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
                             </a>
                             <h3 th:text="${book.title}">책 제목</h3>
                             <p th:text="${book.author}">작가</p>
@@ -79,8 +79,8 @@
                         <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
                             <div class="d-flex justify-content-between gap-3">
                                 <div th:each="book : ${chunk}" class="book-card flex-fill">
-                                    <a th:href="@{${book.bookUrl}}">
-                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
+                                    <a th:href="@{/books/{id}(id=${book.bookId})}">
+                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
                                     </a>
                                     <h3 th:text="${book.title}">책 제목</h3>
                                     <p th:text="${book.author}">작가</p>
@@ -117,8 +117,8 @@
                         <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
                             <div class="d-flex justify-content-between gap-3">
                                 <div th:each="book : ${chunk}" class="book-card flex-fill">
-                                    <a th:href="@{${book.bookUrl}}">
-                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
+                                    <a th:href="@{/books/{id}(id=${book.bookId})}">
+                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
                                     </a>
                                     <h3 th:text="${book.title}">책 제목</h3>
                                     <p th:text="${book.author}">작가</p>
