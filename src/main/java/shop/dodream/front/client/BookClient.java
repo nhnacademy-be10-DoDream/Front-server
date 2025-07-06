@@ -1,6 +1,7 @@
 package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.dto.*;
@@ -42,7 +43,7 @@ public interface BookClient {
     BookDetailDto getBookDetail(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/public/books/{book-id}/reviews")
-    List<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
+    Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/admin/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);

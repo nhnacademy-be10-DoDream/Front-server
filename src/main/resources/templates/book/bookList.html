@@ -37,8 +37,8 @@
     <div class="booklist-content" style="flex: 1; padding: 20px;">
         <div class="book-grid">
             <div th:each="book : ${books}" class="book-card">
-                <a th:href="@{${book.bookUrl}}">
-                    <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
+                <a th:href="@{/books/{id}(id=${book.bookId})}">
+                    <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
                 </a>
                 <h3 th:text="${book.title}">책 제목</h3>
                 <p th:text="${book.author}">작가</p>
