@@ -35,111 +35,45 @@
         </div>
     </section>
 
-    <section class="best-seller container my-5">
-        <h2 class="mb-4 fw-bold">베스트셀러</h2>
+    <!-- 베스트셀러/이달의 도서/추천 도서-->
+    <div th:each="bookTagInfo : ${bookTagInfos}">
+        <section class="best-seller container my-5">
+            <h2 class="mb-4 fw-bold" th:text="${bookTagInfo.tag.tagName}"></h2>
 
-        <div id="carouselExample" class="carousel slide">
-            <div class="carousel-inner">
-                <!-- bookList를 6개씩 자른 조각(chunk)을 슬라이드로 반복 -->
+            <div th:with="chunks=${chunksMap[bookTagInfo.tagId]}"
+                 th:attr="id='carouselExample__' + ${bookTagInfo.tagId}" class="carousel slide">
+                <div class="carousel-inner">
+                    <!-- bookList를 6개씩 자른 조각(chunk)을 슬라이드로 반복 -->
+                    <div th:each="chunk, stat : ${chunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
+                        <div class="d-flex justify-content-between gap-3">
+                            <div th:each="book : ${chunk}" class="book-card flex-fill">
+                                <a th:href="@{/books/{id}(id=${book.bookId})}">
+                                    <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
+                                </a>
+                                <h3 th:text="${book.title}">책 제목</h3>
+                                <p th:text="${book.author}">작가</p>
+                                <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
 
-                <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
-                    <div class="d-flex justify-content-between gap-3">
-                        <div th:each="book : ${chunk}" class="book-card flex-fill">
-                            <a th:href="@{${book.bookUrl}}">
-                                <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
-                            </a>
-                            <h3 th:text="${book.title}">책 제목</h3>
-                            <p th:text="${book.author}">작가</p>
-                            <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
-
-                            <form th:action="@{/cart/add}" method="post" class="mt-2">
-                                <input type="hidden" name="bookId" th:value="${book.bookId}" />
-                                <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 슬라이드 이동 버튼 -->
-            <div class="white_circle_prev" data-bs-slide="prev" data-bs-target="#carouselExample"></div>
-            <div class="white_circle_next" data-bs-slide="next" data-bs-target="#carouselExample"></div>
-        </div>
-    </section>
-
-    <section class="best-seller container my-5">
-        <h2 class="container mb-4 fw-bold">이달의 도서</h2>
-        <div id="carouselExample2" class="carousel slide">
-            <div class="carousel-inner">
-                <!-- 슬라이드 1 -->
-                <div id="carousel-item" class="carousel slide">
-                    <div class="carousel-inner">
-                        <!-- bookList를 6개씩 자른 조각(chunk)을 슬라이드로 반복 -->
-
-                        <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
-                            <div class="d-flex justify-content-between gap-3">
-                                <div th:each="book : ${chunk}" class="book-card flex-fill">
-                                    <a th:href="@{${book.bookUrl}}">
-                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
-                                    </a>
-                                    <h3 th:text="${book.title}">책 제목</h3>
-                                    <p th:text="${book.author}">작가</p>
-                                    <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
-
-                                    <form th:action="@{/cart/add}" method="post" class="mt-2">
-                                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
-                                        <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
-                                    </form>
-                                </div>
+                                <form th:action="@{/cart/add}" method="post" class="mt-2">
+                                    <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                                    <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+                                </form>
                             </div>
                         </div>
                     </div>
-
-
-            <div class="white_circle_prev" data-bs-slide="prev" data-bs-target="#carouselExample2"></div>
-            <div class="white_circle_next" data-bs-slide="next" data-bs-target="#carouselExample2"></div>
                 </div>
+
+                <!-- 슬라이드 이동 버튼 -->
+                <div class="white_circle_prev"
+                     data-bs-slide="prev"
+                     th:attr="data-bs-target='#carouselExample__' + ${bookTagInfo.tagId}"></div>
+
+                <div class="white_circle_next"
+                     data-bs-slide="next"
+                     th:attr="data-bs-target='#carouselExample__' + ${bookTagInfo.tagId}"></div>
             </div>
-        </div>
-
-    </section>
-
-    <!-- 도서 추천/리스트 섹션 -->
-    <section class="best-seller container my-5">
-        <h2 class="container mb-4 fw-bold">추천 도서</h2>
-        <div id="carouselExample3" class="carousel slide">
-            <div class="carousel-inner">
-                <!-- 슬라이드 1 -->
-                <div id="carousel-item2" class="carousel slide">
-                    <div class="carousel-inner">
-                        <!-- bookList를 6개씩 자른 조각(chunk)을 슬라이드로 반복 -->
-
-                        <div th:each="chunk, stat : ${bookChunks}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
-                            <div class="d-flex justify-content-between gap-3">
-                                <div th:each="book : ${chunk}" class="book-card flex-fill">
-                                    <a th:href="@{${book.bookUrl}}">
-                                        <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2">
-                                    </a>
-                                    <h3 th:text="${book.title}">책 제목</h3>
-                                    <p th:text="${book.author}">작가</p>
-                                    <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
-
-                                    <form th:action="@{/cart/add}" method="post" class="mt-2">
-                                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
-                                        <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="white_circle_prev" data-bs-slide="prev" data-bs-target="#carouselExample3"></div>
-                    <div class="white_circle_next" data-bs-slide="next" data-bs-target="#carouselExample3"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
 </div>
 </body>

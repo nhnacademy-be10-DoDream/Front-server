@@ -14,13 +14,15 @@
             <a th:href="@{/contact}" class="nav-item">쿠폰</a>
             <a th:href="@{/mypage}" class="nav-item">마이페이지</a>
             <!-- 로그인 여부에 따라 출력 분기 -->
-            <span th:if="${user != null}" class="nav-item fw-semibold">
+            <div th:if="${user != null}" class="d-flex align-items-center gap-3 nav-item fw-semibold">
                 <span th:text="|${user.name}님 반갑습니다!|">사용자님 반갑습니다!</span>
-            </span>
+                <form th:action="@{/auth/logout}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-link nav-item p-0 m-0 text-decoration-none" style="color:inherit;">로그아웃</button>
+                </form>
+            </div>
             <a th:if="${user == null}" th:href="@{/auth/signup-form}" class="nav-item">회원가입</a>
             <a th:if="${user == null}" th:href="@{/auth/login-form}" class="nav-item">로그인</a>
             <a th:href="@{/cart}" class="nav-item">장바구니🛒</a>
-
         </nav>
     </header>
     <nav class="navbar navbar-expand-lg " style="background-color: #ffffff;" data-bs-theme="light">
@@ -31,24 +33,37 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav  me-auto mb-2 mb-lg-0 ">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown
-                        </a>
+                        <a class="nav-link">분야보기</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            <li th:each="entry : ${categories}">
+                                <div class="p-3">
+                                    <a class="fw-bold text-decoration-none parent-category"
+                                       th:href="@{'/categories/' + ${entry.key.categoryId}}"
+                                       th:text="${entry.key.categoryName}"></a>
+                                    <ul class="list-unstyled mt-2">
+                                        <li th:each="child : ${entry.value}">
+                                            <a class="dropdown-item"
+                                               th:href="@{'/categories/' + ${child.categoryId}}"
+                                               th:text="${child.categoryName}"></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                         </ul>
                     </li>
+
+
                     <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                        <a class="nav-link active" role="button" aria-disabled="true">베스트</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" role="button" aria-disabled="true">신상품</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" role="button" aria-disabled="true">추천도서</a>
                     </li>
                 </ul>
                 <form class="d-flex" role="search">
