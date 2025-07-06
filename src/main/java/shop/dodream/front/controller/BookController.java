@@ -1,14 +1,17 @@
 package shop.dodream.front.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.BookDto;
 import shop.dodream.front.dto.BookTagInfo;
 import shop.dodream.front.dto.PageResponse;
 import shop.dodream.front.dto.TagResponse;
+import shop.dodream.front.dto.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,4 +55,59 @@ public class BookController {
         TagResponse tag = bookClient.getTag(tagId);
         return new BookTagInfo(tagId, tag, books);
     }
+
+
+    @GetMapping("/books/{book-id}")
+    public String bookDetail(@PathVariable("book-id") Long bookId, Model model){
+
+        BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
+        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
+        List<String> convertedUrls = new ArrayList<>();
+
+        for (String url : bookDetailDto.getBookUrls()) {
+            convertedUrls.add(bookUrlPrefix + url);
+        }
+
+        bookDetailDto.setBookUrls(convertedUrls);
+
+        List<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId);
+        ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
+
+
+        model.addAttribute("book", bookDetailDto);
+        model.addAttribute("reviews", reviewResponse);
+        model.addAttribute("reviewCount", reviewResponse.size());
+        model.addAttribute("reviewSummary", reviewSummaryResponse);
+        return "book/detail";
+    }
+
+
+    @PostMapping("/books/{book-id}/reviews")
+    public String postReview(@PathVariable("book-id") Long bookId,
+                             @ModelAttribute ReviewCreateRequest reviewCreateRequest,
+                             @RequestParam(value = "files", required = false)List<MultipartFile> files){
+
+
+        MultipartFile[] nonEmptyFiles = files.stream()
+                .filter(file -> !file.isEmpty())
+                .toList().toArray(MultipartFile[]::new);
+
+
+
+
+        bookClient.createReview(bookId,"1234", reviewCreateRequest, nonEmptyFiles);
+
+
+        return "redirect:/books/"+bookId;
+
+
+
+
+
+
+    }
+
+
+
+
 }

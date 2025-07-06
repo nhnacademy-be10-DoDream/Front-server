@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 
@@ -32,5 +36,26 @@ public interface BookClient {
 
     @GetMapping("/public/tags/{tag-id}")
     TagResponse getTag(@PathVariable("tag-id") Long tagId);
+
+
+    @GetMapping("/public/books/{book-id}")
+    BookDetailDto getBookDetail(@PathVariable("book-id") Long bookId);
+
+    @GetMapping("/public/books/{book-id}/reviews")
+    List<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
+
+    @GetMapping("/admin/reviews/{book-id}/review-summary")
+    ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
+
+
+
+    @PostMapping(value = "/books/{book-id}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Void createReview(
+            @PathVariable("book-id") Long bookId,
+            @RequestHeader("X-USER-ID") String userId,
+            @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
+            @RequestPart(value = "files", required = false) MultipartFile[] files
+    );
+
 
 }
