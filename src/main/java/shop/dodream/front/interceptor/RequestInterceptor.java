@@ -30,4 +30,5 @@ public class RequestInterceptor implements HandlerInterceptor {
         AccessTokenHolder.clear();
         HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
     }
+
 }
