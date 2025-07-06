@@ -6,10 +6,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.BookDto;
+import shop.dodream.front.dto.BookTagInfo;
+import shop.dodream.front.dto.PageResponse;
+import shop.dodream.front.dto.TagResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,23 +23,33 @@ public class BookController {
     // Controller
     @GetMapping("/")
     public String home(Model model) {
+        List<Long> tagIds = List.of(1L, 2L, 3L);
 
+        List<BookTagInfo> bookTagInfos = tagIds.stream()
+                .map(this::getBookTagInfo)
+                .toList();
 
-        List<BookDto> books = bookClient.getBooks();
-        for( BookDto book : books) {
-            // 이미지 URL을 BOOK_API_URL과 결합
-            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-            String imageUrl = bookUrlPrefix + book.getBookUrl();
-            book.setBookUrl(imageUrl);
-        }
-        model.addAttribute("books", books);
-        // 책 리스트를 6개씩 나누기
-        List<List<BookDto>> chunks = new ArrayList<>();
-        for (int i = 0; i < books.size(); i += 5) {
-            chunks.add(books.subList(i, Math.min(i + 5, books.size())));
-        }
+        model.addAttribute("bookTagInfos", bookTagInfos);
+        model.addAttribute("chunksMap", bookTagInfos.stream()
+                .collect(Collectors.toMap(BookTagInfo::getTagId, b -> chunkBooks(b.getBooks(), 6))));
 
-        model.addAttribute("bookChunks", chunks);
         return "home";
+    }
+
+    private List<List<BookDto>> chunkBooks(List<BookDto> books, int chunkSize) {
+        List<List<BookDto>> chunks = new ArrayList<>();
+        for (int i = 0; i < books.size(); i += chunkSize) {
+            chunks.add(books.subList(i, Math.min(i + chunkSize, books.size())));
+        }
+        return chunks;
+    }
+
+    private BookTagInfo getBookTagInfo(Long tagId) {
+        PageResponse<BookDto> response = bookClient.getBooksByTagId(tagId);
+        List<BookDto> books = response.getContent();
+        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
+        books.forEach(book -> book.setBookUrl(bookUrlPrefix + book.getBookUrl()));
+        TagResponse tag = bookClient.getTag(tagId);
+        return new BookTagInfo(tagId, tag, books);
     }
 }

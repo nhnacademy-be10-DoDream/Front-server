@@ -27,5 +27,10 @@ public interface BookClient {
     @GetMapping("/public/categories/{category-id}")
     CategoryResponse getCategory(@PathVariable("category-id") Long categoryId);
 
+    @GetMapping("/public/tags/{tag-id}/books")
+    PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId);
+
+    @GetMapping("/public/tags/{tag-id}")
+    TagResponse getTag(@PathVariable("tag-id") Long tagId);
 
 }
