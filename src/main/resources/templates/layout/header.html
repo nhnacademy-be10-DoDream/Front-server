@@ -14,12 +14,9 @@
             <a th:href="@{/contact}" class="nav-item">쿠폰</a>
             <a th:href="@{/mypage}" class="nav-item">마이페이지</a>
             <!-- 로그인 여부에 따라 출력 분기 -->
-            <div th:if="${user != null}" class="d-flex align-items-center gap-3 nav-item fw-semibold">
+            <span th:if="${user != null}" class="nav-item fw-semibold">
                 <span th:text="|${user.name}님 반갑습니다!|">사용자님 반갑습니다!</span>
-                <form th:action="@{/auth/logout}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-link nav-item p-0 m-0 text-decoration-none" style="color:inherit;">로그아웃</button>
-                </form>
-            </div>
+            </span>
             <a th:if="${user == null}" th:href="@{/auth/signup-form}" class="nav-item">회원가입</a>
             <a th:if="${user == null}" th:href="@{/auth/login-form}" class="nav-item">로그인</a>
             <a th:href="@{/cart}" class="nav-item">장바구니🛒</a>
