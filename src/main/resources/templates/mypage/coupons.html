@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+<head>
+    <title>내 쿠폰</title>
+    <link rel="stylesheet" th:href="@{/css/mypage.css}" />
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="mypage-content-header">
+        <h3 th:text="#{mypage.coupons.heading}">내 쿠폰</h3>
+    </div>
+    <div class="mypage-section">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>쿠폰 이름</th>
+                <th>할인 유형</th>
+                <th>할인 값</th>
+                <th>최소 구매 금액</th>
+                <th>최대 할인 금액</th>
+                <th>발급일</th>
+                <th>만료일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="coupon : ${availableCoupons}">
+                <td th:text="${coupon.policyName != null ? coupon.policyName : '없음'}"></td>
+                <td>
+                    <span th:if="${coupon.discountType.toString() == 'PERCENTAGE'}">정률</span>
+                    <span th:if="${coupon.discountType.toString() == 'FLAT'}">정액</span>
+                </td>
+                <td>
+                    <span th:if="${coupon.discountValue != null}">
+                        <span th:if="${coupon.discountType.toString() == 'PERCENTAGE'}" th:text="${#numbers.formatDecimal(coupon.discountValue, 0, 'COMMA', 0, 'POINT')} + '%'"></span>
+                        <span th:if="${coupon.discountType.toString() == 'FLAT'}" th:text="${#numbers.formatDecimal(coupon.discountValue, 0, 'COMMA', 0, 'POINT')} + '원'"></span>
+                    </span>
+                    <span th:if="${coupon.discountValue == null}">없음</span>
+                </td>
+                <td th:text="${coupon.minPurchaseAmount != null ? #numbers.formatDecimal(coupon.minPurchaseAmount, 0, 'COMMA', 0, 'POINT') + '원' : '없음'}"></td>
+                <td th:text="${coupon.maxDiscountAmount != null ? #numbers.formatDecimal(coupon.maxDiscountAmount, 0, 'COMMA', 0, 'POINT') + '원' : '없음'}"></td>
+                <td th:text="${coupon.issuedAt != null ? coupon.issuedAt : '없음'}"></td>
+                <td th:text="${coupon.expiredAt != null ? coupon.expiredAt : '없음'}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(availableCoupons)}">
+                <td colspan="7" class="text-center">사용 가능한 쿠폰이 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
