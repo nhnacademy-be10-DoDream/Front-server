@@ -17,7 +17,7 @@
         <h4 class="sidebar-title" th:text="${categoryTree.categoryName}"></h4>
 
         <!-- 2단계 카테고리 리스트 -->
-        <ul class="sidebar-list">
+        <ul class="sidebar-list" th:if="${categoryTree.depth == 1}">
             <li th:each="child : ${categoryTree.children}" class="sidebar-parent-item">
                 <a th:text="${child.categoryName}" th:href="@{'/categories/' + ${child.categoryId}}" class="sidebar-parent"></a>
 
@@ -26,6 +26,45 @@
                     <ul class="subcategory-list">
                         <li th:each="subChild : ${child.children}">
                             <a th:text="${subChild.categoryName}" th:href="@{'/categories/' + ${subChild.categoryId}}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+
+        <!-- 2단계 카테고리 리스트 -->
+        <ul class="sidebar-list" th:if="${categoryTree.depth > 1}">
+            <li th:each="child : ${categoryTree.children}" class="sidebar-parent-item">
+
+                <!-- 1단계 카테고리 -->
+                <a th:text="${child.categoryName}"
+                   th:href="@{'/categories/' + ${child.categoryId}}"
+                   class="sidebar-parent"></a>
+
+                <!-- 2단계 이상부터 접기/펼치기 -->
+                <div th:if="${child.children != null and !child.children.isEmpty()}">
+                    <input type="checkbox" th:id="'toggle-' + ${child.categoryId}" class="toggle-checkbox" hidden>
+                    <label th:for="'toggle-' + ${child.categoryId}" class="toggle-label">+</label>
+
+                    <!-- 3단계 카테고리 -->
+                    <ul class="subcategory-list">
+                        <li th:each="subChild : ${child.children}">
+                            <a th:text="${subChild.categoryName}"
+                               th:href="@{'/categories/' + ${subChild.categoryId}}"></a>
+
+                            <!-- 4단계 카테고리 (재귀) -->
+                            <div th:if="${subChild.children != null and !subChild.children.isEmpty()}">
+                                <input type="checkbox" th:id="'toggle-' + ${subChild.categoryId}" class="toggle-checkbox" hidden>
+                                <label th:for="'toggle-' + ${subChild.categoryId}" class="toggle-label">+</label>
+
+                                <ul class="subcategory-list">
+                                    <li th:each="subSubChild : ${subChild.children}">
+                                        <a th:text="${subSubChild.categoryName}"
+                                           th:href="@{'/categories/' + ${subSubChild.categoryId}}"></a>
+                                    </li>
+                                </ul>
+                            </div>
+
                         </li>
                     </ul>
                 </div>

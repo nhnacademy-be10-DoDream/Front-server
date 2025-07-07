@@ -199,6 +199,21 @@ header, footer {
     color: #007bff;
 }
 
+.toggle-checkbox ~ .subcategory-list {
+    display: none;
+}
+
+.toggle-checkbox:checked ~ .subcategory-list {
+    display: block;
+}
+
+.toggle-label {
+    cursor: pointer;
+    margin-left: 8px;
+    font-weight: bold;
+    user-select: none;
+}
+
 
 .book-grid {
     display: flex;
