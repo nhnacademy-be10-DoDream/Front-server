@@ -6,10 +6,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import shop.dodream.front.client.CouponClient;
 import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.client.UserClient;
+import shop.dodream.front.dto.AvailableCouponResponse;
 import shop.dodream.front.dto.UserAddressDto;
 import shop.dodream.front.dto.UserUpdateDto;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -17,6 +20,7 @@ import shop.dodream.front.dto.UserUpdateDto;
 public class UserProfileController {
 	private final UserClient userClient;
 	private final OrderClient orderClient;
+    private final CouponClient couponClient;
 
 	@GetMapping(path = {"/profile", ""})
 	public String getProfile(@CookieValue("accessToken") String accessToken,
@@ -79,6 +83,14 @@ public class UserProfileController {
 		model.addAttribute("orders", orderClient.getOrders());
 		model.addAttribute("activeMenu", "orders");
 		return "mypage/orders";
+	}
+
+	@GetMapping("/coupons")
+	public String getMyCoupons(Model model) {
+		List<AvailableCouponResponse> availableCoupons = couponClient.getAvailableCoupons();
+		model.addAttribute("availableCoupons", availableCoupons);
+		model.addAttribute("activeMenu", "coupons");
+		return "mypage/coupons";
 	}
 
 }
