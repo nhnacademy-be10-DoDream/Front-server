@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>두드림 책방</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div layout:fragment="content" class="booklist-container" style="display: flex; position: relative;">
+
+    <!-- 왼쪽 사이드바 -->
+    <div class="category-sidebar">
+        <!-- 최상위 카테고리 이름 -->
+        <h4 class="sidebar-title" th:text="${categoryTree.categoryName}"></h4>
+
+        <!-- 2단계 카테고리 리스트 -->
+        <ul class="sidebar-list">
+            <li th:each="child : ${categoryTree.children}" class="sidebar-parent-item">
+                <a th:text="${child.categoryName}" th:href="@{'/categories/' + ${child.categoryId}}" class="sidebar-parent"></a>
+
+                <!-- 3단계 카테고리 박스 -->
+                <div class="subcategory-box" th:if="${child.children != null and !child.children.isEmpty()}">
+                    <ul class="subcategory-list">
+                        <li th:each="subChild : ${child.children}">
+                            <a th:text="${subChild.categoryName}" th:href="@{'/categories/' + ${subChild.categoryId}}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 도서 목록 영역 -->
+    <div class="booklist-content" style="flex: 1; padding: 20px;">
+        <div class="book-grid">
+            <div th:each="book : ${books}" class="book-card">
+                <a th:href="@{/books/{id}(id=${book.bookId})}">
+                    <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
+                </a>
+                <h3 th:text="${book.title}">책 제목</h3>
+                <p th:text="${book.author}">작가</p>
+                <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
+                <form th:action="@{/cart/add}" method="post">
+                    <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                    <button type="submit">장바구니 담기</button>
+                </form>
+            </div>
+        </div>
+
+
+
+        <!-- 페이지네이션 -->
+        <div>
+            <a th:if="${currentPage > 0}"
+               th:href="@{|/categories/${categoryId}?page=${currentPage - 1}|}">이전</a>
+
+            <span th:text="${currentPage + 1} + ' / ' + ${totalPages}"></span>
+
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{|/categories/${categoryId}?page=${currentPage + 1}|}">다음</a>
+        </div>
+    </div>
+
+
+
+</div>
+</body>
+</html>

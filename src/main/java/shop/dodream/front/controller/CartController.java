@@ -1,25 +1,16 @@
 package shop.dodream.front.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
 import shop.dodream.front.client.CartClient;
 import shop.dodream.front.client.CouponClient;
-import shop.dodream.front.dto.CartItemResponse;
-import shop.dodream.front.dto.CartResponse;
-import shop.dodream.front.dto.CouponResponse;
-import shop.dodream.front.dto.GuestCartResponse;
-
-import java.util.Arrays;
+import shop.dodream.front.client.OrderClient;
+import shop.dodream.front.dto.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,17 +19,12 @@ public class CartController {
 	
 	private final CouponClient couponClient;
 	private final CartClient cartClient;
+	private final OrderClient orderClient;
 	
 	@GetMapping
-	public String showCart(Model model, HttpServletRequest request) {
-		String userId = request.getHeader("X-USER-ID");
-		String guestId = getCookieHeader(request);
-		if (userId == null) {
-			GuestCartResponse Guestcart = cartClient.getGuestCart(request.getHeader("Cookie"));
-		}
-		
-		CartResponse cart = cartClient.getCart(userId);
-		
+	public String showCart(Model model) {
+		CartResponse cart = cartClient.getCart();
+		// 유저가 아이디로 카트를 조회하고 없다면 만드는 로직 추가 예정
 		List<CartItemResponse> cartItems = cartClient.getCartItems(cart.getCartId());
 		model.addAttribute("cartItems", cartItems);
 		
@@ -50,15 +36,32 @@ public class CartController {
 		}
 		model.addAttribute("couponsMap", couponsMap);
 		
+		List<WrappingDto> wrappingOptions = orderClient.getGiftWraps();
+		model.addAttribute("wrappingOptions", wrappingOptions);
+		
 		return "cart";
 	}
 	
-	private String getCookieHeader(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies == null) return "";
-		
-		return Arrays.stream(cookies)
-				       .map(cookie -> cookie.getName() + "=" + cookie.getValue())
-				       .collect(Collectors.joining("; "));
+	@PostMapping
+	public String addCartItem(@ModelAttribute CartItemRequest request) {
+		CartResponse cart = cartClient.getCart(); // 사용자 장바구니 조회
+		cartClient.addCartItem(cart.getCartId(), request);
+		return "redirect:/cart";
+	}
+	
+	@PutMapping("/{cartItemId}")
+	public String updateQuantity(@PathVariable Long cartItemId,
+	                             @RequestParam Long quantity) {
+		CartResponse cart = cartClient.getCart();
+		CartItemRequest request = new CartItemRequest();
+		request.setQuantity(quantity);
+		cartClient.updateCartItemQuantity(request, cartItemId, cart.getCartId());
+		return "redirect:/cart";
+	}
+	
+	@DeleteMapping("/{cartItemId}")
+	public String deleteCartItem(@PathVariable Long cartItemId) {
+		cartClient.deleteCartItem(cartItemId);
+		return "redirect:/cart";
 	}
 }

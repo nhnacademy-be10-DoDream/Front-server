@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/css/toss.css" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>do</title>
+    <title>두드림 결제창</title>
     <!-- SDK 추가 -->
     <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
@@ -33,7 +33,7 @@
     /*<![CDATA[*/
     const amount = {
         currency: "KRW",
-        value: Number([[${session.orderResponse['totalPrice']}]]) // 총 결제 금액
+        value: Number([[${param.totalPrice}]]) // 총 결제 금액
     };
 
     let selectedPaymentMethod = null;
@@ -53,7 +53,7 @@
     const payment = tossPayments.payment({ customerKey });
 
     async function requestPayment() {
-        const orderId = [[${session.orderResponse['orderId']}]]
+        const orderId = [[${param.orderId}]].toString();
         const orderName = 'test';
         const customerName ='test';
         const customerEmail = 'test@gmail.com';

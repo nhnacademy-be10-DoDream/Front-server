@@ -70,10 +70,155 @@ header, footer {
     font-weight: 500;
     color: #333;
     text-decoration: none;
+    position: relative;
 }
 
 .nav-item:hover {
     color: #0070f3;
+}
+
+.nav-item .dropdown-menu {
+    display: none; /* 기본 숨김 */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    min-width: 100%;
+    padding: 1rem;
+    margin: 0;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    flex-wrap: nowrap;
+}
+
+.nav-item:hover .dropdown-menu {
+    display: flex;
+}
+
+.nav-link {
+    cursor: pointer;
+    color: #000 !important
+}
+
+.dropdown-header {
+    font-weight: bold;
+    padding: 0.5rem 0;
+}
+
+.dropdown-header + ul {
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+.dropdown-menu > li {
+    padding: 0 1rem;
+}
+
+/* 부모 카테고리명 스타일 */
+.dropdown-menu .fw-bold {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* 자식 카테고리 리스트 */
+.dropdown-menu .list-unstyled li {
+    margin-bottom: 0.3rem;
+}
+
+/* 링크 hover 효과 */
+.dropdown-item:hover {
+    color: #0070f3;
+    text-decoration: underline;
+}
+
+/* 메뉴 전체 수평 정렬 강제 */
+.dropdown-menu {
+    display: none;
+    flex-direction: row; /* 핵심: 수평 정렬 */
+}
+
+.parent-category {
+    color: #333;
+}
+
+.booklist-container {
+    display: flex;
+    position: relative;
+}
+
+.category-sidebar {
+    width: 250px;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    position: relative;
+}
+
+.sidebar-parent-item {
+    position: relative;
+}
+
+.subcategory-box {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: calc(100% - 50%);
+    width: 200px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    z-index: 100;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-parent-item:hover .subcategory-box {
+    display: block;
+}
+
+.sidebar-parent {
+    display: block;
+    padding: 5px 0;
+    text-decoration: none;
+    color: black;
+}
+
+.sidebar-parent:hover {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.subcategory-list a {
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 3px 0;
+}
+
+.subcategory-list a:hover {
+    font-weight: bold;
+    color: #007bff;
+}
+
+
+.book-grid {
+    display: flex;
+    flex-wrap: wrap; /* 줄바꿈 허용 */
+    gap: 20px; /* 카드 간 간격 */
+}
+
+.book-card {
+    flex: 1 1 calc(25% - 20px); /* 가로 20% - 간격 (5개씩 한 줄) */
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.book-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 10px;
 }
 
 .menu {
@@ -427,5 +572,12 @@ header, footer {
 .card {
     border-radius: 12px;
     background-color: #fff;
+}
+
+span.username {
+    color: black;
+}
+span.username:hover {
+    color: black;
 }
 
