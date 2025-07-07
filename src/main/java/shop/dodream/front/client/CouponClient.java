@@ -1,14 +1,15 @@
 package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
-import shop.dodream.front.dto.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import shop.dodream.front.dto.CouponResponse;
 
 import java.util.List;
 
-@FeignClient(name = "coupon", url = "${gateway.url}")
+@FeignClient(name = "coupon", url = "http://localhost:10320")
 public interface CouponClient {
 
     // Coupon APIs
