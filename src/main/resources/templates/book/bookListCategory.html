@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <title>두드림 책방</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/paging.css}">
 </head>
 <body>
 <div layout:fragment="content" class="booklist-container" style="display: flex; position: relative;">
@@ -34,8 +35,8 @@
     </div>
 
     <!-- 도서 목록 영역 -->
-    <div class="booklist-content" style="flex: 1; padding: 20px;">
-        <div class="book-grid">
+    <div class="booklist-content d-flex flex-column" style="flex: 1; padding: 20px; min-height: 600px;">
+        <div class="book-grid" style="flex-grow: 1;">
             <div th:each="book : ${books}" class="book-card">
                 <a th:href="@{/books/{id}(id=${book.bookId})}">
                     <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
@@ -50,22 +51,32 @@
             </div>
         </div>
 
-
-
         <!-- 페이지네이션 -->
-        <div>
-            <a th:if="${currentPage > 0}"
-               th:href="@{|/categories/${categoryId}?page=${currentPage - 1}|}">이전</a>
+        <ul class="pagination" th:if="${totalPages > 1}">
+            <!-- 이전 버튼 -->
+            <li>
+                <a th:if="${currentPage > 0}"
+                   th:href="@{|/categories/${categoryId}?page=${currentPage - 1}|}"
+                   class="page-link">«</a>
+                <span th:if="${currentPage == 0}" class="page-link disabled">«</span>
+            </li>
 
-            <span th:text="${currentPage + 1} + ' / ' + ${totalPages}"></span>
+            <!-- 페이지 번호 목록 -->
+            <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:href="@{|/categories/${categoryId}?page=${pageNum}|}"
+                   th:text="${pageNum + 1}"
+                   th:class="'page-link ' + (${pageNum} == ${currentPage} ? 'active' : '')"></a>
+            </li>
 
-            <a th:if="${currentPage + 1 < totalPages}"
-               th:href="@{|/categories/${categoryId}?page=${currentPage + 1}|}">다음</a>
-        </div>
+            <!-- 다음 버튼 -->
+            <li>
+                <a th:if="${currentPage + 1 < totalPages}"
+                   th:href="@{|/categories/${categoryId}?page=${currentPage + 1}|}"
+                   class="page-link">»</a>
+                <span th:if="${currentPage + 1 >= totalPages}" class="page-link disabled">»</span>
+            </li>
+        </ul>
     </div>
-
-
-
 </div>
 </body>
 </html>
