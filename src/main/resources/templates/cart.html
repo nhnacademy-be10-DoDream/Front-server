@@ -22,7 +22,6 @@
                         <th style="text-align: center">수량</th>
                         <th style="text-align: center">쿠폰</th>
                         <th style="text-align: center">포장여부</th>
-                        <th style="text-align: center">개별 합계</th>
                         <th style="text-align: center">삭제</th>
                     </tr>
                     </thead>
@@ -31,7 +30,7 @@
                         th:attr="data-sale-price=${item.salePrice}, data-coupon-discount=${item.couponDiscount}">
 
                         <td>
-                            <a th:href="@{/product/{id}(id=${item.id})}" th:title="${item.title}">
+                            <a th:href="@{/book/{id}(id=${item.bookId})}" th:title="${item.title}">
                                 <img th:src="@{${item.bookUrl}}" style="width:48px;">
                             </a>
                         </td>
@@ -61,10 +60,6 @@
                                         th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
                                 </option>
                             </select>
-                        </td>
-
-                        <td align="center">
-                            <span class="item-total">0원</span>
                         </td>
 
                         <td align="center">
