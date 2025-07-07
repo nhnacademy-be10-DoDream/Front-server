@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 
-@FeignClient(name = "bookClient", url = "s1.java21.net:10325")
+@FeignClient(name = "bookClient", url = "http://localhost:10320")
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();

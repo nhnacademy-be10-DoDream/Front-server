@@ -9,7 +9,7 @@ import shop.dodream.front.dto.CouponResponse;
 
 import java.util.List;
 
-@FeignClient(name = "coupon", url = "http://localhost:10320")
+@FeignClient(name = "couponClient", url = "http://localhost:10320")
 public interface CouponClient {
 	
 	@GetMapping("/coupons")
