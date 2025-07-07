@@ -207,7 +207,7 @@ header, footer {
 }
 
 .book-card {
-    flex: 1 1 calc(25% - 20px); /* 가로 20% - 간격 (5개씩 한 줄) */
+    flex: 0 0 calc((100% - 60px)/4); /* 가로 20% - 간격 (5개씩 한 줄) */
     box-sizing: border-box;
     border: 1px solid #ddd;
     padding: 10px;

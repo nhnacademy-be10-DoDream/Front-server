@@ -2,14 +2,11 @@ package shop.dodream.front.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,31 +16,30 @@ import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.*;
 import shop.dodream.front.holder.AccessTokenHolder;
 import shop.dodream.front.service.RedisUserSessionService;
-import shop.dodream.front.util.CookieUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Slf4j
 public class AuthController {
     private final AuthClient authClient;
     private final UserClient userClient;
     private final RedisUserSessionService redisUserSessionService;
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, Model model) throws IOException {
+    public String login(@ModelAttribute LoginRequest request, Model model, HttpServletResponse response) throws IOException {
         try{
             ResponseEntity<Void> result = authClient.login(request);
-//            HttpHeaders headers = result.getHeaders();
-//            if (headers.containsKey(HttpHeaders.SET_COOKIE)) {
-//                for (String cookieHeader : headers.get(HttpHeaders.SET_COOKIE)) {
-//                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
-//                }
-//            }
-            String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
+            HttpHeaders gatewayHeaders = result.getHeaders();
+            if (gatewayHeaders.containsKey(HttpHeaders.SET_COOKIE)) {
+                for (String cookieHeader : gatewayHeaders.get(HttpHeaders.SET_COOKIE)) {
+                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
+                }
+            }
+            String accessToken = extractAccessTokenFromCookies(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
@@ -90,13 +86,13 @@ public class AuthController {
     ) {
         try {
             ResponseEntity<Void> result = authClient.paycoCallback(code, state);
-//            HttpHeaders gatewayHeaders = result.getHeaders();
-//            if (gatewayHeaders.containsKey(HttpHeaders.SET_COOKIE)) {
-//                for (String cookieHeader : gatewayHeaders.get(HttpHeaders.SET_COOKIE)) {
-//                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
-//                }
-//            }
-            String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
+            HttpHeaders gatewayHeaders = result.getHeaders();
+            if (gatewayHeaders.containsKey(HttpHeaders.SET_COOKIE)) {
+                for (String cookieHeader : gatewayHeaders.get(HttpHeaders.SET_COOKIE)) {
+                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
+                }
+            }
+            String accessToken = extractAccessTokenFromCookies(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
@@ -127,32 +123,6 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        String cookieHeader = request.getHeader(HttpHeaders.COOKIE);
-        try {
-            authClient.logout(cookieHeader);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        String accessToken = null;
-        if (request.getCookies() != null) {
-            accessToken = CookieUtils.extractCookieValue(
-                    CookieUtils.convertToSetCookieList(request.getCookies()), "accessToken"
-            );
-        }
-
-        if (accessToken != null) {
-            redisUserSessionService.deleteUser(accessToken);
-        }
-
-        CookieUtils.deleteCookie(response, "accessToken");
-        CookieUtils.deleteCookie(response, "refreshToken");
-
-        return "redirect:/auth/login";
-
-    }
-
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
 //        String password = request.getPassword();
@@ -161,4 +131,13 @@ public class AuthController {
         return "redirect:/";
     }
 
+    private String extractAccessTokenFromCookies(List<String> cookies) {
+        if (cookies == null) return null;
+        for (String cookie : cookies) {
+            if (cookie.startsWith("accessToken=")) {
+                return cookie.split("=")[1].split(";")[0];
+            }
+        }
+        return null;
+    }
 }
