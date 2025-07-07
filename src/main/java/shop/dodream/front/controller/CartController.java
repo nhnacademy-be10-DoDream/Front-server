@@ -16,14 +16,13 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/cart")
 public class CartController {
 	
 	private final CouponClient couponClient;
 	private final CartClient cartClient;
 	private final OrderClient orderClient;
 	
-	@GetMapping
+	@GetMapping("/cart")
 	public String showCart(HttpServletRequest request, Model model) {
 		String accessToken = getAccessTokenFromCookies(request.getCookies());
 		
@@ -67,10 +66,10 @@ public class CartController {
 		List<WrappingDto> wrappingOptions = orderClient.getGiftWraps();
 		model.addAttribute("wrappingOptions", wrappingOptions);
 		
-		return "cart"; // templates/cart.html
+		return "cart";
 	}
 	
-	@PostMapping("/add")
+	@PostMapping("/cart/add")
 	public String addCartItem(@ModelAttribute CartItemRequest request,HttpServletRequest httpServletRequest) {
 		String accessToken = getAccessTokenFromCookies(httpServletRequest.getCookies());
 		if (accessToken == null || accessToken.isEmpty()) {
@@ -86,7 +85,7 @@ public class CartController {
 		return "redirect:/cart";
 	}
 	
-	@PutMapping("/{cartItemId}")
+	@PutMapping("/cart/{cartItemId}")
 	public String updateQuantity(@PathVariable Long cartItemId,
 	                             @RequestParam Long quantity) {
 		CartResponse cart = cartClient.getCart();
@@ -96,7 +95,7 @@ public class CartController {
 		return "redirect:/cart";
 	}
 	
-	@DeleteMapping("/{cartItemId}")
+	@DeleteMapping("/cart/{cartItemId}")
 	public String deleteCartItem(@PathVariable Long cartItemId) {
 		cartClient.deleteCartItem(cartItemId);
 		return "redirect:/cart";
