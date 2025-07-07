@@ -43,4 +43,11 @@ public class CookieUtils {
         return list;
 
     }
+    public static void addSetCookieHeaders(HttpServletResponse response, List<String> setCookieHeaders) {
+        if (setCookieHeaders == null) return;
+        for (String header : setCookieHeaders) {
+            response.addHeader("Set-Cookie", header);
+        }
+    }
+
 }

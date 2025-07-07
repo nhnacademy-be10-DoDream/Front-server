@@ -34,15 +34,11 @@ public class AuthController {
     private final RedisUserSessionService redisUserSessionService;
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, Model model) throws IOException {
+    public String login(@ModelAttribute LoginRequest request, Model model,HttpServletResponse response) throws IOException {
         try{
             ResponseEntity<Void> result = authClient.login(request);
-//            HttpHeaders headers = result.getHeaders();
-//            if (headers.containsKey(HttpHeaders.SET_COOKIE)) {
-//                for (String cookieHeader : headers.get(HttpHeaders.SET_COOKIE)) {
-//                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
-//                }
-//            }
+            HttpHeaders headers = result.getHeaders();
+            CookieUtils.addSetCookieHeaders(response, headers.get(HttpHeaders.SET_COOKIE));
             String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
@@ -90,12 +86,8 @@ public class AuthController {
     ) {
         try {
             ResponseEntity<Void> result = authClient.paycoCallback(code, state);
-//            HttpHeaders gatewayHeaders = result.getHeaders();
-//            if (gatewayHeaders.containsKey(HttpHeaders.SET_COOKIE)) {
-//                for (String cookieHeader : gatewayHeaders.get(HttpHeaders.SET_COOKIE)) {
-//                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
-//                }
-//            }
+            HttpHeaders headers = result.getHeaders();
+            CookieUtils.addSetCookieHeaders(response, headers.get(HttpHeaders.SET_COOKIE));
             String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
@@ -149,7 +141,7 @@ public class AuthController {
         CookieUtils.deleteCookie(response, "accessToken");
         CookieUtils.deleteCookie(response, "refreshToken");
 
-        return "redirect:/auth/login";
+        return "redirect:/";
 
     }
 
