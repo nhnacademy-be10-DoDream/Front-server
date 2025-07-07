@@ -24,12 +24,11 @@
           </tr>
           </thead>
           <tbody>
-          <tr th:each="item : ${cart.items}">
+          <tr th:each="item : ${cartItems}">
             <!-- 상품 정보 -->
             <td>
-              <a th:href="@{/product/{id}(id=${item.bookId})}" th:title="${item.title}">
-                <img th:src="@{${item.bookUrl}}" alt="book image" style="width:48px;">
-                <span th:text="${item.title}"></span>
+              <a th:href="@{/book/{id}(id=${item.bookId})}" th:title="${item.title}">
+                <img th:src="@{${item.bookUrl}}" style="width:48px;">
               </a>
             </td>
 
@@ -95,7 +94,7 @@
 
     document.querySelectorAll("tr[th\\:each]").forEach(row => {
       const salePriceText = row.querySelector("td:nth-child(3) span")?.textContent || '0';
-      const quantity = parseInt(row.querySelector("td:nth-child(4) span")?.textContent || '1');
+      const quantity = parseInt(row.querySelector("td:nth-child(4) input")?.value || '1');
 
       const salePrice = parseInt(salePriceText.replace(/[^0-9]/g, '')) || 0;
       totalProductPrice += salePrice * quantity;
