@@ -34,7 +34,7 @@ public interface CartClient {
 	
 	@DeleteMapping("/carts/cart-items/{cartItemId}")
 	void deleteCartItem(@PathVariable Long cartItemId);
-	
+	//비회원 처리 로직 시작
 	@GetMapping("/public/carts")
 	GuestCartResponse getPublicCart();
 	
