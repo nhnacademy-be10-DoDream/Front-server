@@ -41,8 +41,13 @@
                         </td>
 
                         <td align="center">
-                            <input type="number" th:id="'quantity-' + ${item.cartItemId}" class="quantity-input" th:value="${item.quantity}" min="1" style="width: 40px;">
+                            <form th:action="@{/cart/{cartItemId}(cartItemId=${item.cartItemId})}" method="post" style="display: inline;">
+                                <input type="hidden" name="_method" value="put" />
+                                <input type="number" class="quantity-input" name="quantity" th:value="${item.quantity}" min="1" style="width: 40px;">
+                                <button type="submit">변경</button>
+                            </form>
                         </td>
+
 
                         <td align="center">
                             <button type="button"
@@ -114,7 +119,7 @@
             const wrappingSelect = row.querySelector('.wrapping-select');
             const selectedOption = wrappingSelect?.selectedOptions[0];
             const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
-            totalWrapping += wrappingPrice;
+            totalWrapping += wrappingPrice * quantity;
         });
 
         const discountedPrice = totalProductPrice - totalDiscount;
