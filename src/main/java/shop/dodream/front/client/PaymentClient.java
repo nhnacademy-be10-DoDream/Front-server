@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
-@FeignClient(name = "paymentClient", url = "http://localhost:10320")
+@FeignClient(name = "paymentClient", url =  "${gateway.url}")
 public interface PaymentClient {
     @PostMapping("/public/orders/confirm/payment")
     Map<String ,Object> confirm(@RequestBody String payment);

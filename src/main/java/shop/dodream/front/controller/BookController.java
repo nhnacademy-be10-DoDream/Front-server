@@ -25,7 +25,8 @@ public class BookController {
 
     // Controller
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(@RequestParam(value = "page", defaultValue = "0") int page,
+                       Model model) {
         List<Long> tagIds = List.of(1L, 2L, 3L);
 
         List<BookTagInfo> bookTagInfos = tagIds.stream()

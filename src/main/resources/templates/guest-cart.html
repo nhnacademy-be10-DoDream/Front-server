@@ -24,12 +24,11 @@
           </tr>
           </thead>
           <tbody>
-          <tr th:each="item : ${cart.items}">
+          <tr th:each="item : ${cartItems}">
             <!-- 상품 정보 -->
             <td>
-              <a th:href="@{/product/{id}(id=${item.bookId})}" th:title="${item.title}">
-                <img th:src="@{${item.bookUrl}}" alt="book image" style="width:48px;">
-                <span th:text="${item.title}"></span>
+              <a th:href="@{/book/{id}(id=${item.bookId})}" th:title="${item.title}">
+                <img th:src="@{${item.bookUrl}}" style="width:48px;">
               </a>
             </td>
 
@@ -40,31 +39,27 @@
 
             <!-- 수량 변경 -->
             <td align="center">
-              <form th:action="@{/guest-cart/update/{bookId}(bookId=${item.bookId})}" method="post">
+              <form th:action="@{/guest-cart/update/{id}(id=${item.bookId})}" method="post">
                 <input type="hidden" name="_method" value="put"/>
                 <input type="number" name="quantity" th:value="${item.quantity}" min="1" style="width: 40px;">
                 <button type="submit">변경</button>
               </form>
             </td>
 
-            <!-- 포장 선택 -->
             <td align="center">
-              <form th:action="@{/guest-cart/wrapping/{bookId}(bookId=${item.bookId})}" method="post">
-                <input type="hidden" name="_method" value="put"/>
-                <select name="wrappingId">
-                  <option value="">선택 안 함</option>
-                  <option th:each="wrap : ${wrappingOptions}"
-                          th:value="${wrap.id}"
-                          th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
-                  </option>
-                </select>
-                <button type="submit">적용</button>
-              </form>
+              <select class="wrapping-select">
+                <option data-price="0" value="">선택 안 함</option>
+                <option th:each="wrap : ${wrappingOptions}"
+                        th:value="${wrap.id}"
+                        th:data-price="${wrap.price}"
+                        th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
+                </option>
+              </select>
             </td>
 
             <!-- 삭제 버튼 -->
             <td align="center">
-              <form th:action="@{/guest-cart/delete/{bookId}(bookId=${item.bookId})}" method="post">
+              <form th:action="@{/guest-cart/delete/{id}(id=${item.bookId})}" method="post">
                 <button type="submit">삭제</button>
               </form>
             </td>
@@ -95,18 +90,16 @@
 
     document.querySelectorAll("tr[th\\:each]").forEach(row => {
       const salePriceText = row.querySelector("td:nth-child(3) span")?.textContent || '0';
-      const quantity = parseInt(row.querySelector("td:nth-child(4) span")?.textContent || '1');
+      const quantity = parseInt(row.querySelector("td:nth-child(4) input")?.value || '1');
 
       const salePrice = parseInt(salePriceText.replace(/[^0-9]/g, '')) || 0;
       totalProductPrice += salePrice * quantity;
 
-      // wrapping select
-      const wrappingSelect = row.querySelector("select");
+      // wrapping price
+      const wrappingSelect = row.querySelector('.wrapping-select');
       const selectedOption = wrappingSelect?.selectedOptions[0];
-      if (selectedOption && selectedOption.value !== '') {
-        const wrappingPrice = parseInt(selectedOption.textContent.replace(/[^0-9]/g, '')) || 0;
-        totalWrappingPrice += wrappingPrice;
-      }
+      const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
+      totalWrappingPrice += wrappingPrice * quantity;
     });
 
     const orderTotal = totalProductPrice + totalWrappingPrice;
