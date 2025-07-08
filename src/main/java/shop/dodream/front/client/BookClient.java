@@ -14,10 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 
-@FeignClient(name = "bookClient", url = "http://localhost:10320")
+@FeignClient(name = "bookClient", url = "s1.java21.net:10325")
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();
+
     @GetMapping("/public/categories/{depth}/depth")
     List<CategoryResponse> getCategoriesByDepth(@PathVariable("depth") Long depth);
 
@@ -34,6 +35,11 @@ public interface BookClient {
 
     @GetMapping("/public/tags/{tag-id}/books")
     PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId);
+
+    @GetMapping("/public/tags/{tag-id}/books")
+    PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId,
+                                                 @RequestParam("page") int page,
+                                                 @RequestParam("size") int size);
 
     @GetMapping("/public/tags/{tag-id}")
     TagResponse getTag(@PathVariable("tag-id") Long tagId);
