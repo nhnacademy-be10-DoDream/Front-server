@@ -58,7 +58,7 @@ public class CartController {
 		// 각 카트 아이템에 대해 사용 가능한 쿠폰 조회
 		Map<Long, List<BookAvailableCouponResponse>> couponsMap = new HashMap<>();
 		for (CartItemResponse item : cartItems) {
-			List<BookAvailableCouponResponse> coupons = couponClient.getBookAvailableCoupons(item.getBookId(), item.getSalePrice());
+			List<BookAvailableCouponResponse> coupons = couponClient.getAvailableCoupons(item.getBookId(), item.getSalePrice());
 			couponsMap.put(item.getCartItemId(), coupons);
 		}
 		model.addAttribute("couponsMap", couponsMap);
