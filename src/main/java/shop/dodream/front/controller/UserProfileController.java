@@ -33,7 +33,7 @@ public class UserProfileController {
 	public String getProfile(Model model) {
 		model.addAttribute("currentUser",userClient.getUser());
 		model.addAttribute("activeMenu", "profile");
-		return "/mypage/profile";
+		return "mypage/profile";
 	}
 
 	@PutMapping("/profile")
@@ -41,7 +41,7 @@ public class UserProfileController {
 								Model model) {
 		model.addAttribute("currentUser", userClient.updateUser( userUpdateDto));
 		model.addAttribute("activeMenu", "profile");
-		return "/mypage/profile";
+		return "mypage/profile";
 	}
 
 	@PutMapping("/password")
@@ -49,7 +49,7 @@ public class UserProfileController {
 								 Model model) {
 		model.addAttribute("currentUser", userClient.updateUser(userPasswordUpdateDto));
 		model.addAttribute("activeMenu", "profile");
-		return "/mypage/profile";
+		return "mypage/profile";
 	}
 
 	@PostMapping("/profile")
@@ -63,7 +63,7 @@ public class UserProfileController {
 	public String getAddresses(Model model) {
 		model.addAttribute("addresses", userClient.getAddresses());
 		model.addAttribute("activeMenu", "addresses");
-		return "/mypage/addresses";
+		return "mypage/addresses";
 	}
 
 	@PostMapping("/addresses")
@@ -90,14 +90,14 @@ public class UserProfileController {
 									Model model) {
 		model.addAttribute("points", userClient.getPointHistories( pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
 		model.addAttribute("activeMenu", "points");
-		return "/mypage/points";
+		return "mypage/points";
 	}
 
 	@GetMapping("/orders")
 	public String getOrders(Model model) {
 		model.addAttribute("orders", orderClient.getOrders());
 		model.addAttribute("activeMenu", "orders");
-		return "/mypage/orders";
+		return "mypage/orders";
 	}
 
 	@GetMapping("/coupons")
@@ -105,7 +105,7 @@ public class UserProfileController {
 		List<AvailableCouponResponse> availableCoupons = couponClient.getAvailableCoupons();
 		model.addAttribute("availableCoupons", availableCoupons);
 		model.addAttribute("activeMenu", "coupons");
-		return "/mypage/coupons";
+		return "mypage/coupons";
 	}
 
 	@GetMapping("/reviews")
@@ -114,7 +114,7 @@ public class UserProfileController {
 		model.addAttribute("reviews", bookClient.getReviews(pageable));
 		model.addAttribute("reviewPrefix", reviewPrefix);
 		model.addAttribute("activeMenu", "reviews");
-		return "/mypage/reviews";
+		return "mypage/reviews";
 	}
 
 	@GetMapping("/liked-books")
@@ -123,7 +123,7 @@ public class UserProfileController {
 		model.addAttribute("likedBooks", bookClient.getLikedBooks(pageable));
 		model.addAttribute("bookPrefix", bookPrefix);
 		model.addAttribute("activeMenu", "liked-books");
-		return "/mypage/liked-books";
+		return "mypage/liked-books";
 	}
 
 }

@@ -33,6 +33,6 @@ public class TagController {
         model.addAttribute("totalPages", bookPage.getTotalPages());
         model.addAttribute("tagId", tagId);
 
-        return "/book/bookList";
+        return "book/bookList";
     }
 }
