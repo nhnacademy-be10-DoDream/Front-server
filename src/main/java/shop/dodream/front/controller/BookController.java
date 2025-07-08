@@ -69,14 +69,14 @@ public class BookController {
                              Model model){
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
-        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-        List<String> convertedUrls = new ArrayList<>();
-
-        for (String url : bookDetailDto.getBookUrls()) {
-            convertedUrls.add(bookUrlPrefix + url);
-        }
-
-        bookDetailDto.setBookUrls(convertedUrls);
+//        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
+//        List<String> convertedUrls = new ArrayList<>();
+//
+//        for (String url : bookDetailDto.getBookUrls()) {
+//            convertedUrls.add(bookUrlPrefix + url);
+//        }
+//
+//        bookDetailDto.setBookUrls(convertedUrls);
 
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
@@ -103,7 +103,7 @@ public class BookController {
                 .toList().toArray(MultipartFile[]::new);
 
 
-        bookClient.createReview(bookId,"2222", reviewCreateRequest, nonEmptyFiles);
+        bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
 
 
         return "redirect:/books/"+bookId;
@@ -141,25 +141,15 @@ public class BookController {
         return "redirect:/admin/books";
     }
 
-    @PostMapping("/admin/books/delete")
+    @DeleteMapping("/admin/books/delete")
     public String deleteBook(@RequestParam("bookId") Long bookId){
         bookClient.deleteBook(bookId);
         return "redirect:/admin/books";
     }
 
-    @GetMapping("/admin/books/edit/{book-id}")
+    @GetMapping("/admin/books/detail/{book-id}")
     public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model){
         BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
-
-        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-        List<String> convertedUrls = new ArrayList<>();
-
-        for (String url : bookDetailDto.getBookUrls()) {
-            convertedUrls.add(bookUrlPrefix + url);
-        }
-
-        bookDetailDto.setBookUrls(convertedUrls);
-
 
         model.addAttribute("book", bookDetailDto);
 
@@ -167,10 +157,29 @@ public class BookController {
 
     }
 
-//    @PutMapping("/admin/books/edit/{book-id}/edit")
-//    public String editForm(@PathVariable("book-id") Long bookId, Model model) {
-//
-//    }
+    @GetMapping("/admin/books/edit")
+    public String editBookForm(@RequestParam("bookId") Long bookId, Model model){
+        BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
+        model.addAttribute("book", bookDetailDto);
+
+        return "admin/book-edit";
+    }
+
+    @PutMapping("/admin/books/{book-id}/edit")
+    public String updateBook(@PathVariable("book-id") Long bookId,
+                              @ModelAttribute BookUpdateRequest bookUpdateRequest,
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+
+        MultipartFile[] nonEmptyFiles = files.stream()
+                .filter(file -> !file.isEmpty())
+                .toList().toArray(MultipartFile[]::new);
+
+        bookClient.updateBook(bookId, bookUpdateRequest, nonEmptyFiles);
+
+        return "redirect:/admin/books/detail/"+bookId;
+
+    }
+
 
 
 

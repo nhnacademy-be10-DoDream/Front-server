@@ -318,7 +318,7 @@
 
         <div class="book-content">
             <div class="book-image">
-                <img th:src="@{${book.bookUrls[0]}}" th:alt="${book.title}">
+                <img th:src="@{|${minioPath.book}${book.bookUrls[0]}|}" th:alt="${book.title}">
             </div>
 
             <div class="book-detail">
@@ -423,14 +423,15 @@
         </div>
 
 
-        <!-- 마이리뷰 -->
-        <!-- 마이리뷰 -->
+        <!-- 리뷰목록 -->
         <div class="review-section">
-            <h2 th:text="#{review.my.title}">마이리뷰</h2>
+            <h2 th:text="#{review.my.title}">리뷰 목록</h2>
             <div class="filter-info">
-                전체 <span id="review-count" th:text="${reviewCount}">0</span>개
+                <div class="filter-info"
+                     th:text="#{review.count.label(${reviewCount})}">
+                    전체 (0)
+                </div>
             </div>
-
             <div class="review-list" id="review-list">
                 <div class="review" th:each="review : ${reviews.content}">
                     <div class="review-header">
@@ -444,7 +445,6 @@
                 </div>
             </div>
 
-            <!-- 🔽 이 부분에 추가하세요 -->
             <input type="hidden" id="is-last" th:value="${reviews.last}">
 
             <div style="text-align: center; margin-top: 1rem;">
@@ -513,7 +513,6 @@
         });
     </script>
 </div>
-
 
 </body>
 </html>

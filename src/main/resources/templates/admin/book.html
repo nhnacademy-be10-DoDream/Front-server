@@ -36,8 +36,9 @@
             <td th:text="${#temporals.format(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">등록일</td>
             <td th:text="${book.status}">상태</td>
             <td>
-                <a th:href="@{'/admin/books/edit/' + ${book.bookId}}" class="btn btn-sm btn-primary">조회</a>
+                <a th:href="@{'/admin/books/detail/' + ${book.bookId}}" class="btn btn-sm btn-primary">조회</a>
                 <form th:action="@{/admin/books/delete}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="delete"/>
                     <input type="hidden" name="bookId" th:value="${book.bookId}" />
                     <button type="submit" class="btn btn-sm btn-danger"
                             onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>

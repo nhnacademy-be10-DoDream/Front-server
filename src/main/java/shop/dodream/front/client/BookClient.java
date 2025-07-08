@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+
 //@FeignClient(name = "bookClient", url = "http://localhost:10320", configuration = FeignMultipartSupportConfig.class)
 @FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
@@ -51,15 +53,15 @@ public interface BookClient {
                                         @RequestParam("page") int page,
                                         @RequestParam("size") int size);
 
-    @GetMapping("/admin/reviews/{book-id}/review-summary")
+    @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
 
 
-    @PostMapping(value = "/books/{book-id}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
     Void createReview(
             @PathVariable("book-id") Long bookId,
-            @RequestHeader("X-USER-ID") String userId,
+//            @RequestHeader("X-USER-ID") String userId,
             @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
@@ -67,7 +69,7 @@ public interface BookClient {
     @PostMapping("/admin/books/aladdin-api")
     Void aladdinRegisterBook(@RequestParam("isbn") String isbn);
 
-    @PostMapping(value = "/admin/books", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/admin/books", consumes = MULTIPART_FORM_DATA_VALUE)
     Void registerBook(@RequestPart(value = "book") BookRegisterRequest bookRegisterRequest,
                       @RequestPart(value = "files", required = false) MultipartFile[] files);
 
@@ -76,12 +78,14 @@ public interface BookClient {
     @DeleteMapping("/admin/books/{book-id}")
     Void deleteBook(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("admin/books/{book-id}")
+    @GetMapping("/admin/books/{book-id}")
     BookDetailDto getAdminBookDetail(@PathVariable("book-id") Long bookId);
 
 
-    @PutMapping("admin/books/{book-id}")
-    Void updateBook(@PathVariable("book-id") Long bookId);
+    @PutMapping(value = "/admin/books/{book-id}", consumes = MULTIPART_FORM_DATA_VALUE)
+    Void updateBook(@PathVariable("book-id") Long bookId,
+                    @RequestPart(value = "book") BookUpdateRequest bookUpdateRequest,
+                    @RequestPart(value = "files", required = false) MultipartFile[] files);
 
 
 

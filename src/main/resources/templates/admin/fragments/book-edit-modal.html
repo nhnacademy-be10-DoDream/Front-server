@@ -1,0 +1,80 @@
+<!-- fragments/book-edit-modal.html -->
+<div th:fragment="modalFragment">
+    <div class="modal fade" id="bookEditModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form class="needs-validation" method="post" action="/admin/books/update" novalidate>
+                    <input type="hidden" name="_method" value="put"/>
+                    <input type="hidden" id="modal-bookId" name="bookId"/>
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">도서 정보 수정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="modal-title" class="form-label">제목</label>
+                            <input type="text" class="form-control" id="modal-title" name="title" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-author" class="form-label">저자</label>
+                            <input type="text" class="form-control" id="modal-author" name="author" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-publisher" class="form-label">출판사</label>
+                            <input type="text" class="form-control" id="modal-publisher" name="publisher">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-isbn" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="modal-isbn" name="isbn">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-publishedAt" class="form-label">출간일</label>
+                            <input type="date" class="form-control" id="modal-publishedAt" name="publishedAt">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-regularPrice" class="form-label">정가</label>
+                            <input type="number" class="form-control" id="modal-regularPrice" name="regularPrice" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-salePrice" class="form-label">판매가</label>
+                            <input type="number" class="form-control" id="modal-salePrice" name="salePrice" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-discountRate" class="form-label">할인율</label>
+                            <input type="number" class="form-control" id="modal-discountRate" name="discountRate">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-status" class="form-label">도서 상태</label>
+                            <input type="text" class="form-control" id="modal-status" name="status">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-bookCount" class="form-label">보유 수량</label>
+                            <input type="number" class="form-control" id="modal-bookCount" name="bookCount">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modal-description" class="form-label">도서 설명</label>
+                            <textarea class="form-control" id="modal-description" name="description" rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
