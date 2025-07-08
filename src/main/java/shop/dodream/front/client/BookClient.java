@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import shop.dodream.front.config.FeignMultipartSupportConfig;
 import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.MediaType;
@@ -14,7 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 
-@FeignClient(name = "bookClient", url = "s1.java21.net:10325")
+//@FeignClient(name = "bookClient", url = "http://localhost:10320", configuration = FeignMultipartSupportConfig.class)
+@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();
