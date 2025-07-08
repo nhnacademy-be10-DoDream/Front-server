@@ -25,4 +25,11 @@ public interface AuthClient {
     @GetMapping("/auth/payco/authorize")
     ResponseEntity<String> getAuthorizeUrl();
 
+    @PostMapping("/auth/dormant/request")
+    ResponseEntity<Void> sendDormantCode(@RequestParam("userId") String userId);
+
+    @PostMapping("/auth/dormant/verify")
+    ResponseEntity<String> verifyDormantCode(@RequestParam("userId") String userId,
+                                             @RequestParam("code") String code);
+
 }
