@@ -4,8 +4,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import shop.dodream.front.config.FeignMultipartSupportConfig;
 import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,11 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
-@FeignClient(name = "bookClient", url = "http://localhost:10320")
+//@FeignClient(name = "bookClient", url = "http://localhost:10320", configuration = FeignMultipartSupportConfig.class)
+@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
+
     @GetMapping("/admin/books")
-    List<BookDto> getBooks();
+    Page<BookDto> getBooks(Pageable pageable);
+
     @GetMapping("/public/categories/{depth}/depth")
     List<CategoryResponse> getCategoriesByDepth(@PathVariable("depth") Long depth);
 
@@ -43,7 +47,9 @@ public interface BookClient {
     BookDetailDto getBookDetail(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/public/books/{book-id}/reviews")
-    Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
+    Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId,
+                                        @RequestParam("page") int page,
+                                        @RequestParam("size") int size);
 
     @GetMapping("/admin/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
@@ -57,6 +63,38 @@ public interface BookClient {
             @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
+
+    @PostMapping("/admin/books/aladdin-api")
+    Void aladdinRegisterBook(@RequestParam("isbn") String isbn);
+
+    @PostMapping(value = "/admin/books", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    Void registerBook(@RequestPart(value = "book") BookRegisterRequest bookRegisterRequest,
+                      @RequestPart(value = "files", required = false) MultipartFile[] files);
+
+
+
+    @DeleteMapping("/admin/books/{book-id}")
+    Void deleteBook(@PathVariable("book-id") Long bookId);
+
+    @GetMapping("admin/books/{book-id}")
+    BookDetailDto getAdminBookDetail(@PathVariable("book-id") Long bookId);
+
+
+    @PutMapping("admin/books/{book-id}")
+    Void updateBook(@PathVariable("book-id") Long bookId);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

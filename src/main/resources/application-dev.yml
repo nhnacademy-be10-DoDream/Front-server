@@ -2,3 +2,15 @@ spring:
   cloud:
     config:
       enabled: false
+
+
+server:
+  tomcat:
+    max-part-count: 30
+
+
+
+minio:
+  prefix: https://dodream.shop/dodream-images
+  book: /book/
+  review: /review/

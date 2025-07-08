@@ -340,7 +340,8 @@
                     </div>
                     <div>
                         <strong th:text="#{book.price.category}">카테고리??:</strong> <!-- 값 필요 -->
-                    </div>                    <div>
+                    </div>
+                    <div>
                         <strong>ISBN:</strong>
                         <span th:text="${book.isbn}">ISBN 값</span>
                     </div>
@@ -378,7 +379,9 @@
                 </div>
 
                 <div class="btns">
-                    <button class="btn-cart" th:text="#{button.cart}">장바구니 담기</button>
+                    <form th:action="@{/cart/add}" method="post">
+                        <button type="submit" class="btn-cart" th:text="#{button.cart}">장바구니 담기</button>
+                    </form>
                     <button class="btn-buy" th:text="#{button.buy}">바로구매</button>
                 </div>
             </div>
@@ -421,28 +424,43 @@
 
 
         <!-- 마이리뷰 -->
+        <!-- 마이리뷰 -->
         <div class="review-section">
             <h2 th:text="#{review.my.title}">마이리뷰</h2>
-            <div class="filter-info" th:text="#{review.count.label(${reviewCount})}">
-                전체 (0)
+            <div class="filter-info">
+                전체 <span id="review-count" th:text="${reviewCount}">0</span>개
             </div>
-            <div class="review-list">
-                <div class="review" th:each="review : ${reviews}">
+
+            <div class="review-list" id="review-list">
+                <div class="review" th:each="review : ${reviews.content}">
                     <div class="review-header">
                         <strong th:text="${review.userId}">작성자</strong>
                         <span class="stars">
-                            <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                  th:class="${i <= review.rating} ? 'filled' : ''">★</span>
-                        </span>
+                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+                          th:class="${i <= review.rating} ? 'filled' : ''">★</span>
+                </span>
                     </div>
                     <p th:text="${review.content}">리뷰 내용</p>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- JS -->
-    <script>
+            <!-- 🔽 이 부분에 추가하세요 -->
+            <input type="hidden" id="is-last" th:value="${reviews.last}">
+
+            <div style="text-align: center; margin-top: 1rem;">
+                <button id="load-more-btn" type="button">더보기</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<!-- JS -->
+
+
+<div layout:fragment="scripts">
+    <script th:inline="javascript">
+
         const unitPrice = [[${book.salePrice}]];
 
         function changeQty(diff) {
@@ -463,8 +481,39 @@
                 star.classList.toggle("filled", index < score);
             });
         }
-    </script>
 
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let size = [[${size}]];
+            const bookId = [[${book.bookId}]];
+
+            document.getElementById('load-more-btn').addEventListener('click', () => {
+                size += 5;
+
+                const url = `/books/${bookId}?page=0&size=${size}`;
+
+                fetch(url)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        const newReviewList = doc.querySelector('#review-list');
+                        const newReviewCount = doc.querySelector('#review-count');
+                        const isLast = doc.querySelector('#is-last');
+
+                        document.querySelector('#review-list').innerHTML = newReviewList.innerHTML;
+                        document.querySelector('#review-count').innerText = newReviewCount.innerText;
+
+                        if (isLast && isLast.value === 'true') {
+                            document.getElementById('load-more-btn').style.display = 'none';
+                        }
+                    });
+            });
+        });
+    </script>
 </div>
+
+
 </body>
 </html>

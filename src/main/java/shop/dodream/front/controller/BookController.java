@@ -1,7 +1,11 @@
 package shop.dodream.front.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookClient bookClient;
+
 
     // Controller
     @GetMapping("/")
@@ -58,7 +63,10 @@ public class BookController {
 
 
     @GetMapping("/books/{book-id}")
-    public String bookDetail(@PathVariable("book-id") Long bookId, Model model){
+    public String bookDetail(@PathVariable("book-id") Long bookId,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "5") int size,
+                             Model model){
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
@@ -70,16 +78,18 @@ public class BookController {
 
         bookDetailDto.setBookUrls(convertedUrls);
 
-        Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId);
+        Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
 
 
         model.addAttribute("book", bookDetailDto);
         model.addAttribute("reviews", reviewResponse);
-        model.addAttribute("reviewCount", reviewResponse.getContent().size());
+        model.addAttribute("reviewCount", reviewResponse.getTotalElements());
         model.addAttribute("reviewSummary", reviewSummaryResponse);
         return "book/detail";
     }
+
+
 
 
     @PostMapping("/books/{book-id}/reviews")
@@ -93,19 +103,77 @@ public class BookController {
                 .toList().toArray(MultipartFile[]::new);
 
 
-
-
-        bookClient.createReview(bookId,"1234", reviewCreateRequest, nonEmptyFiles);
+        bookClient.createReview(bookId,"2222", reviewCreateRequest, nonEmptyFiles);
 
 
         return "redirect:/books/"+bookId;
 
 
 
+    }
+
+    @GetMapping("/admin/books")
+    public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable){
+        Page<BookDto> bookDtoList = bookClient.getBooks(pageable);
+
+        model.addAttribute("books", bookDtoList);
+        return "admin/book";
+    }
+
+    @PostMapping("/admin/books/register")
+    public String registerBook(@ModelAttribute BookRegisterRequest registerRequest,
+                               @RequestParam(value = "files", required = false)List<MultipartFile> files) {
 
 
+        MultipartFile[] nonEmptyFiles = files.stream()
+                .filter(file -> !file.isEmpty())
+                .toList().toArray(MultipartFile[]::new);
+
+        bookClient.registerBook(registerRequest, nonEmptyFiles);
+
+        return "redirect:/admin/books";
 
     }
+
+    @PostMapping("/admin/books/register-api")
+    public String registerBookFromAladdin(@RequestParam("isbn") String isbn){
+        bookClient.aladdinRegisterBook(isbn);
+        return "redirect:/admin/books";
+    }
+
+    @PostMapping("/admin/books/delete")
+    public String deleteBook(@RequestParam("bookId") Long bookId){
+        bookClient.deleteBook(bookId);
+        return "redirect:/admin/books";
+    }
+
+    @GetMapping("/admin/books/edit/{book-id}")
+    public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model){
+        BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
+
+        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
+        List<String> convertedUrls = new ArrayList<>();
+
+        for (String url : bookDetailDto.getBookUrls()) {
+            convertedUrls.add(bookUrlPrefix + url);
+        }
+
+        bookDetailDto.setBookUrls(convertedUrls);
+
+
+        model.addAttribute("book", bookDetailDto);
+
+        return "admin/book-detail";
+
+    }
+
+//    @PutMapping("/admin/books/edit/{book-id}/edit")
+//    public String editForm(@PathVariable("book-id") Long bookId, Model model) {
+//
+//    }
+
+
+
 
 
 

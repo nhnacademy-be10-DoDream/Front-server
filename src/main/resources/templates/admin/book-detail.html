@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>도서 상세 조회</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2rem;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+        }
+
+        .book-detail-table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .book-detail-table th,
+        .book-detail-table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .book-detail-table th {
+            background-color: #f5f5f5;
+            width: 200px;
+        }
+
+        .book-images {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .book-images img {
+            width: 150px;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>도서 상세 정보</h1>
+
+<table class="book-detail-table">
+    <tr>
+        <th>도서 ID</th>
+        <td th:text="${book.bookId}">1</td>
+    </tr>
+    <tr>
+        <th>제목</th>
+        <td th:text="${book.title}">제목</td>
+    </tr>
+    <tr>
+        <th>저자</th>
+        <td th:text="${book.author}">저자</td>
+    </tr>
+    <tr>
+        <th>출판사</th>
+        <td th:text="${book.publisher}">출판사</td>
+    </tr>
+    <tr>
+        <th>ISBN</th>
+        <td th:text="${book.isbn}">ISBN</td>
+    </tr>
+    <tr>
+        <th>출간일</th>
+        <td th:text="${book.publishedAt}">출간일</td>
+    </tr>
+    <tr>
+        <th>정가</th>
+        <td th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">0원</td>
+    </tr>
+    <tr>
+        <th>판매가</th>
+        <td th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">0원</td>
+    </tr>
+    <tr>
+        <th>할인율</th>
+        <td th:text="${book.discountRate + '%'}">20%</td>
+    </tr>
+    <tr>
+        <th>도서 상태</th>
+        <td th:text="${book.status}">???</td>
+    </tr>
+    <tr>
+        <th>등록일</th>
+        <td th:text="${#temporals.format(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-10 10:00:00</td>
+    </tr>
+    <tr>
+        <th>조회수</th>
+        <td th:text="${book.viewCount}">0</td>
+    </tr>
+    <tr>
+        <th>보유 수량</th>
+        <td th:text="${book.bookCount}">50</td>
+    </tr>
+    <tr>
+        <th>도서 설명</th>
+        <td th:text="${#strings.isEmpty(book.description) ? '도서 설명이 존재하지 않습니다.' : book.description}"></td>
+    </tr>
+</table>
+
+<div class="book-images">
+    <div th:each="url : ${book.bookUrls}">
+        <img th:src="@{${url}}" alt="도서 이미지">
+    </div>
+</div>
+
+</body>
+</html>
