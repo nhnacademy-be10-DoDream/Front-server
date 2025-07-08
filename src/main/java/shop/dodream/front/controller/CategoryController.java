@@ -47,7 +47,7 @@ public class CategoryController {
         model.addAttribute("categoryTree", root);
 
 
-        return "book/bookList";
+        return "book/bookListCategory";
     }
 
 

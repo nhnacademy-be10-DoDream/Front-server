@@ -11,7 +11,7 @@
 <body>
 <div layout:fragment="content" class="order-container" style="max-width: 900px; margin: 0 auto;">
     <form th:action="@{/order/payment}" method="post">
-        <input type="hidden" name="userId" th:value="${user.userId}" />
+        <input type="hidden" name="userId" th:if="${user != null}" th:value="${user.userId}" />
         <div class="order-wrapper">
             <table class="table table-bordered text-center align-middle">
                 <thead class="table-light">

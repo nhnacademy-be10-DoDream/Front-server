@@ -2,23 +2,22 @@ package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.config.FeignMultipartSupportConfig;
 import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.util.List;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
+@FeignClient(name = "bookClient", url = "${gateway.url}", configuration = FeignMultipartSupportConfig.class)
 //@FeignClient(name = "bookClient", url = "http://localhost:10320", configuration = FeignMultipartSupportConfig.class)
-@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
 
     @GetMapping("/admin/books")
@@ -40,6 +39,11 @@ public interface BookClient {
 
     @GetMapping("/public/tags/{tag-id}/books")
     PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId);
+
+    @GetMapping("/public/tags/{tag-id}/books")
+    PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId,
+                                                 @RequestParam("page") int page,
+                                                 @RequestParam("size") int size);
 
     @GetMapping("/public/tags/{tag-id}")
     TagResponse getTag(@PathVariable("tag-id") Long tagId);
@@ -100,5 +104,9 @@ public interface BookClient {
 
 
 
+    @GetMapping("/reviews/me")
+    Page<ReviewResponse> getReviews(Pageable pageable);
 
+    @GetMapping("/likes/me")
+    Page<BookListResponse> getLikedBooks(Pageable pageable);
 }
