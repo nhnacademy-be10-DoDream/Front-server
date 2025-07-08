@@ -48,7 +48,7 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}/reviews")
     Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/admin/reviews/{book-id}/review-summary")
+    @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
 
