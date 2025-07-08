@@ -5,220 +5,108 @@
       layout:decorate="~{layout/mypage}">
 
 <head>
-  <title th:text="#{mypage.liked.books.title}">마이페이지 - 좋아요한 도서</title>
+    <title th:text="#{mypage.likedBooks.title}"></title>
 </head>
 
 <body>
 <div layout:fragment="content">
-  <!-- 페이지 헤더 -->
-  <div class="content-header">
-    <div class="d-flex justify-content-between align-items-center">
-      <h2 th:text="#{mypage.liked.books.heading}">좋아요한 도서</h2>
-      <div class="liked-books-counter">
-        <span class="text-muted" th:text="#{pagination.showing(${likedBooks.number * likedBooks.size + 1}, ${likedBooks.number * likedBooks.size + likedBooks.numberOfElements}, ${likedBooks.totalElements})}">
-          표시 중: 1~10 / 총 23건
-        </span>
-      </div>
-    </div>
-  </div>
 
-  <!-- 좋아요 통계 요약 -->
-  <div class="liked-books-summary mb-4">
-    <div class="card bg-light">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-md-4 text-center">
-            <h6 class="mb-1" th:text="#{liked.books.total}">총 좋아요 도서</h6>
-            <span class="fs-3 fw-bold text-danger" th:text="${likedBooks.totalElements}">23</span>
-          </div>
-          <div class="col-md-4 text-center">
-            <h6 class="mb-1" th:text="#{liked.books.this.month}">이번 달 추가</h6>
-            <span class="fs-3 fw-bold text-primary" th:text="${monthlyLikedCount}">5</span>
-          </div>
-          <div class="col-md-4 text-center">
-            <h6 class="mb-1" th:text="#{liked.books.categories}">관심 분야</h6>
-            <span class="fs-3 fw-bold text-success" th:text="${categoryCount}">8</span>
-          </div>
+    <div class="mypage-content-header">
+        <h2 class="mypage-section-title" th:text="#{mypage.likedBooks.heading}"></h2>
+        <div class="mypage-counter-text">
+            <span class="text-muted"
+                  th:text="#{pagination.showing(${likedBooks.number * likedBooks.size + 1}, ${likedBooks.number * likedBooks.size + likedBooks.numberOfElements}, ${likedBooks.totalElements})}"></span>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- 도서 목록 -->
-  <div th:if="${likedBooks.isEmpty()}" class="text-center py-5">
-    <i class="bi bi-heart text-muted" style="font-size: 3rem;"></i>
-    <p class="text-muted mt-3 mb-4" th:text="#{message.noLikedBooks}">좋아요한 도서가 없습니다.</p>
-    <a th:href="@{/}" class="btn btn-primary" th:text="#{button.exploreBooks}">도서 둘러보기</a>
-  </div>
+    <!-- 좋아요 이력 없음 -->
+    <div th:if="${likedBooks.isEmpty()}" class="empty-container">
+        <i class="bi bi-star empty-icon"></i>
+        <p class="empty-text" th:text="#{mypage.likedBooks.noLikedBooks}"></p>
+        <a th:href="@{/}" class="btn-mypage btn-dark" th:text="#{mypage.button.exploreBooks}"></a>
+    </div>
 
-  <div th:if="${!likedBooks.isEmpty()}" class="liked-books-grid">
-    <div class="row">
-      <div th:each="book : ${likedBooks.content}" class="col-lg-6 col-xl-4 mb-4">
-        <div class="book-card">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="row">
-                <!-- 도서 이미지 -->
-                <div class="col-4">
-                  <div class="book-image-container">
-                    <img th:src="${book.bookUrl}"
-                         th:alt="${book.title}"
-                         class="book-image"
-                         th:onclick="'goToBook(' + ${book.bookId} + ')'">
-                    <div class="book-overlay">
-                      <i class="bi bi-eye-fill"></i>
-                    </div>
-                  </div>
+    <div th:if="${!likedBooks.isEmpty()}" class="mini-cards-container">
+        <div th:each="book : ${likedBooks.content}" class="info-mini-card">
+            <div class="info-card-header" th:text="${book.title}"></div>
+            <div class="info-mini-card-body">
+                <!-- 책 이미지 영역 -->
+                <div class="info-mini-card-image">
+                    <img th:src="${bookPrefix + book.bookUrl}"
+                         th:alt="${book.title}">
                 </div>
-
-                <!-- 도서 정보 -->
-                <div class="col-8">
-                  <div class="book-info">
-                    <h6 class="book-title mb-2"
-                        th:text="${book.title}"
-                        th:onclick="'goToBook(' + ${book.bookId} + ')'">
-                      스프링 부트 완벽 가이드
-                    </h6>
-
-                    <p class="book-author text-muted mb-2" th:text="${book.author}">김개발</p>
-
-                    <div class="book-isbn mb-2">
-                      <small class="text-muted">ISBN: <span th:text="${book.isbn}">9788123456789</span></small>
+                <div class="info-mini-card-content">
+                    <div class="info-card-item">
+                        <div class="info-card-label">
+                            <span th:text="#{mypage.likedBooks.author}"></span>
+                        </div>
+                        <div class="info-card-value">
+                            <span th:text="${book.author}"></span>
+                        </div>
                     </div>
-
-                    <div class="book-price mb-3">
-                      <div th:if="${book.salePrice < book.regularPrice}" class="price-discount">
-                        <span class="regular-price text-muted text-decoration-line-through"
-                              th:text="${#numbers.formatCurrency(book.regularPrice)}">25,000원</span>
-                        <span class="sale-price fw-bold text-danger ms-1"
-                              th:text="${#numbers.formatCurrency(book.salePrice)}">22,500원</span>
-                        <span class="discount-rate grade-badge grade-gold ms-1"
-                              th:text="${T(java.lang.Math).round((1 - book.salePrice * 1.0 / book.regularPrice) * 100)} + '%'">10%</span>
-                      </div>
-                      <div th:unless="${book.salePrice < book.regularPrice}">
-                        <span class="regular-price fw-bold"
-                              th:text="${#numbers.formatCurrency(book.regularPrice)}">25,000원</span>
-                      </div>
+                    <div class="info-card-item">
+                        <div class="info-card-label">
+                            <span>ISBN</span>
+                        </div>
+                        <div class="info-card-value">
+                            <span th:text="${book.isbn}"></span>
+                        </div>
                     </div>
-                  </div>
+                    <div class="info-card-item">
+                        <div class="info-card-label">
+                            <span th:text="#{mypage.likedBooks.price}"></span>
+                        </div>
+                        <div class="info-card-value">
+                            <div th:if="${book.salePrice != book.regularPrice}">
+                            <span style="text-decoration: line-through; color: #6c757d; font-size: 0.8rem;"
+                                  th:text="${#numbers.formatDecimal(book.regularPrice, 0, 'COMMA', 0, 'POINT')} + #{currency.won}"></span>
+                                <span class="mypage-amount"
+                                      th:text="${#numbers.formatDecimal(book.salePrice, 0, 'COMMA', 0, 'POINT')} + #{currency.won}"></span>
+                            </div>
+                            <div th:if="${book.salePrice == book.regularPrice}">
+                            <span class="mypage-amount"
+                                  th:text="${#numbers.formatDecimal(book.regularPrice, 0, 'COMMA', 0, 'POINT')} + #{currency.won}"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-
-              <!-- 액션 버튼 -->
-              <div class="book-actions mt-3">
-                <div class="row">
-                  <div class="col-6">
-                    <button type="button"
-                            class="btn btn-primary btn-sm w-100"
-                            th:onclick="'goToBook(' + ${book.bookId} + ')'">
-                      <i class="bi bi-book me-1"></i><span th:text="#{button.viewDetail}">상세보기</span>
-                    </button>
-                  </div>
-                  <div class="col-6">
-                    <button type="button"
-                            class="btn btn-outline-danger btn-sm w-100"
-                            th:onclick="'removeLike(' + ${book.bookId} + ')'">
-                      <i class="bi bi-heart-fill me-1"></i><span th:text="#{button.removeLike}">좋아요 취소</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- 페이지네이션 -->
-  <div th:if="${likedBooks.totalPages > 1}" class="d-flex justify-content-center mt-4">
-    <nav aria-label="Liked books pagination">
-      <ul class="pagination">
-        <!-- 처음 페이지 -->
-        <li class="page-item" th:classappend="${likedBooks.first} ? 'disabled'">
-          <a class="page-link" th:href="@{/mypage/liked-books(page=0, size=${likedBooks.size})}" th:text="#{pagination.first}">처음</a>
-        </li>
-
-        <!-- 이전 페이지 -->
-        <li class="page-item" th:classappend="${!likedBooks.hasPrevious()} ? 'disabled'">
-          <a class="page-link"
-             th:href="@{/mypage/liked-books(page=${likedBooks.number - 1}, size=${likedBooks.size})}"
-             th:text="#{pagination.previous}">이전</a>
-        </li>
-
-        <!-- 페이지 번호들 -->
-        <li th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, likedBooks.number - 2),
-                                                   T(java.lang.Math).min(likedBooks.totalPages - 1, likedBooks.number + 2))}"
-            class="page-item"
-            th:classappend="${pageNum == likedBooks.number} ? 'active'">
-          <a class="page-link"
-             th:href="@{/mypage/liked-books(page=${pageNum}, size=${likedBooks.size})}"
-             th:text="${pageNum + 1}">1</a>
-        </li>
-
-        <!-- 다음 페이지 -->
-        <li class="page-item" th:classappend="${!likedBooks.hasNext()} ? 'disabled'">
-          <a class="page-link"
-             th:href="@{/mypage/liked-books(page=${likedBooks.number + 1}, size=${likedBooks.size})}"
-             th:text="#{pagination.next}">다음</a>
-        </li>
-
-        <!-- 마지막 페이지 -->
-        <li class="page-item" th:classappend="${likedBooks.last} ? 'disabled'">
-          <a class="page-link"
-             th:href="@{/mypage/liked-books(page=${likedBooks.totalPages - 1}, size=${likedBooks.size})}"
-             th:text="#{pagination.last}">마지막</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-
-  <!-- 추천 도서 섹션 -->
-  <div class="recommendations mt-5">
-    <div class="card border-primary">
-      <div class="card-header bg-primary text-white">
-        <h6 class="mb-0">
-          <i class="bi bi-lightbulb me-2"></i>
-          <span th:text="#{liked.books.recommendations}">이런 도서는 어떠세요?</span>
-        </h6>
-      </div>
-      <div class="card-body">
-        <p class="mb-2" th:text="#{liked.books.recommendations.desc}">좋아요한 도서를 바탕으로 추천드립니다.</p>
-        <a th:href="@{/books/recommendations}" class="btn btn-outline-primary btn-sm" th:text="#{button.viewRecommendations}">
-          추천 도서 보기
-        </a>
-      </div>
-    </div>
-  </div>
 </div>
 
-<script>
-  function goToBook(bookId) {
-    window.location.href = '/books/' + bookId;
-  }
+<!-- 페이지네이션 -->
+<div th:if="${likedBooks.totalPages > 1}" class="pagination-container">
+    <ul class="custom-pagination">
+        <li th:classappend="${likedBooks.first} ? 'disabled'">
+            <a class="pagination-link"
+               th:href="@{/mypage/likedBooks(page=0, size=${likedBooks.size})}"
+               th:text="#{pagination.first}"></a>
+        </li>
+        <li th:classappend="${!likedBooks.hasPrevious()} ? 'disabled'">
+            <a class="pagination-link"
+               th:href="@{/mypage/likedBooks(page=${likedBooks.number - 1}, size=${likedBooks.size})}"
+               th:text="#{pagination.previous}"></a>
+        </li>
+        <li th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, likedBooks.number - 2), T(java.lang.Math).min(likedBooks.totalPages - 1, likedBooks.number + 2))}"
+            th:classappend="${pageNum == likedBooks.number} ? 'active'">
+            <a class="pagination-link"
+               th:href="@{/mypage/likedBooks(page=${pageNum}, size=${likedBooks.size})}"
+               th:text="${pageNum + 1}"></a>
+        </li>
+        <li th:classappend="${!likedBooks.hasNext()} ? 'disabled'">
+            <a class="pagination-link"
+               th:href="@{/mypage/likedBooks(page=${likedBooks.number + 1}, size=${likedBooks.size})}"
+               th:text="#{pagination.next}"></a>
+        </li>
+        <li th:classappend="${likedBooks.last} ? 'disabled'">
+            <a class="pagination-link"
+               th:href="@{/mypage/likedBooks(page=${likedBooks.totalPages - 1}, size=${likedBooks.size})}"
+               th:text="#{pagination.last}"></a>
+        </li>
+    </ul>
+</div>
 
-  function removeLike(bookId) {
-    if (confirm('정말로 좋아요를 취소하시겠습니까?')) {
-      // 좋아요 취소 로직
-      fetch('/api/books/' + bookId + '/like', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })
-              .then(response => {
-                if (response.ok) {
-                  location.reload();
-                } else {
-                  alert('좋아요 취소에 실패했습니다.');
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error);
-                alert('오류가 발생했습니다.');
-              });
-    }
-  }
-</script>
 </body>
 </html>

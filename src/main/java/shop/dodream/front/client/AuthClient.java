@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.LoginRequest;
 
-@FeignClient(name = "authClient", url = "http://localhost:10320")
+@FeignClient(name = "authClient", url = "${gateway.url}")
 public interface AuthClient {
     @PostMapping("/auth/login")
     ResponseEntity<Void> login(@RequestBody LoginRequest request);
