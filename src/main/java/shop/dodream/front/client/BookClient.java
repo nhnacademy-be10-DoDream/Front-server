@@ -18,6 +18,7 @@ import java.util.List;
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();
+
     @GetMapping("/public/categories/{depth}/depth")
     List<CategoryResponse> getCategoriesByDepth(@PathVariable("depth") Long depth);
 
@@ -34,6 +35,11 @@ public interface BookClient {
 
     @GetMapping("/public/tags/{tag-id}/books")
     PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId);
+
+    @GetMapping("/public/tags/{tag-id}/books")
+    PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId,
+                                                 @RequestParam("page") int page,
+                                                 @RequestParam("size") int size);
 
     @GetMapping("/public/tags/{tag-id}")
     TagResponse getTag(@PathVariable("tag-id") Long tagId);

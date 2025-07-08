@@ -2,6 +2,7 @@ package shop.dodream.front.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import shop.dodream.front.client.AuthClient;
 import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.*;
@@ -34,43 +33,19 @@ public class AuthController {
     private final RedisUserSessionService redisUserSessionService;
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, Model model) throws IOException {
+    public String login(@ModelAttribute LoginRequest request, Model model,HttpServletResponse response) throws IOException {
         try{
             ResponseEntity<Void> result = authClient.login(request);
-//            HttpHeaders headers = result.getHeaders();
-//            if (headers.containsKey(HttpHeaders.SET_COOKIE)) {
-//                for (String cookieHeader : headers.get(HttpHeaders.SET_COOKIE)) {
-//                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
-//                }
-//            }
+            HttpHeaders headers = result.getHeaders();
+            CookieUtils.addSetCookieHeaders(response, headers.get(HttpHeaders.SET_COOKIE));
             String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
             redisUserSessionService.saveUser(accessToken,user);
             return "redirect:/";
-        } catch (HttpClientErrorException ex) {
-            if (ex.getStatusCode() == HttpStatus.LOCKED) {
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, String> body = mapper.readValue(
-                            ex.getResponseBodyAsString(),
-                            new TypeReference<>() {}
-                    );
-                    if ("DORMANT".equals(body.get("status"))) {
-                        return "redirect:/dormant/verify-form?userId=" + request.getUserId();
-                    }
-                } catch (Exception e) {
-                    model.addAttribute("error", "휴면 계정 처리 중 오류 발생");
-                    return "auth/login";
-                }
-            } else if (ex.getStatusCode() == HttpStatus.FORBIDDEN) {
-                model.addAttribute("error", "탈퇴한 계정입니다. 다른 계정으로 로그인 해주세요.");
-                return "auth/login";
-            }
-
-            model.addAttribute("error", "로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.");
-            return "auth/login";
+        } catch (FeignException e) {
+            return handleAuthException(e, request.getUserId(), model);
         }
     }
 
@@ -90,40 +65,16 @@ public class AuthController {
     ) {
         try {
             ResponseEntity<Void> result = authClient.paycoCallback(code, state);
-//            HttpHeaders gatewayHeaders = result.getHeaders();
-//            if (gatewayHeaders.containsKey(HttpHeaders.SET_COOKIE)) {
-//                for (String cookieHeader : gatewayHeaders.get(HttpHeaders.SET_COOKIE)) {
-//                    response.addHeader(HttpHeaders.SET_COOKIE, cookieHeader);
-//                }
-//            }
+            HttpHeaders headers = result.getHeaders();
+            CookieUtils.addSetCookieHeaders(response, headers.get(HttpHeaders.SET_COOKIE));
             String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
             AccessTokenHolder.set(accessToken);
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
             redisUserSessionService.saveUser(accessToken,user);
             return "redirect:/";
-        }catch (HttpClientErrorException ex) {
-            if (ex.getStatusCode() == HttpStatus.LOCKED) {
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, String> body = mapper.readValue(
-                            ex.getResponseBodyAsString(),
-                            new TypeReference<>() {}
-                    );
-                    if ("DORMANT".equals(body.get("status"))) {
-                        return "redirect:/dormant/verify-form?userId=" + body.get("userId");
-                    }
-                } catch (Exception e) {
-                    model.addAttribute("error", "휴면 계정 처리 중 오류 발생");
-                    return "auth/login";
-                }
-            } else if (ex.getStatusCode() == HttpStatus.FORBIDDEN) {
-                model.addAttribute("error", "탈퇴한 계정입니다. 다른 계정으로 로그인해주세요.");
-                return "auth/login";
-            }
-
-            model.addAttribute("error", "로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.");
-            return "auth/login";
+        }catch (FeignException e) {
+            return handleAuthException(e, null, model); // userId는 response body에서 파싱
         }
     }
 
@@ -149,7 +100,7 @@ public class AuthController {
         CookieUtils.deleteCookie(response, "accessToken");
         CookieUtils.deleteCookie(response, "refreshToken");
 
-        return "redirect:/auth/login";
+        return "redirect:/";
 
     }
 
@@ -161,4 +112,31 @@ public class AuthController {
         return "redirect:/";
     }
 
+    private String handleAuthException(FeignException e, String fallbackUserId, Model model) {
+        try {
+            int status = e.status();
+
+            if (status == HttpStatus.LOCKED.value()) { // 423
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, String> body = mapper.readValue(e.contentUTF8(), new TypeReference<>() {});
+
+                if ("DORMANT".equalsIgnoreCase(body.get("status"))) {
+                    String userId = body.getOrDefault("userId", fallbackUserId);
+                    return "redirect:/dormant/verify-form?userId=" + userId;
+                }
+            }
+
+            if (status == HttpStatus.FORBIDDEN.value()) {
+                model.addAttribute("error", "탈퇴한 계정입니다. 다른 계정으로 로그인 해주세요.");
+                return "auth/login";
+            }
+
+        } catch (Exception ex) {
+            model.addAttribute("error", "휴면 계정 처리 중 오류 발생");
+            return "auth/login";
+        }
+
+        model.addAttribute("error", "로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.");
+        return "auth/login";
+    }
 }
