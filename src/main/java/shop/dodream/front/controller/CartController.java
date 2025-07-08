@@ -2,6 +2,7 @@ package shop.dodream.front.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -70,10 +71,18 @@ public class CartController {
 	}
 	
 	@PostMapping("/cart/add")
-	public String addCartItem(@ModelAttribute CartItemRequest request,HttpServletRequest httpServletRequest) {
+	public String addCartItem(@ModelAttribute CartItemRequest request, HttpServletRequest httpServletRequest, HttpServletResponse response) {
 		String accessToken = getAccessTokenFromCookies(httpServletRequest.getCookies());
 		if (accessToken == null || accessToken.isEmpty()) {
 			String guestId = getGuestIdFromCookie(httpServletRequest);
+			if(guestId == null){
+				GuestCartResponse guestCartResponse = cartClient.getPublicCart();
+				guestId = guestCartResponse.getGuestId();
+				Cookie cookie = new Cookie("guestId", guestId);
+				cookie.setPath("/");
+				cookie.setMaxAge(60 * 60 * 24 * 30); // 30일
+				response.addCookie(cookie);
+			}
 			GuestCartItemRequest guestRequest = new GuestCartItemRequest();
 			guestRequest.setBookId(request.getBookId());
 			guestRequest.setQuantity(request.getQuantity());

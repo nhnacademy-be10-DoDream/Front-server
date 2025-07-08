@@ -12,9 +12,6 @@ public interface CartClient {
 	@GetMapping("/carts/users")
 	CartResponse getCart();
 	
-	@PostMapping("/carts")
-	CartResponse createCart( @RequestParam(value = "guestId", required = false) String guestId);
-	
 	@DeleteMapping("/carts/{cartId}")
 	void deleteCart(@PathVariable Long cartId);
 	
