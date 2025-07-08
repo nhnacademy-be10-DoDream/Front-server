@@ -1,13 +1,20 @@
 package shop.dodream.front.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CouponResponse {
-	private Long couponId;
-	private String couponName;
-	private Long discountValue;
-	private Long minPurchaseAmount;
-	private Long maxDiscountAmount;
-	private Long finalPrice;
+    private Long couponId;
+    private Long policyId;
+    private String policyName;
+    private String discountType;
+    private Long discountValue;
+    private Long minPurchaseAmount;
+    private Long maxDiscountAmount;
+    private Long bookId;
+    private Long categoryId;
 }

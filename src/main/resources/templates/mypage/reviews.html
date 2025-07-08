@@ -5,207 +5,128 @@
       layout:decorate="~{layout/mypage}">
 
 <head>
-  <title th:text="#{mypage.reviews.title}">마이페이지 - 작성한 리뷰</title>
+    <title th:text="#{mypage.reviews.title}"></title>
 </head>
 
 <body>
 <div layout:fragment="content">
-  <!-- 페이지 헤더 -->
-  <div class="content-header">
-    <div class="d-flex justify-content-between align-items-center">
-      <h2 th:text="#{mypage.reviews.heading}">작성한 리뷰 목록</h2>
-      <div class="reviews-counter">
-        <span class="text-muted" th:text="#{pagination.showing(${reviews.number * reviews.size + 1}, ${reviews.number * reviews.size + reviews.numberOfElements}, ${reviews.totalElements})}">
-          표시 중: 1~10 / 총 15건
-        </span>
-      </div>
-    </div>
-  </div>
 
-  <!-- 리뷰 통계 요약 -->
-  <div class="reviews-summary mb-4">
-    <div class="card bg-light">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-md-4 text-center">
-            <h6 class="mb-1" th:text="#{review.total.count}">총 리뷰 수</h6>
-            <span class="fs-3 fw-bold text-primary" th:text="${reviews.totalElements}">15</span>
-          </div>
-          <div class="col-md-4 text-center">
-            <h6 class="mb-1" th:text="#{review.average.rating}">평균 평점</h6>
-            <div class="rating-display">
-              <span class="fs-3 fw-bold text-warning" th:text="${averageRating}">4.3</span>
-              <div class="stars-display mt-1">
-                <i th:each="i : ${#numbers.sequence(1, 5)}"
-                   class="bi"
-                   th:classappend="${i <= averageRating} ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 text-center">
-            <h6 class="mb-1" th:text="#{review.this.month}">이번 달 작성</h6>
-            <span class="fs-3 fw-bold text-success" th:text="${monthlyReviewCount}">3</span>
-          </div>
+    <div class="mypage-content-header">
+        <h2 class="mypage-section-title" th:text="#{mypage.reviews.heading}"></h2>
+        <div class="mypage-counter-text">
+            <span th:text="#{pagination.showing(${reviews.number * reviews.size + 1}, ${reviews.number * reviews.size + reviews.numberOfElements}, ${reviews.totalElements})}"></span>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- 리뷰 목록 -->
-  <div th:if="${reviews.isEmpty()}" class="text-center py-5">
-    <i class="bi bi-star text-muted" style="font-size: 3rem;"></i>
-    <p class="text-muted mt-3 mb-4" th:text="#{review.noReviews}">작성한 리뷰가 없습니다.</p>
-    <a th:href="@{/}" class="btn btn-primary" th:text="#{button.startShopping}">쇼핑 시작하기</a>
-  </div>
+    <!-- 리뷰 목록 -->
+    <div th:if="${reviews.isEmpty()}" class="empty-container">
+        <i class="bi bi-star empty-icon"></i>
+        <p class="empty-text" th:text="#{mypage.review.noReviews}"></p>
+        <a th:href="@{/}" class="btn-mypage btn-dark" th:text="#{mypage.button.startShopping}"></a>
+    </div>
 
-  <div th:if="${!reviews.isEmpty()}" class="reviews-list">
-    <div th:each="review : ${reviews.content}" class="review-card mb-4">
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <!-- 리뷰 정보 -->
-            <div class="col-md-8">
-              <div class="review-header mb-3">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div class="review-rating">
-                    <div class="stars mb-1">
-                      <i th:each="i : ${#numbers.sequence(1, 5)}"
-                         class="bi"
-                         th:classappend="${i <= review.rating} ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
-                      <span class="rating-number ms-2 fw-bold" th:text="${review.rating} + '.0'">5.0</span>
+    <div th:if="${!reviews.isEmpty()}">
+        <div th:each="review : ${reviews.content}" class="info-card">
+
+            <div class="info-card-header">
+                <div class="mypage-subtitle">
+                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+                          class="bi"
+                          th:classappend="${i <= review.rating} ? 'bi-star-fill' : 'bi-star'"
+                          th:style="${i <= review.rating} ? 'color: #ffc107;' : 'color: #6c757d;'"></span>
+                    <span th:text="${review.rating} + '.0'"></span>
+                </div>
+                <div class="info-card-label">
+                    <i class="bi bi-person"></i>
+                    <span th:text="#{mypage.review.author}"></span>
+                    <span th:text="${review.userId}"></span>
+                </div>
+            </div>
+
+            <!-- 리뷰 본문 -->
+            <div class="info-card-body">
+
+                <!-- 리뷰 내용 -->
+                <div class="info-card-item">
+                    <div class="info-card-label">
+                        <i class="bi bi-chat-quote"></i>
+                        <span th:text="#{mypage.review.content}"></span>
+                        <div class="right-group">
+                            <span th:text="#{mypage.review.writeDate}"></span>:
+                            <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
                     </div>
-                    <small class="text-muted">
-                      <span th:text="#{review.writeDate}">작성일</span>:
-                      <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}">2024-12-01 15:30</span>
-                    </small>
-                  </div>
+                    <div class="info-card-value">
+                        <p th:text="${review.content}"></p>
+                    </div>
                 </div>
-              </div>
 
-              <div class="review-content mb-3">
-                <p class="mb-0" th:text="${review.content}">정말 좋은 책이었습니다. 내용이 알차고 이해하기 쉽게 설명되어 있어서 많은 도움이 되었습니다.</p>
-              </div>
-
-              <!-- 리뷰 이미지 -->
-              <div th:if="${!#lists.isEmpty(review.images)}" class="review-images mb-3">
-                <div class="image-gallery">
-                  <img th:each="image : ${review.images}"
-                       th:src="${image}"
-                       th:alt="#{review.image.alt}"
-                       class="review-image me-2 mb-2"
-                       data-bs-toggle="modal"
-                       data-bs-target="#imageModal"
-                       th:onclick="'showImage(\'' + ${image} + '\')'">
+                <!-- 리뷰 이미지 -->
+                <div th:if="${!#lists.isEmpty(review.images)}" class="info-card-item">
+                    <div class="info-card-label">
+                        <i class="bi bi-images"></i>
+                        <span th:text="#{mypage.review.image.title}"></span>
+                    </div>
+                    <div class="info-card-value">
+                        <a th:each="image : ${review.images}"
+                           th:href="@{${reviewPrefix + image}}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            <img th:src="${reviewPrefix + image}"
+                                 th:alt="#{mypage.review.image.alt}"
+                                 class="review-thumbnail">
+                        </a>
+                    </div>
                 </div>
-              </div>
+
             </div>
 
-            <!-- 액션 버튼 -->
-            <div class="col-md-4 text-end">
-              <div class="review-actions">
-                <a th:href="@{/books/{bookId}(bookId=${review.bookId})}"
-                   class="btn btn-primary btn-sm mb-2 w-100">
-                  <i class="bi bi-book me-1"></i><span th:text="#{button.viewBook}">도서 보기</span>
+            <!-- 액션 버튼들 -->
+            <div class="info-card-actions">
+                <a th:href="@{/books/{bookId}(bookId=${review.bookId})}" class="btn-mypage btn-dark">
+                    <i class="bi bi-book btn-icon"></i><span th:text="#{mypage.button.viewBook}"></span>
                 </a>
-                <button type="button"
-                        class="btn btn-outline-secondary btn-sm mb-2 w-100"
+
+                <button type="button" class="btn-mypage btn-outline-gray"
                         th:onclick="'editReview(' + ${review.reviewId} + ')'">
-                  <i class="bi bi-pencil me-1"></i><span th:text="#{button.edit}">수정</span>
+                    <i class="bi bi-pencil btn-icon"></i><span th:text="#{button.edit}"></span>
                 </button>
-                <button type="button"
-                        class="btn btn-outline-danger btn-sm w-100"
-                        th:onclick="'deleteReview(' + ${review.reviewId} + ')'">
-                  <i class="bi bi-trash me-1"></i><span th:text="#{button.delete}">삭제</span>
-                </button>
-              </div>
-
-              <!-- 도서 정보 미리보기 -->
-              <div class="book-preview mt-3 p-2 bg-light rounded">
-                <small class="text-muted d-block mb-1" th:text="#{review.book.info}">리뷰한 도서</small>
-                <span class="book-title fw-bold" th:text="${review.bookTitle}">스프링 부트 완벽 가이드</span>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- 페이지네이션 -->
-  <div th:if="${reviews.totalPages > 1}" class="d-flex justify-content-center mt-4">
-    <nav aria-label="Reviews pagination">
-      <ul class="pagination">
-        <!-- 처음 페이지 -->
-        <li class="page-item" th:classappend="${reviews.first} ? 'disabled'">
-          <a class="page-link" th:href="@{/mypage/reviews(page=0, size=${reviews.size})}" th:text="#{pagination.first}">처음</a>
-        </li>
-
-        <!-- 이전 페이지 -->
-        <li class="page-item" th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
-          <a class="page-link"
-             th:href="@{/mypage/reviews(page=${reviews.number - 1}, size=${reviews.size})}"
-             th:text="#{pagination.previous}">이전</a>
-        </li>
-
-        <!-- 페이지 번호들 -->
-        <li th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, reviews.number - 2),
-                                                   T(java.lang.Math).min(reviews.totalPages - 1, reviews.number + 2))}"
-            class="page-item"
-            th:classappend="${pageNum == reviews.number} ? 'active'">
-          <a class="page-link"
-             th:href="@{/mypage/reviews(page=${pageNum}, size=${reviews.size})}"
-             th:text="${pageNum + 1}">1</a>
-        </li>
-
-        <!-- 다음 페이지 -->
-        <li class="page-item" th:classappend="${!reviews.hasNext()} ? 'disabled'">
-          <a class="page-link"
-             th:href="@{/mypage/reviews(page=${reviews.number + 1}, size=${reviews.size})}"
-             th:text="#{pagination.next}">다음</a>
-        </li>
-
-        <!-- 마지막 페이지 -->
-        <li class="page-item" th:classappend="${reviews.last} ? 'disabled'">
-          <a class="page-link"
-             th:href="@{/mypage/reviews(page=${reviews.totalPages - 1}, size=${reviews.size})}"
-             th:text="#{pagination.last}">마지막</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-
-  <!-- 이미지 확대 모달 -->
-  <div class="modal fade" id="imageModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" th:text="#{review.image.title}">리뷰 이미지</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body text-center">
-          <img id="modalImage" src="" alt="" class="img-fluid">
-        </div>
-      </div>
+    <!-- 페이지네이션 -->
+    <div th:if="${reviews.totalPages > 1}" class="pagination-container">
+        <ul class="custom-pagination">
+            <li th:classappend="${reviews.first} ? 'disabled'">
+                <a class="pagination-link"
+                   th:href="@{/mypage/reviews(page=0, size=${reviews.size})}"
+                   th:text="#{pagination.first}"></a>
+            </li>
+            <li th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
+                <a class="pagination-link"
+                   th:href="@{/mypage/reviews(page=${reviews.number - 1}, size=${reviews.size})}"
+                   th:text="#{pagination.previous}"></a>
+            </li>
+            <li th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, reviews.number - 2), T(java.lang.Math).min(reviews.totalPages - 1, reviews.number + 2))}"
+                th:classappend="${pageNum == reviews.number} ? 'active'">
+                <a class="pagination-link"
+                   th:href="@{/mypage/reviews(page=${pageNum}, size=${reviews.size})}"
+                   th:text="${pageNum + 1}"></a>
+            </li>
+            <li th:classappend="${!reviews.hasNext()} ? 'disabled'">
+                <a class="pagination-link"
+                   th:href="@{/mypage/reviews(page=${reviews.number + 1}, size=${reviews.size})}"
+                   th:text="#{pagination.next}"></a>
+            </li>
+            <li th:classappend="${reviews.last} ? 'disabled'">
+                <a class="pagination-link"
+                   th:href="@{/mypage/reviews(page=${reviews.totalPages - 1}, size=${reviews.size})}"
+                   th:text="#{pagination.last}"></a>
+            </li>
+        </ul>
     </div>
-  </div>
+
 </div>
-
-<script>
-  function showImage(imageSrc) {
-    document.getElementById('modalImage').src = imageSrc;
-  }
-
-  function editReview(reviewId) {
-    // 리뷰 수정 로직
-    console.log('Edit review:', reviewId);
-  }
-
-  function deleteReview(reviewId) {
-    if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
-      // 리뷰 삭제 로직
-      console.log('Delete review:', reviewId);
-    }
-  }
-</script>
 </body>
 </html>

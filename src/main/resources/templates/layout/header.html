@@ -13,6 +13,7 @@
             <a th:href="@{/about}" class="nav-item">주문/결제</a>
             <a th:href="@{/contact}" class="nav-item">쿠폰</a>
             <a th:href="@{/mypage}" class="nav-item">마이페이지</a>
+            <a th:href="@{/admin}" class="nav-item">관리자</a>
             <!-- 로그인 여부에 따라 출력 분기 -->
             <div th:if="${user != null}" class="d-flex align-items-center gap-3 nav-item fw-semibold">
                 <span class="username" th:text="|${user.name}님 반갑습니다!|"></span>
@@ -58,13 +59,13 @@
 
 
                     <li class="nav-item">
-                        <a class="nav-link active" role="button" aria-disabled="true">베스트</a>
+                        <a class="nav-link active" th:href="@{/tags/1}" role="button" aria-disabled="true">베스트</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" role="button" aria-disabled="true">신상품</a>
+                        <a class="nav-link active" th:href="@{/tags/2}" role="button" aria-disabled="true">신상품</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" role="button" aria-disabled="true">추천도서</a>
+                        <a class="nav-link active" th:href="@{/tags/3}" role="button" aria-disabled="true">추천도서</a>
                     </li>
                 </ul>
                 <form class="d-flex" role="search">

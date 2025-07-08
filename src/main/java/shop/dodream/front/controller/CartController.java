@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
 import shop.dodream.front.client.CartClient;
 import shop.dodream.front.client.CouponClient;
-import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.dto.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ public class CartController {
 	
 	private final CouponClient couponClient;
 	private final CartClient cartClient;
-	private final OrderClient orderClient;
 	
 	@GetMapping
 	public String showCart(Model model) {
@@ -29,15 +29,12 @@ public class CartController {
 		model.addAttribute("cartItems", cartItems);
 		
 		// 각 카트 아이템에 대해 사용 가능한 쿠폰 조회
-		Map<Long, List<CouponResponse>> couponsMap = new HashMap<>();
+		Map<Long, List<BookAvailableCouponResponse>> couponsMap = new HashMap<>();
 		for (CartItemResponse item : cartItems) {
-			List<CouponResponse> coupons = couponClient.getAvailableCoupons(item.getBookId(), item.getSalePrice());
+			List<BookAvailableCouponResponse> coupons = couponClient.getAvailableCouponsforBook(item.getBookId(), item.getSalePrice());
 			couponsMap.put(item.getCartItemId(), coupons);
 		}
 		model.addAttribute("couponsMap", couponsMap);
-		
-		List<WrappingDto> wrappingOptions = orderClient.getGiftWraps();
-		model.addAttribute("wrappingOptions", wrappingOptions);
 		
 		return "cart";
 	}
@@ -48,7 +45,7 @@ public class CartController {
 		cartClient.addCartItem(cart.getCartId(), request);
 		return "redirect:/cart";
 	}
-	
+
 	@PutMapping("/{cartItemId}")
 	public String updateQuantity(@PathVariable Long cartItemId,
 	                             @RequestParam Long quantity) {
@@ -58,7 +55,7 @@ public class CartController {
 		cartClient.updateCartItemQuantity(request, cartItemId, cart.getCartId());
 		return "redirect:/cart";
 	}
-	
+
 	@DeleteMapping("/{cartItemId}")
 	public String deleteCartItem(@PathVariable Long cartItemId) {
 		cartClient.deleteCartItem(cartItemId);

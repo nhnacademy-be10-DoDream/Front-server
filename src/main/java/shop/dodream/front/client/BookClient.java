@@ -2,22 +2,20 @@ package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import shop.dodream.front.dto.*;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import shop.dodream.front.dto.*;
 
 import java.util.List;
 
 
-@FeignClient(name = "bookClient", url = "http://localhost:10320")
+@FeignClient(name = "bookClient", url = "${gateway.url}")
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();
+
     @GetMapping("/public/categories/{depth}/depth")
     List<CategoryResponse> getCategoriesByDepth(@PathVariable("depth") Long depth);
 
@@ -35,6 +33,11 @@ public interface BookClient {
     @GetMapping("/public/tags/{tag-id}/books")
     PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId);
 
+    @GetMapping("/public/tags/{tag-id}/books")
+    PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId,
+                                                 @RequestParam("page") int page,
+                                                 @RequestParam("size") int size);
+
     @GetMapping("/public/tags/{tag-id}")
     TagResponse getTag(@PathVariable("tag-id") Long tagId);
 
@@ -45,7 +48,7 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}/reviews")
     Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/admin/reviews/{book-id}/review-summary")
+    @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
 
@@ -58,5 +61,9 @@ public interface BookClient {
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 
+    @GetMapping("/reviews/me")
+    Page<ReviewResponse> getReviews(Pageable pageable);
 
+    @GetMapping("/likes/me")
+    Page<BookListResponse> getLikedBooks(Pageable pageable);
 }
