@@ -1,6 +1,5 @@
 package shop.dodream.front.client;
 
-import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import shop.dodream.front.dto.LoginRequest;
 @FeignClient(name = "authClient", url = "http://localhost:10320")
 public interface AuthClient {
     @PostMapping("/auth/login")
-    @Headers("Content-Type: application/json")
     ResponseEntity<Void> login(@RequestBody LoginRequest request);
 
     @PostMapping("/auth/refresh")
