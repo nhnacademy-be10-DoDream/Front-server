@@ -50,5 +50,12 @@ public class CategoryController {
         return "/book/bookListCategory";
     }
 
+    @GetMapping("/admin/categories")
+    public String getCategoriesRelated(Model model){
+        List<CategoryResponse> categories = bookClient.getAllCategories();
+        model.addAttribute("categories", categories);
+        return "/admin/category";
+    }
+
 
 }
