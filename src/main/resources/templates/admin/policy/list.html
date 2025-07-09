@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title">쿠폰 정책 관리</title>
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+    <!-- 상단: 섹션 제목과 정책 추가 버튼 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0">쿠폰 정책 관리</h2>
+        <form th:action="@{/admin/policies/add}" method="get" style="display: inline;">
+            <button type="submit" class="btn-admin btn-primary">쿠폰 정책 추가</button>
+        </form>
+    </div>
+
+    <table class="table table-admin">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>이름</th>
+            <th>할인 유형</th>
+            <th>할인 값</th>
+            <th>최소 구매 금액</th>
+            <th>최대 할인 금액</th>
+            <th>고정 만료일</th>
+            <th>사용 기한일</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="policy : ${policies}">
+            <td th:text="${policy.id}"></td>
+            <td th:text="${policy.name}"></td>
+            <td th:text="${policy.discountType}"></td>
+            <td th:text="${policy.discountValue}"></td>
+            <td th:text="${policy.minPurchaseAmount}"></td>
+            <td th:text="${policy.maxDiscountAmount}"></td>
+            <td th:text="${policy.fixedDate}"></td>
+            <td th:text="${policy.plusDay}"></td>
+            <td>
+                <form th:action="@{/admin/policies/edit/{id}(id=${policy.id})}" method="get" style="display: inline;">
+                    <button type="submit"  class="btn-admin btn-primary btn-sm">수정</button>
+                </form>
+                <form th:action="@{/admin/policies/delete/{id}(id=${policy.id})}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn-admin btn-danger btn-sm">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

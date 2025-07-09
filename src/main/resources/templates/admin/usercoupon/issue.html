@@ -1,0 +1,61 @@
+<!-- templates/admin/usercoupon/issue.html -->
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title">쿠폰 발급</title>
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+    <!-- 상단: 제목 + 발급 내역 버튼 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0">쿠폰 발급</h2>
+    </div>
+
+    <form th:action="@{/admin/user-coupons/issue}" method="post">
+        <div class="form-group mb-3">
+            <label for="couponId" class="form-label">쿠폰 ID</label>
+            <input type="number"
+                   id="couponId"
+                   name="couponId"
+                   class="form-control"
+                   required />
+        </div>
+        <div class="form-group mb-3">
+            <label for="userIds" class="form-label">사용자 ID (콤마로 구분)</label>
+            <textarea id="userIds"
+                      name="userIds"
+                      class="form-control"
+                      rows="3"></textarea>
+        </div>
+        <div class="form-group mb-3">
+            <label for="grade" class="form-label">회원 등급</label>
+            <select id="grade" name="grade" class="form-control">
+                <option value="">선택 안함</option>
+                <option value="BASIC">BASIC</option>
+                <option value="ROYAL">ROYAL</option>
+                <option value="GOLD">GOLD</option>
+                <option value="PLATINUM">PLATINUM</option>
+                <option value="COMMON">COMMON</option>
+            </select>
+        </div>
+        <div class="form-group mb-4">
+            <label for="birthMonth" class="form-label">생월 (숫자)</label>
+            <input type="number"
+                   id="birthMonth"
+                   name="birthMonth"
+                   class="form-control" />
+        </div>
+        <div class="mt-4">
+            <button type="submit" class="btn-admin btn-primary">발급</button>
+            <form th:action="@{/admin/user-coupons/issued-list}" method="get" style="display: inline;">
+                <button type="submit" class="btn-admin btn-secondary">취소</button>
+            </form>
+        </div>
+    </form>
+</main>
+</body>
+</html>

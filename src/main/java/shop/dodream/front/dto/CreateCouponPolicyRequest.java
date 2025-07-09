@@ -5,14 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
+
+import java.time.ZonedDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookAvailableCouponResponse {
-    private Long couponId;
-    private String policyName;
+@Getter
+@Setter
+public class CreateCouponPolicyRequest {
+    private String name;
+    private String discountType;
     private Long discountValue;
     private Long minPurchaseAmount;
     private Long maxDiscountAmount;
-    private Long finalPrice;
+    private String expiredStrategy;
+    private ZonedDateTime fixedDate;
+    private Long plusDay;
 }

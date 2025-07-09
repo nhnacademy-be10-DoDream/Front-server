@@ -7,7 +7,7 @@ import shop.dodream.front.dto.*;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "orderClient", url =  "${gateway.url}")
+@FeignClient(name = "orderClient", url = "${gateway.url}")
 public interface OrderClient {
     @PostMapping("/orders")
     Map<String, Object> createOrder(@RequestBody OrderRequest orderRequest);
