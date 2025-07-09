@@ -14,7 +14,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/policies")
-public class PolicyController {
+public class CouponPolicyController {
 
     private final CouponClient couponClient;
 
@@ -46,13 +46,13 @@ public class PolicyController {
         return "admin/policy/edit";
     }
 
-    @PostMapping("/edit/{policyId}")
+    @PutMapping("/edit/{policyId}")
     public String updatePolicy(@PathVariable("policyId") Long policyId, @ModelAttribute UpdateCouponPolicyRequest request) {
         couponClient.updateCouponPolicy(policyId, request);
         return "redirect:/admin/policies";
     }
 
-    @PostMapping("/delete/{policyId}")
+    @DeleteMapping("/delete/{policyId}")
     public String deletePolicy(@PathVariable("policyId") Long policyId) {
         couponClient.deleteCouponPolicy(policyId);
         return "redirect:/admin/policies";

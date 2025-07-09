@@ -11,7 +11,7 @@ public class CouponResponse {
     private Long couponId;
     private Long policyId;
     private String policyName;
-    private String discountType;
+    private String type;
     private Long discountValue;
     private Long minPurchaseAmount;
     private Long maxDiscountAmount;

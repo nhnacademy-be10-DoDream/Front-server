@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title>쿠폰 추가</title>
+</head>
+<body>
+<div layout:fragment="content">
+        <h2>새 쿠폰 추가</h2>
+        <form th:action="@{/admin/coupons/add}" th:object="${createCouponRequest}" method="post">
+            <div class="form-group">
+                <label for="policyId">정책 ID:</label>
+                <input type="number" id="policyId" th:field="*{policyId}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="bookId">도서 ID (선택 사항):</label>
+                <input type="number" id="bookId" th:field="*{bookId}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="categoryId">카테고리 ID (선택 사항):</label>
+                <input type="number" id="categoryId" th:field="*{categoryId}" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">쿠폰 추가</button>
+            <a th:href="@{/admin/coupons}" class="btn btn-secondary">목록으로 돌아가기</a>
+        </form>
+</div>
+</body>
+</html>

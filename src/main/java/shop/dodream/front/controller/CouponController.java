@@ -38,7 +38,7 @@ public class CouponController {
         return "redirect:/admin/coupons";
     }
 
-    @PostMapping("/delete/{couponId}")
+    @DeleteMapping("/delete/{couponId}")
     public String deleteCoupon(@PathVariable("couponId") Long couponId) {
         couponClient.deleteCoupon(couponId);
         return "redirect:/admin/coupons";
