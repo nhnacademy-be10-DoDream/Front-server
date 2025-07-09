@@ -125,7 +125,21 @@ public class CartController {
 	@GetMapping("/cart/coupons")
 	@ResponseBody
 	public List<BookAvailableCouponResponse> getAvailableCoupons(@RequestParam Long bookId) {
-		return couponClient.getAvailableCoupons(bookId);
+		return couponClient.getAvailableCouponsforBook(bookId);
+	}
+	
+	@PostMapping("/cart/merge")
+	public String mergeCart(HttpServletRequest request) {
+		String accessToken = getAccessTokenFromCookies(request.getCookies());
+		if(accessToken == null || accessToken.isEmpty()){
+			//return "error";
+		}
+		String guestId = getGuestIdFromCookie(request);
+		if(guestId == null){
+			//return "error";
+		}
+		cartClient.mergeCart();
+		return "redirect:/cart";
 	}
 	
 	// === 쿠키에서 accessToken 추출 ===
@@ -140,7 +154,7 @@ public class CartController {
 	}
 	
 	// === 쿠키에서 guestId 추출 ===
-	private String getGuestIdFromCookie(HttpServletRequest request) {
+	public String getGuestIdFromCookie(HttpServletRequest request) {
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
 				if ("guestId".equals(cookie.getName())) {
