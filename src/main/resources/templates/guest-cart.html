@@ -166,9 +166,28 @@
 
 
   window.onload = () => {
+    // 1. 금액 계산
     recalculateGuestCartTotal();
     document.querySelectorAll("select").forEach(select => {
       select.addEventListener("change", recalculateGuestCartTotal);
     });
+
+    // 2. 로그인 후 카트 병합
+    const isLoggedIn = document.cookie.includes("accessToken");
+    const hasGuestId = document.cookie.includes("guestId");
+
+    if (isLoggedIn && hasGuestId) {
+      fetch("/carts/merge", {
+        method: "POST"
+      }).then(res => {
+        if (res.ok) {
+          // 병합 완료 → guestId 쿠키 삭제
+          document.cookie = "guestId=; path=/; max-age=0";
+          location.reload();
+        } else {
+          console.error("카트 병합 실패");
+        }
+      });
+    }
   };
 </script>
