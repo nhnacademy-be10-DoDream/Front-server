@@ -41,7 +41,7 @@
         <div class="p-grid-col text--right" id="items" style="white-space: pre-wrap"></div>
     </div>
     <div class="p-grid" style="margin-top: 30px">
-        <button class="button p-grid-col5" onclick="location.href=''">주문 상세</button>
+        <button class="button p-grid-col5" onclick="location.href='/order/detail/' + urlParams.get('orderId')">주문 상세</button>
         <button class="button p-grid-col5" onclick="location.href='/'" style="background-color: #e8f3ff; color: #1b64da">홈으로 돌아가기</button>
     </div>
 </div>
@@ -88,7 +88,6 @@
 
         })
         .catch((err) => {
-            // TODO: 결제 승인에 실패했을 경우 UI 처리 로직을 구현하세요.
             window.location.href = `/payment/fail?errorCode=${err.code}&errorMessage=${encodeURIComponent(err.message)}`;
         });
 
