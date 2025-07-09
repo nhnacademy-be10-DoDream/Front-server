@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -35,19 +34,19 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@ModelAttribute LoginRequest request, Model model,HttpServletResponse response) throws IOException {
         try{
-            ResponseEntity<Void> result = authClient.login(request);
-            HttpHeaders headers = result.getHeaders();
-            CookieUtils.addSetCookieHeaders(response, headers.get(HttpHeaders.SET_COOKIE));
-            String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
-            AccessTokenHolder.set(accessToken);
+            TokenResponse tokenResponse = authClient.login(request).getBody();
+            CookieUtils.setCookie(response, "accessToken", tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), true);
+            CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 604800, true);
+            AccessTokenHolder.set(tokenResponse.getAccessToken());
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
-            redisUserSessionService.saveUser(accessToken,user);
+            redisUserSessionService.saveUser(tokenResponse.getAccessToken(),user);
             return "redirect:/";
         } catch (FeignException e) {
             return handleAuthException(e, request.getUserId(), model);
         }
     }
+
 
 
     @GetMapping("/payco/login")
@@ -64,17 +63,16 @@ public class AuthController {
             Model model
     ) {
         try {
-            ResponseEntity<Void> result = authClient.paycoCallback(code, state);
-            HttpHeaders headers = result.getHeaders();
-            CookieUtils.addSetCookieHeaders(response, headers.get(HttpHeaders.SET_COOKIE));
-            String accessToken = CookieUtils.extractAccessToken(result.getHeaders().get(HttpHeaders.SET_COOKIE));
-            AccessTokenHolder.set(accessToken);
+            TokenResponse tokenResponse = authClient.paycoCallback(code, state).getBody();
+            CookieUtils.setCookie(response, "accessToken", tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), true);
+            CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 604800, true);
+            AccessTokenHolder.set(tokenResponse.getAccessToken());
             UserDto user = userClient.getUser();
             AccessTokenHolder.clear();
-            redisUserSessionService.saveUser(accessToken,user);
+            redisUserSessionService.saveUser(tokenResponse.getAccessToken(),user);
             return "redirect:/";
         }catch (FeignException e) {
-            return handleAuthException(e, null, model); // userId는 response body에서 파싱
+            return handleAuthException(e, null, model);
         }
     }
 
