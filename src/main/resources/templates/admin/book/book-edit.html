@@ -2,14 +2,14 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/book}">
+      layout:decorate="~{layout/admin}">
 
 <head>
-    <title>도서 수정</title>
+    <title layout:fragment="title">도서 수정 </title>
 </head>
 
 <body>
-<div layout:fragment="content" class="container mt-5">
+<div layout:fragment="content" class="admin-content-area">
     <h2 class="mb-4">도서 정보 수정</h2>
 
     <form th:action="@{'/admin/books/' + ${book.bookId} + '/edit'}"

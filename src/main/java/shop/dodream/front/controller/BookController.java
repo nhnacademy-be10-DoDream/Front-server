@@ -128,6 +128,7 @@ public class BookController {
     @GetMapping("/admin/books")
     public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable){
         Page<BookDto> bookDtoList = bookClient.getBooks(pageable);
+        model.addAttribute("activeMenu", "books");
 
         model.addAttribute("books", bookDtoList);
         return "admin/book/book";
@@ -154,8 +155,8 @@ public class BookController {
         return "redirect:/admin/books";
     }
 
-    @DeleteMapping("/admin/books/delete")
-    public String deleteBook(@RequestParam("bookId") Long bookId){
+    @DeleteMapping("/admin/books/delete/{book-id}")
+    public String deleteBook(@PathVariable("book-id") Long bookId){
         bookClient.deleteBook(bookId);
         return "redirect:/admin/books";
     }
