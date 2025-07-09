@@ -12,9 +12,6 @@ public interface CartClient {
 	@GetMapping("/carts/users")
 	CartResponse getCart();
 	
-	@PostMapping("/carts")
-	CartResponse createCart( @RequestParam(value = "guestId", required = false) String guestId);
-	
 	@DeleteMapping("/carts/{cartId}")
 	void deleteCart(@PathVariable Long cartId);
 	
@@ -32,8 +29,12 @@ public interface CartClient {
 	CartItemResponse updateCartItemQuantity(@RequestBody CartItemRequest request,
 	                                        @PathVariable Long cartItemId, @PathVariable Long cartId);
 	
-	@DeleteMapping("/carts/cart-items/{cartItemId}")
+	@DeleteMapping("/carts/{cartId}/cart-items/{cartItemId}")
 	void deleteCartItem(@PathVariable Long cartItemId);
+	
+	@DeleteMapping("/carts/{cartId}/cart-items/books/{bookId}")
+	void deleteCartItemByBookId(@PathVariable Long cartId, @PathVariable Long bookId);
+	
 	//비회원 처리 로직 시작
 	@GetMapping("/public/carts")
 	GuestCartResponse getPublicCart();

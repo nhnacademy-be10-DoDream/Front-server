@@ -33,4 +33,10 @@ public interface OrderClient {
 
     @PostMapping("/orders/{order-id}/refund")
     Map<String, Object> returnOrder(@PathVariable("order-id") String orderId, PaymentCancelRequest request); //환불
+
+    @PostMapping("/public/orders")
+    Map<String, Object> createOrderForGuest(OrderRequest orderRequest); // 비회원 주문 생성
+
+    @PostMapping("/public/orders/guest")
+    List<OrderResponse> getOrdersForGuest(@RequestBody GuestAuthRequest guestAuthRequest); // 비회원 주문 목록 조회
 }

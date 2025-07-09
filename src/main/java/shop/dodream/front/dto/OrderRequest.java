@@ -15,16 +15,18 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequest {
 
-    private List<OrderItemDto> orderItems;
+    private List<OrderItemRequest> orderItems;
 
     private String userId;
     private String receiverName;
-    private String phoneNumber;
+    private String guestName;
+    private String guestPhone;
+    private String guestPassword;
     private String zipcode;
     private String roadAddress;
     private String detailAddress;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime wantedDate;
-    private Integer price;
+    private Integer totalPrice;
     private Long shippingPolicyId;
 }

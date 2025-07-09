@@ -63,6 +63,6 @@ public interface CouponClient {
     void useMultipleCoupons(@RequestBody UseCouponsRequest request);
 
     @GetMapping("/coupons/book/{book-id}")
-    List<BookAvailableCouponResponse> getAvailableCouponsforBook(@PathVariable("book-id") Long bookId, @RequestParam("bookPrice") Long bookPrice);
+    List<BookAvailableCouponResponse> getAvailableCouponsforBook(@PathVariable("book-id") Long bookId);
 
 }

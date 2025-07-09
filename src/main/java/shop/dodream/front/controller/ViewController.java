@@ -15,4 +15,9 @@ public class ViewController {
     public String signupForm() {
         return "auth/signup";
     }
+
+    @GetMapping("/auth/guest")
+    public String guestAuth() {
+        return "auth/guest";
+    }
 }
