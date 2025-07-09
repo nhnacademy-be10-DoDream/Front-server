@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+  <title layout:fragment="title">태그 관리</title>
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="admin-section-title mb-0">태그 관리</h2>
+    <form th:action="@{/admin/tag/register}" method="get" style="display: inline;">
+      <button type="submit" class="btn-admin btn-primary">태그 추가</button>
+    </form>
+  </div>
+  <table class="table table-admin">
+    <thead>
+    <tr>
+      <th>태그 ID</th>
+      <th>태그이름</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cat : ${tags}">
+      <td th:text="${cat.tagId}">1</td>
+      <td th:text="${cat.tagName}">태그명</td>
+      <td>
+        <form th:action="'/admin/tag/modify/' + ${cat.tagId}" method="get" style="display: inline;">
+          <button type="submit"  class="btn-admin btn-primary btn-sm">수정</button>
+        </form>
+        <form th:action="@{/admin/tag/remove}" method="post" style="display:inline;">
+          <input type="hidden" name="tagId" th:value="${cat.tagId}" />
+          <button type="submit" class="btn-admin btn-danger btn-sm" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <ul class="pagination justify-content-center mt-4" th:if="${totalPages > 1}">
+    <!-- 이전 버튼 -->
+    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+      <a class="page-link"
+         th:href="@{/admin/tags(page=${currentPage - 1})}">«</a>
+    </li>
+
+    <!-- 페이지 번호 목록 -->
+    <li class="page-item"
+        th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+        th:classappend="${pageNum == currentPage} ? 'active'">
+      <a class="page-link"
+         th:href="@{/admin/tags(page=${pageNum})}"
+         th:text="${pageNum + 1}"></a>
+    </li>
+
+    <!-- 다음 버튼 -->
+    <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+      <a class="page-link"
+         th:href="@{/admin/tags(page=${currentPage + 1})}">»</a>
+    </li>
+  </ul>
+</main>
+</body>
+</html>

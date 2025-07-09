@@ -24,10 +24,10 @@ public class UserProfileController {
     private final CouponClient couponClient;
 	private final BookClient bookClient;
 
-	@Value("${app.image.review-prefix}")
-	private String reviewPrefix;
-	@Value("${app.image.book-prefix}")
-	private String bookPrefix;
+//	@Value("${app.image.review-prefix}")
+//	private String reviewPrefix;
+//	@Value("${app.image.book-prefix}")
+//	private String bookPrefix;
 
 	@GetMapping(path = {"/profile", ""})
 	public String getProfile(Model model) {
@@ -112,7 +112,7 @@ public class UserProfileController {
 	public String getReviews(@PageableDefault(size = 5) Pageable pageable,
 							 Model model) {
 		model.addAttribute("reviews", bookClient.getReviews(pageable));
-		model.addAttribute("reviewPrefix", reviewPrefix);
+//		model.addAttribute("reviewPrefix", reviewPrefix);
 		model.addAttribute("activeMenu", "reviews");
 		return "mypage/reviews";
 	}
@@ -121,7 +121,7 @@ public class UserProfileController {
 	public String getLikedBooks(@PageableDefault(size = 5) Pageable pageable,
 								Model model) {
 		model.addAttribute("likedBooks", bookClient.getLikedBooks(pageable));
-		model.addAttribute("bookPrefix", bookPrefix);
+//		model.addAttribute("bookPrefix", bookPrefix);
 		model.addAttribute("activeMenu", "liked-books");
 		return "mypage/liked-books";
 	}

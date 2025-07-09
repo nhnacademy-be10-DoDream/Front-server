@@ -1,6 +1,7 @@
 package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.*;
 
@@ -39,4 +40,10 @@ public interface OrderClient {
 
     @PostMapping("/public/orders/guest")
     List<OrderResponse> getOrdersForGuest(@RequestBody GuestAuthRequest guestAuthRequest); // 비회원 주문 목록 조회
+
+    @GetMapping("/admin/orders/order-status/{order-status}")
+    Page<OrderByStatusResponse> getOrdersByStatus(@PathVariable("order-status") String status, @RequestParam int page, @RequestParam int size);
+
+    @PostMapping("/admin/orders/{order-id}/delivery")
+    void processOrderWaiting(@PathVariable("order-id") String orderId);
 }
