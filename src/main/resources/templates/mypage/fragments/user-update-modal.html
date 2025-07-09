@@ -7,7 +7,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <form id="userUpdateForm" th:action="@{/mypage/profile}" method="post" novalidate>
+                <form id="userUpdateForm" th:action="@{/mypage/profile}" method="post">
                     <input type="hidden" name="_method" value="put" />
 
                     <div class="mypage-modal-body">
@@ -16,11 +16,11 @@
                         <div class="mypage-form-group">
                             <label for="email" class="mypage-form-label" th:text="#{mypage.profile.email}"></label>
                             <div class="mypage-modal-input-group">
-                                <input type="email" class="mypage-form-control" id="email" name="email" required>
-                                <button type="button" class="btn-mypage btn-dark" id="checkEmailButton">중복체크</button>
+                                <input type="email" class="mypage-form-control" id="email" name="email" data-email-input required>
+                                <button type="button" class="btn-mypage btn-dark" data-email-check>중복체크</button>
                             </div>
                             <div id="emailFeedback" class="mypage-form-text"></div>
-                            <div class="invalid-feedback" th:text="#{validation.email.invalid}"></div>
+                            <div class="form-feedback" data-email-feedback></div>
                         </div>
 
                         <!-- 이름 -->
