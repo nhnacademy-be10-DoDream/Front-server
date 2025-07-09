@@ -14,12 +14,12 @@ public class UserCheckController {
     private final UserClient userClient;
 
     @GetMapping("/check-email")
-    public boolean checkEmailDuplicate(@RequestParam String email) {
-        return !userClient.checkEmail(email);
+    public boolean checkEmailDuplicate(@RequestParam("email") String email) {
+        return userClient.checkEmail(email);
     }
 
     @GetMapping("/check-user-id")
-    public boolean checkUsernameDuplicate(@RequestParam String userId) {
-        return !userClient.checkUserId(userId);
+    public boolean checkUsernameDuplicate(@RequestParam("user-id") String userId) {
+        return userClient.checkUserId(userId);
     }
 }

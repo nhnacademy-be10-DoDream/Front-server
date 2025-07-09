@@ -21,14 +21,14 @@
                         <!-- 새 비밀번호 -->
                         <div class="mypage-form-group">
                             <label for="newPassword" class="mypage-form-label" th:text="#{mypage.profile.newPassword}"></label>
-                            <input type="password" class="mypage-form-control" id="newPassword" name="newPassword" required>
+                            <input type="password" class="mypage-form-control" id="newPassword" name="newPassword" data-new-password required>
                         </div>
 
                         <!-- 새 비밀번호 확인 -->
                         <div class="mypage-form-group">
                             <label for="confirmPassword" class="mypage-form-label" th:text="#{mypage.profile.confirmPassword}"></label>
-                            <input type="password" class="mypage-form-control" id="confirmPassword" required>
-                            <div class="invalid-feedback" th:text="#{validation.password.mismatch}"></div>
+                            <input type="password" class="mypage-form-control" id="confirmPassword" data-confirm-password required>
+                            <div class="form-feedback" data-password-feedback></div>
                         </div>
 
                     </div>
