@@ -14,19 +14,18 @@
 <body class="d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">도서 관리</a>
+    <a class="navbar-brand" href="#">카테고리 관리</a>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" th:href="@{/admin/books}">도서 목록</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/admin/books/api-register-form}">도서 openAPI등록</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/admin/books/register-form}">도서 직접등록</a></li>
+        <li class="nav-item"><a class="nav-link-admin" th:href="@{/admin/categories}">카테고리 목록</a></li>
+        <li class="nav-item"><a class="nav-link-admin" th:href="@{/admin/category/register}">카테고리 등록</a></li>
       </ul>
     </div>
   </div>
 </nav>
 
 <main class="container mt-4 flex-grow-1">
-  <div layout:fragment="content">여기에 페이지 콘텐츠가 들어갑니다.</div>
+  <div layout:fragment="content"></div>
 </main>
 
 <footer th:replace="~{layout/footer :: footer}"></footer>

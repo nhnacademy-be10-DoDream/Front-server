@@ -1,5 +1,6 @@
 package shop.dodream.front.controller;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -13,8 +14,7 @@ import shop.dodream.front.dto.PageResponse;
 import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -37,6 +37,13 @@ public class BookController {
         model.addAttribute("chunksMap", bookTagInfos.stream()
                 .collect(Collectors.toMap(BookTagInfo::getTagId, b -> chunkBooks(b.getBooks(), 6))));
 
+        List<BookDto> books = bookClient.getAllBooks();
+        for( BookDto book : books) {
+            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
+            String imageUrl = bookUrlPrefix + book.getBookUrl();
+            book.setBookUrl(imageUrl);
+        }
+        model.addAttribute("books", books);
         return "home";
     }
 
@@ -101,12 +108,47 @@ public class BookController {
 
         return "redirect:/books/"+bookId;
 
-
-
-
-
-
     }
+
+    @GetMapping("/search")
+    public String searchBooks(@RequestParam String keyword,
+                              @RequestParam(defaultValue = "NONE") BookSortType sort,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "8") int size,
+                              Model model) {
+
+        PageResponse<BookItemResponse> books;
+        try {
+            books = bookClient.searchBooks(keyword, sort, page, size);
+        } catch (Exception e) {
+            model.addAttribute("books", Collections.emptyList());
+            model.addAttribute("totalPages", 0);
+            model.addAttribute("currentPage", 0);
+            return "book/bookSearchList";
+        }
+
+        List<BookDto> bookDtos = new ArrayList<>();
+        for (BookItemResponse book : books.getContent()) {
+            try {
+                BookDto bookDto = bookClient.getBook(book.getBookId());
+                String prefix = "https://dodream.shop/dodream-images/book/";
+                String imageUrl = prefix + bookDto.getBookUrl();
+                bookDto.setBookUrl(imageUrl);
+                bookDtos.add(bookDto);
+            } catch (FeignException.NotFound e) {
+                continue;
+            }
+        }
+        model.addAttribute("books", bookDtos);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("totalPages", books.getTotalPages());
+        model.addAttribute("currentPage", books.getNumber());
+        model.addAttribute("sort", sort);
+        return "book/bookSearchList";
+    }
+
+
+
 
 
 

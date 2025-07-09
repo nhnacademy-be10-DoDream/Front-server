@@ -34,6 +34,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(requestInterceptor);
 
         registry.addInterceptor(categoryInterceptor)
-                .addPathPatterns("/**");
+                .addPathPatterns("/**")
+                .addPathPatterns("/search/**");
+
     }
 }

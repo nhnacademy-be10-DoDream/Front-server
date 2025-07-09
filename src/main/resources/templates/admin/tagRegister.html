@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/tag}">
+
+<head>
+  <title>태그 등록</title>
+</head>
+
+<body>
+<main layout:fragment="content">
+  <div class="container">
+    <h2 class="mb-4">태그 등록</h2>
+    <form th:action="@{/admin/tag/register}" method="post">
+      <div class="mb-3">
+        <label for="tagName" class="form-label">태그 이름</label>
+        <input type="text" class="form-control" id="tagName" name="tagName" required>
+      </div>
+      <button type="submit" class="btn btn-primary">등록</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

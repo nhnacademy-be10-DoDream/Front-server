@@ -100,6 +100,11 @@ header, footer {
     color: #000 !important
 }
 
+.nav-link-admin {
+    cursor: pointer;
+    color: #ce6363 !important
+}
+
 .dropdown-header {
     font-weight: bold;
     padding: 0.5rem 0;
