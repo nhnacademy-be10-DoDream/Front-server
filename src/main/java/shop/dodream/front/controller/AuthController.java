@@ -7,17 +7,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import shop.dodream.front.client.AuthClient;
-import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.*;
-import shop.dodream.front.holder.AccessTokenHolder;
-import shop.dodream.front.service.RedisUserSessionService;
-import shop.dodream.front.util.CookieUtils;
+import shop.dodream.front.service.AuthService;
 
 import java.io.IOException;
 import java.util.Map;
@@ -27,31 +22,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-    private final AuthClient authClient;
-    private final UserClient userClient;
-    private final RedisUserSessionService redisUserSessionService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public String login(@ModelAttribute LoginRequest request, Model model,HttpServletResponse response) throws IOException {
         try{
-            TokenResponse tokenResponse = authClient.login(request).getBody();
-            CookieUtils.setCookie(response, "accessToken", tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), true);
-            CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 604800, true);
-            AccessTokenHolder.set(tokenResponse.getAccessToken());
-            UserDto user = userClient.getUser();
-            AccessTokenHolder.clear();
-            redisUserSessionService.saveUser(tokenResponse.getAccessToken(),user);
+            authService.login(request,response);
             return "redirect:/";
         } catch (FeignException e) {
             return handleAuthException(e, request.getUserId(), model);
         }
     }
 
-
-
     @GetMapping("/payco/login")
     public void paycoLogin(HttpServletResponse response)throws IOException {
-        String url = authClient.getAuthorizeUrl().getBody();
+        String url = authService.getPaycoUrl();
         response.sendRedirect(url);
     }
 
@@ -63,13 +48,7 @@ public class AuthController {
             Model model
     ) {
         try {
-            TokenResponse tokenResponse = authClient.paycoCallback(code, state).getBody();
-            CookieUtils.setCookie(response, "accessToken", tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), true);
-            CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 604800, true);
-            AccessTokenHolder.set(tokenResponse.getAccessToken());
-            UserDto user = userClient.getUser();
-            AccessTokenHolder.clear();
-            redisUserSessionService.saveUser(tokenResponse.getAccessToken(),user);
+            authService.paycoLogin(code, state, response);
             return "redirect:/";
         }catch (FeignException e) {
             return handleAuthException(e, null, model);
@@ -78,35 +57,14 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        String cookieHeader = request.getHeader(HttpHeaders.COOKIE);
-        try {
-            authClient.logout(cookieHeader);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        String accessToken = null;
-        if (request.getCookies() != null) {
-            accessToken = CookieUtils.extractCookieValue(
-                    CookieUtils.convertToSetCookieList(request.getCookies()), "accessToken"
-            );
-        }
-
-        if (accessToken != null) {
-            redisUserSessionService.deleteUser(accessToken);
-        }
-
-        CookieUtils.deleteCookie(response, "accessToken");
-        CookieUtils.deleteCookie(response, "refreshToken");
-
+        authService.logout(request, response);
         return "redirect:/";
 
     }
 
     @PostMapping("/signup")
     public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
-//        String password = request.getPassword();
-//        request.setPassword(passwordEncoder.encode(password));
-        userClient.createUserAccount(new SignupRequest(request, userAddressDto));
+        authService.signUp(request, userAddressDto);
         return "redirect:/";
     }
 
