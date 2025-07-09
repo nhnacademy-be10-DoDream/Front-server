@@ -8,6 +8,5 @@ import java.util.List;
 public class CartResponse {
 	private Long cartId;
 	private String userId;
-	private String guestId;
 	private List<CartItemResponse> items;
 }
