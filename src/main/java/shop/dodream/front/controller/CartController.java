@@ -69,7 +69,7 @@ public class CartController {
 		
 		return "cart";
 	}
-	
+
 	@PostMapping("/cart/add")
 	public String addCartItem(@ModelAttribute CartItemRequest request, HttpServletRequest httpServletRequest, HttpServletResponse response) {
 		String accessToken = getAccessTokenFromCookies(httpServletRequest.getCookies());

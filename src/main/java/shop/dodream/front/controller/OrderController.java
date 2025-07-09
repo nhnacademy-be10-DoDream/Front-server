@@ -4,11 +4,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.client.UserClient;
-import shop.dodream.front.dto.CartItemResponse;
-import shop.dodream.front.dto.OrderRequest;
+import shop.dodream.front.dto.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -24,12 +24,10 @@ public class OrderController {
 
     private final OrderClient orderClient;
     private final UserClient userClient;
-    @GetMapping
-    public String orderSheet(Model model, HttpServletRequest request) {
-        List<CartItemResponse> cartItems = List.of(
-                new CartItemResponse(1L, 1L, "호날두 되는법" , 120000L, 2L, "http://storage.java21.net:8000/dodream-images/book/0524d09f-0fb9-4671-8611-ef6e00983628.png"),
-                new CartItemResponse(2L, 2L, "호날두 자서전" , 50000L, 2L, "http://storage.java21.net:8000/dodream-images/book/0524d09f-0fb9-4671-8611-ef6e00983628.png")
-        );
+
+    @PostMapping
+    public String orderSheet(Model model, @ModelAttribute("items") CartOrderRequest cartOrderRequest) {
+        List<OrderItemRequest> cartItems = cartOrderRequest.getItems();
         try {
             model.addAttribute("addressList", userClient.getAddresses());
         } catch (Exception e) {
@@ -42,11 +40,7 @@ public class OrderController {
         // 장바구니에서 선택된 아이템을 주문서로 전달
         model.addAttribute("orderItems", cartItems);
         // 총 금액 계산
-        int totalAmount = 0;
-        totalAmount += cartItems.stream()
-                .mapToInt(cartItem -> Math.toIntExact(cartItem.getSalePrice() * cartItem.getQuantity()))
-                .sum();
-        model.addAttribute("totalAmount", totalAmount);
+        model.addAttribute("totalAmount", cartOrderRequest.getOrderTotal());
 //        model.addAttribute("userId", "user");
 
         return "order/order-sheet"; // 주문서 페이지로 이동
@@ -55,16 +49,63 @@ public class OrderController {
     @PostMapping("/payment")
     public String pay(@ModelAttribute OrderRequest orderRequest,
                       @RequestParam("wantedDateRaw") String wantedDateRaw,
-                      @RequestParam("userId") String userId) {
+                      @RequestParam(value = "userId", required = false) String userId) {
         ZonedDateTime zoned = LocalDate.parse(wantedDateRaw)
                 .atStartOfDay(ZoneId.of("Asia/Seoul"));
         orderRequest.setWantedDate(zoned);
 
-        orderRequest.setUserId(userId);
 
-        Map<String, Object> orderResponse = orderClient.createOrder(orderRequest);
+        Map<String, Object> orderResponse;
+        if (userId == null || userId.isEmpty()) {
+            // 비회원 주문 처리
+            orderResponse = orderClient.createOrderForGuest(orderRequest);
+        } else {
+            // 회원 주문 처리
+            orderRequest.setUserId(userId);
+            orderResponse = orderClient.createOrder(orderRequest);
+        }
+
         //결제창 리다이렉트
         return "redirect:/payment?orderId=%s&totalPrice=%s"
                 .formatted(orderResponse.get("orderId"), orderResponse.get("totalPrice"));
+    }
+
+    @GetMapping("detail/{order-id}")
+    public String getOrderDetail(@PathVariable("order-id") String orderId, Model model) {
+        // 주문 상세 조회
+        OrderDetailsDto orderDetail = orderClient.getOrderDetail(orderId);
+        model.addAttribute("order", orderDetail);
+        return "order/order-detail"; // 주문 상세 페이지로 이동
+
+    }
+
+    @GetMapping("/{orderId}/cancel-sheet")
+    public String showCancelForm(@PathVariable String orderId,
+                                 @RequestParam String type,
+                                 Model model) {
+        // 주문 취소 폼 표시
+        model.addAttribute("orderId", orderId);
+        model.addAttribute("type", type);
+        return "order/cancel-sheet";
+    }
+
+    @PostMapping("/{orderId}/cancel")
+    public String cancelOrder(@PathVariable String orderId,
+                              PaymentCancelRequest request,
+                              @RequestParam String type) {
+        Map<String, Object> response;
+        if ("cancel".equals(type)) {
+            response = orderClient.cancelOrder(orderId, request);
+        } else if ("refund".equals(type)) {
+            response = orderClient.returnOrder(orderId, request);
+        }
+
+        return "redirect:/order/detail/%s".formatted(orderId);
+    }
+
+    @PostMapping("/guest")
+    public String getGuestOrders(Model model, GuestAuthRequest guestAuthRequest) {
+        model.addAttribute("orders", orderClient.getOrdersForGuest(guestAuthRequest));
+        return "order/guest-orders"; // 비회원 주문 목록 페이지로 이동
     }
 }
