@@ -21,6 +21,7 @@ function handleSendCode() {
         })
         .then(() => {
             alert("인증번호가 전송되었습니다.");
+            startTimer();
             isCodeSent = true;
             button.textContent = "인증번호 재전송";
             startTimer(); // 타이머 재시작
@@ -56,11 +57,6 @@ function startTimer() {
     }, 1000);
 }
 
-// 초기화
-document.addEventListener("DOMContentLoaded", () => {
-    startTimer(); // 페이지 진입 시 타이머 시작
-
-});
 document.addEventListener('DOMContentLoaded', function () {
     if (verifySuccess) {
         alert(verifyMessage);
