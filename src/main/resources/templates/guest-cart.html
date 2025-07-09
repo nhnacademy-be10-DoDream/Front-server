@@ -28,7 +28,7 @@
           <tr th:each="item, stat : ${cartItems}">
             <!-- 상품 정보 -->
             <td>
-              <a th:href="@{/book/{id}(id=${item.bookId})}" th:text="${item.title}">
+              <a th:href="@{/books/{id}(id=${item.bookId})}" th:text="${item.title}">
                 <img th:src="@{${item.bookUrl}}" style="width:48px;">
               </a>
             </td>
