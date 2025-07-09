@@ -16,3 +16,7 @@ management:
       enabled: false
     redis:
       enabled: false
+
+server:
+  tomcat:
+    max-part-count: 30

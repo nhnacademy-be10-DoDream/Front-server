@@ -1,0 +1,27 @@
+
+spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+  cloud:
+    config:
+      enabled: false
+
+server:
+  tomcat:
+    max-part-count: 30
+
+minio:
+  prefix: https://dodream.shop/dodream-images
+  book: /book/
+  review: /review/
+
+logging:
+  level:
+    feign: TRACE
+    shop.dodream.front: TRACE
+
+gateway:
+  url: s1.java21.net:10320

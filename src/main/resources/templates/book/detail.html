@@ -4,306 +4,10 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
 
+
 <head>
     <title th:text="${book.title} + #{book.detail.title.suffix}">책 상세</title>
-    <style>
-        body {
-            font-family: sans-serif;
-        }
-
-        .book-detail-container {
-            max-width: 1100px;
-            margin: 3rem auto;
-            padding: 0 5%;
-        }
-
-        .book-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .book-header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .book-meta {
-            font-size: 0.95rem;
-            color: #555;
-        }
-
-        .book-content {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-        }
-
-        .book-image,
-        .book-detail {
-            flex: 0 0 320px;
-        }
-
-        .book-image img {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-        }
-
-        .book-detail {
-            font-size: 0.95rem;
-            color: #333;
-        }
-
-        .price-info div {
-            margin-bottom: 0.5rem;
-        }
-
-        .price-info strong {
-            color: #d32f2f;
-            font-size: 1.2rem;
-        }
-
-        .price-info del {
-            color: #999;
-        }
-
-        .rating {
-            margin: 1rem 0;
-        }
-
-        /* 책 평점평균 별*/
-        .star {
-            color: #ddd;
-            font-size: 1.2rem;
-        }
-        .star.filled {
-            color: #ffc107;
-        }
-        .star.half-filled {
-            background: linear-gradient(90deg, #ffc107 50%, #ddd 50%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-
-        .rating-text {
-            font-size: 0.9rem;
-            color: #777;
-        }
-
-        .quantity-box {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .quantity-box input {
-            width: 50px;
-            text-align: center;
-            padding: 0.3rem;
-            font-size: 1rem;
-        }
-
-        .quantity-box button {
-            width: 30px;
-            height: 30px;
-            font-size: 1.1rem;
-            border: none;
-            background-color: #eee;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .total-price {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #d32f2f;
-            margin-top: 0.5rem;
-        }
-
-        .btns {
-            margin-top: 1.5rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btns button {
-            flex: 1;
-            padding: 0.8rem 0;
-            font-size: 1rem;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        .btn-cart {
-            background-color: #ff4081;
-            color: white;
-        }
-
-        .btn-buy {
-            background-color: #d32f2f;
-            color: white;
-        }
-
-        /* 책 소개 */
-        .book-intro {
-            margin: 4rem 0 2rem;
-            padding: 1.5rem 0;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            gap: 2rem;
-        }
-
-        .book-intro-title {
-            width: 100px;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #222;
-        }
-
-        .book-intro-content {
-            flex: 1;
-            font-size: 0.95rem;
-            color: #444;
-            line-height: 1.6;
-        }
-
-        /* 리뷰 작성 */
-        .review-write-section {
-            margin: 4rem 0 2rem;
-            padding: 2rem;
-            background-color: #fafafa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .review-write-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #222;
-        }
-
-        .review-write-inner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .review-write-inner .star-box {
-            font-size: 1.8rem;
-            color: #ccc;
-            cursor: pointer;
-        }
-
-        .review-write-inner .star-box span {
-            padding: 0 4px;
-        }
-
-        .review-write-inner .star-box .filled {
-            color: #ffc107;
-        }
-
-        .review-write-inner textarea {
-            width: 100%;
-            max-width: 800px;
-            height: 100px;
-            font-size: 1rem;
-            padding: 0.8rem;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            resize: none;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .review-btns {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .review-btns button {
-            background-color: #1976d2;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            padding: 0.6rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* 마이리뷰 */
-        .review-section {
-            margin: 2rem 0;
-            padding: 2rem;
-            background-color: #fefefe;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .review-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .review-section .filter-info {
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .review-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .review {
-            background-color: #fff;
-            padding: 1rem 1.2rem;
-            border-radius: 6px;
-            border: 1px solid #eee;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .review-header strong {
-            font-size: 1rem;
-            color: #333;
-        }
-
-        .review-header .stars {
-            font-size: 1.1rem;
-        }
-
-        .review-header .stars span {
-            color: #ccc;
-        }
-
-        .review-header .stars span.filled {
-            color: #ffc107;
-        }
-
-
-        .review p {
-            font-size: 0.95rem;
-            color: #555;
-            margin: 0;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/detail.css}">
 </head>
 
 <body>
@@ -318,7 +22,7 @@
 
         <div class="book-content">
             <div class="book-image">
-                <img th:src="@{${book.bookUrls[0]}}" th:alt="${book.title}">
+                <img th:src="@{|${minioPath.book}${book.bookUrls[0]}|}" th:alt="${book.title}">
             </div>
 
             <div class="book-detail">
@@ -334,13 +38,35 @@
                               th:text="#{book.price.discount.format(${book.discountRate}, ${#numbers.formatInteger(discountAmount, 0, 'COMMA')})}">
                             (10%, 2,000원 할인)
                         </span>
+
                     </div>
+
+                    <div class="like-container">
+                        <!-- 로그인 한 사용자 -->
+                        <div th:if="${user != null}">
+                            <form th:action="@{'/books/' + ${book.bookId} + '/like'}" method="post">
+                                <button class="like-button"
+                                        type="submit"
+                                        th:classappend="${isLiked} ? ' liked' : ''"
+                                        th:text="#{book.like.button}">
+                                    ♡ 찜하기
+                                </button>
+                            </form>
+
+                            <!-- 서버에서 전달한 메시지 출력 -->
+                            <div th:if="${likeMsg}" class="like-message" style="color: red; margin-top: 5px;">
+                                <p th:text="#{${likeMsg}}"></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <strong th:text="#{book.price.mileage}">마일리지:</strong> <!-- 값 필요 -->
                     </div>
                     <div>
                         <strong th:text="#{book.price.category}">카테고리??:</strong> <!-- 값 필요 -->
-                    </div>                    <div>
+                    </div>
+                    <div>
                         <strong>ISBN:</strong>
                         <span th:text="${book.isbn}">ISBN 값</span>
                     </div>
@@ -351,7 +77,7 @@
                     <div class="stars">
                         <span th:each="i : ${#numbers.sequence(1, 5)}"
                               th:class="${i <= T(java.lang.Math).floor(reviewSummary.ratingAvg)} ? 'star filled' :
-                                        (${i - reviewSummary.ratingAvg < 1} ? 'star half-filled' : 'star')">
+                                        (${reviewSummary.ratingAvg % 1 != 0 and i == T(java.lang.Math).floor(reviewSummary.ratingAvg) + 1} ? 'star half-filled' : 'star')">
                             ★
                         </span>
                     </div>
@@ -378,17 +104,23 @@
                 </div>
 
                 <div class="btns">
-                    <button class="btn-cart" th:text="#{button.cart}">장바구니 담기</button>
+                    <form th:action="@{/cart/add}" method="post" class="mt-2">
+                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                        <input type="hidden" name="quantity"/>
+                        <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+                    </form>
                     <button class="btn-buy" th:text="#{button.buy}">바로구매</button>
                 </div>
             </div>
         </div>
+
 
         <!-- 책 소개 -->
         <div class="book-intro">
             <div class="book-intro-title" th:text="#{book.intro.title}">책소개</div>
             <div class="book-intro-content" th:text="${book.description}">책 소개 내용</div>
         </div>
+
 
         <!-- 리뷰 작성 -->
         <div class="review-write-section">
@@ -413,36 +145,57 @@
                           wrap="soft"></textarea>
 
                 <div class="review-btns">
+                    <!-- 등록 버튼 -->
                     <button type="submit" th:text="#{button.review.submit}">등록</button>
-                    <input type="file" name="files" multiple accept=".png, .jpeg, .jpg,">
+                    <!-- 파일 업로드 버튼 -->
+                    <label class="upload-label">
+                        이미지 업로드
+                        <input type="file" name="files" multiple accept=".png, .jpeg, .jpg" hidden>
+                    </label>
+
                 </div>
             </form>
         </div>
 
 
-        <!-- 마이리뷰 -->
+        <!-- 리뷰목록 -->
         <div class="review-section">
-            <h2 th:text="#{review.my.title}">마이리뷰</h2>
-            <div class="filter-info" th:text="#{review.count.label(${reviewCount})}">
-                전체 (0)
+            <h2 th:text="#{review.my.title}">리뷰 목록</h2>
+            <div class="filter-info">
+                <div class="filter-info"
+                     th:text="#{review.count.label(${reviewCount})}">
+                    전체 (0)
+                </div>
             </div>
-            <div class="review-list">
-                <div class="review" th:each="review : ${reviews}">
+            <div class="review-list" id="review-list">
+                <div class="review" th:each="review : ${reviews.content}">
                     <div class="review-header">
                         <strong th:text="${review.userId}">작성자</strong>
                         <span class="stars">
-                            <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                  th:class="${i <= review.rating} ? 'filled' : ''">★</span>
-                        </span>
+                    <span th:each="i : ${#numbers.sequence(1, 5)}"
+                          th:class="${i <= review.rating} ? 'filled' : ''">★</span>
+                </span>
                     </div>
                     <p th:text="${review.content}">리뷰 내용</p>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- JS -->
-    <script>
+            <input type="hidden" id="is-last" th:value="${reviews.last}">
+
+            <div style="text-align: center; margin-top: 1rem;">
+                <button id="load-more-btn" type="button">더보기</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<!-- JS -->
+
+
+<div layout:fragment="scripts">
+    <script th:inline="javascript">
+
         const unitPrice = [[${book.salePrice}]];
 
         function changeQty(diff) {
@@ -463,8 +216,51 @@
                 star.classList.toggle("filled", index < score);
             });
         }
-    </script>
 
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let size = [[${size}]];
+            const bookId = [[${book.bookId}]];
+
+
+            // 장바구니 수량 전달 추가
+            const cartForm = document.querySelector('form[action="/cart/add"]');
+            cartForm.addEventListener('submit', function () {
+                const qty = document.getElementById("quantity").value;
+                const hiddenQtyInput = this.querySelector('input[name="quantity"]');
+                hiddenQtyInput.value = qty;
+            });
+
+
+
+            // 리뷰 더보기 버튼
+            document.getElementById('load-more-btn').addEventListener('click', () => {
+                size += 5;
+
+                const url = `/books/${bookId}?page=0&size=${size}`;
+
+                fetch(url)
+                    .then(res => res.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        const newReviewList = doc.querySelector('#review-list');
+                        const newReviewCount = doc.querySelector('#review-count');
+                        const isLast = doc.querySelector('#is-last');
+
+                        document.querySelector('#review-list').innerHTML = newReviewList.innerHTML;
+                        document.querySelector('#review-count').innerText = newReviewCount.innerText;
+
+                        if (isLast && isLast.value === 'true') {
+                            document.getElementById('load-more-btn').style.display = 'none';
+                        }
+                    });
+            });
+        });
+    </script>
 </div>
+
 </body>
 </html>
