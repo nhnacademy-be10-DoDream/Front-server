@@ -125,7 +125,7 @@ public class CartController {
 	@GetMapping("/cart/coupons")
 	@ResponseBody
 	public List<BookAvailableCouponResponse> getAvailableCoupons(@RequestParam Long bookId) {
-		return couponClient.getAvailableCoupons(bookId);
+		return couponClient.getAvailableCouponsforBook(bookId);
 	}
 	
 	// === 쿠키에서 accessToken 추출 ===
