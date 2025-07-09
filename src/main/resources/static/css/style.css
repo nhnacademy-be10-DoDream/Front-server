@@ -73,8 +73,26 @@ header, footer {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     font-family: 'Noto Sans KR', sans-serif;
 }
+.branding > div {
+    width: 200px; /* 원하는 고정 너비 지정 */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 이미지와 텍스트 사이 간격 */
+    overflow: hidden; /* 넘침 내용 숨기기 */
+}
+
+.branding img {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0; /* 이미지 크기 유지 */
+    object-fit: contain;
+}
 
 .branding .logo {
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 넘칠 때 ... 표시 */
+    flex-shrink: 1; /* 공간 없으면 텍스트 줄임 */
     font-size: 1.8rem;
     font-weight: bold;
     color: black;
