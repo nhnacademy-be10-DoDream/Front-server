@@ -10,6 +10,7 @@
 
 <body>
 <div layout:fragment="content">
+
   <table cellspacing="0" cellpadding="0" width="866" align="center" border="0">
     <tr>
       <td valign="top" bgcolor="#ffffff">
@@ -24,10 +25,10 @@
           </tr>
           </thead>
           <tbody>
-          <tr th:each="item : ${cartItems}">
+          <tr th:each="item, stat : ${cartItems}">
             <!-- 상품 정보 -->
             <td>
-              <a th:href="@{/book/{id}(id=${item.bookId})}" th:title="${item.title}">
+              <a th:href="@{/book/{id}(id=${item.bookId})}" th:text="${item.title}">
                 <img th:src="@{${item.bookUrl}}" style="width:48px;">
               </a>
             </td>
@@ -47,7 +48,8 @@
             </td>
 
             <td align="center">
-              <select class="wrapping-select">
+              <select class="wrapping-select"
+                      th:attr="data-index=${stat.index}">
                 <option data-price="0" value="">선택 안 함</option>
                 <option th:each="wrap : ${wrappingOptions}"
                         th:value="${wrap.id}"
@@ -71,10 +73,38 @@
   </table>
 
   <!-- 장바구니 요약 정보 -->
-  <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px;">
-    <p><strong>총 제품 금액:</strong> <span id="totalProductPrice">0원</span></p>
-    <p><strong>총 주문 금액:</strong> <span id="orderTotal">0원</span></p>
-  </div>
+  <form th:action="@{/order}" method="post">
+    <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px; text-align: center;">
+      <p><strong>총 제품 금액:</strong> <span id="totalProductPrice">0원</span></p>
+      <p><strong>총 주문 금액:</strong> <span id="orderTotal">0원</span></p>
+      <input type="hidden" name="orderTotal" value="0" />
+
+      <!-- 장바구니 DTO용 hidden 필드들 -->
+      <div th:each="item, stat : ${cartItems}">
+        <input type="hidden" th:name="|items[${stat.index}].bookId|" th:value="${item.bookId}" />
+        <input type="hidden" th:name="|items[${stat.index}].title|" th:value="${item.title}" />
+        <input type="hidden" th:name="|items[${stat.index}].price|" th:value="${item.salePrice}" />
+        <input type="hidden" th:name="|items[${stat.index}].quantity|" th:value="${item.quantity}" />
+        <input type="hidden" th:name="|items[${stat.index}].wrappingId|" />
+      </div>
+
+      <button type="submit" style="
+      display: inline-block;
+      margin-top: 24px;
+      padding: 12px 40px;
+      background: #007bff;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    "
+              onmouseover="this.style.background='#0056b3'"
+              onmouseout="this.style.background='#007bff'"
+      >주문하기</button>
+    </div>
+  </form>
 </div>
 </body>
 </html>
@@ -87,32 +117,56 @@
   function recalculateGuestCartTotal() {
     let totalProductPrice = 0;
     let totalWrappingPrice = 0;
+    const seenBookIds = new Set();
 
-    document.querySelectorAll("tr[th\\:each]").forEach(row => {
-      const salePriceText = row.querySelector("td:nth-child(3) span")?.textContent || '0';
-      const quantity = parseInt(row.querySelector("td:nth-child(4) input")?.value || '1');
+    document.querySelectorAll("tbody tr").forEach(row => {
+      const priceSpan = row.querySelector("td:nth-child(2) span");
+      const salePriceText = priceSpan ? priceSpan.textContent : '0';
+      const salePrice = Number(salePriceText.replace(/[^0-9]/g, "")) || 0;
 
-      const salePrice = parseInt(salePriceText.replace(/[^0-9]/g, '')) || 0;
-      totalProductPrice += salePrice * quantity;
+      const quantityInput = row.querySelector("input[type='number']");
+      let quantity = 1;
+      if (quantityInput && quantityInput.value !== "") {
+        quantity = Number(quantityInput.value);
+        if (isNaN(quantity) || quantity < 1) quantity = 1;
+      }
 
-      // wrapping price
-      const wrappingSelect = row.querySelector('.wrapping-select');
-      const selectedOption = wrappingSelect?.selectedOptions[0];
-      const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
-      totalWrappingPrice += wrappingPrice * quantity;
+      // bookId 추출 (상품명 td의 a 태그에서 id 파싱)
+      const bookLink = row.querySelector("td:nth-child(1) a");
+      let bookId = null;
+      if (bookLink) {
+        const href = bookLink.getAttribute('href');
+        const match = href.match(/\/book\/(\d+)/);
+        if (match) bookId = match[1];
+      }
+
+      // 0원 행, 중복 bookId 행 제외
+      if (salePrice > 0 && bookId && !seenBookIds.has(bookId)) {
+        seenBookIds.add(bookId);
+        totalProductPrice += salePrice * quantity;
+
+        const wrappingSelect = row.querySelector('.wrapping-select');
+        const selectedOption = wrappingSelect?.selectedOptions[0];
+        const wrappingPrice = selectedOption ? Number(selectedOption.dataset.price || 0) : 0;
+        totalWrappingPrice += wrappingPrice * quantity;
+
+        const index = wrappingSelect.getAttribute("data-index");
+        document.querySelector(`input[name='items[${index}].wrappingId']`).value = selectedOption?.value || "";
+      }
     });
 
     const orderTotal = totalProductPrice + totalWrappingPrice;
-
+    const orderTotalInput = document.querySelector("input[name='orderTotal']");
+    if (orderTotalInput) {
+      orderTotalInput.value = orderTotal; // 값 반영
+    }
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
     document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
   }
 
-  // 이벤트 바인딩
+
   window.onload = () => {
     recalculateGuestCartTotal();
-
-    // 포장 옵션 변경 시 총액 다시 계산
     document.querySelectorAll("select").forEach(select => {
       select.addEventListener("change", recalculateGuestCartTotal);
     });
