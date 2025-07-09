@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title">주문 관리</title>
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+    <!-- 상단: 섹션 제목과 검색/필터 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0">주문 관리</h2>
+        <div>
+            <a th:href="@{/admin/orders(status='WAITING')}"
+               class="btn btn-outline-primary me-2"
+               th:classappend="${param.status == 'WAITING'} ? 'active' : ''">대기</a>
+
+            <a th:href="@{/admin/orders(status='DELIVERING')}"
+               class="btn btn-outline-primary me-2"
+               th:classappend="${param.status == 'DELIVERING'} ? 'active' : ''">배송중</a>
+
+            <a th:href="@{/admin/orders(status='COMPLETED')}"
+               class="btn btn-outline-primary"
+               th:classappend="${param.status == 'COMPLETED'} ? 'active' : ''">배송완료</a>
+
+            <a th:href="@{/admin/orders(status='CANCELED')}"
+               class="btn btn-outline-primary"
+               th:classappend="${param.status == 'CANCELED'} ? 'active' : ''">주문취소</a>
+
+            <a th:href="@{/admin/orders(status='RETURNED')}"
+               class="btn btn-outline-primary"
+               th:classappend="${param.status == 'RETURNED'} ? 'active' : ''">반품</a>
+        </div>
+    </div>
+
+    <!-- 주문 목록 테이블 -->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>주문번호</th>
+            <th>주문 상태</th>
+            <th>주문일시</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders.content}">
+            <td>
+                <a th:href="@{/order/detail/{id}(id=${order.orderId})}" th:text="${order.orderId}"></a>
+            </td>
+            <td>
+                <span th:text="${order.orderStatus}"></span>
+                <form th:if="${order.orderStatus == '대기'}" th:action="@{/admin/orders/order-status/waiting}" method="post" style="display:inline;">
+                    <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                    <button type="submit" class="btn btn-sm btn-primary ms-2">배송중으로 변경</button>
+                </form>
+            </td>
+            <td th:text="${#temporals.format(order.orderAt, 'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+        <tr th:if="${orders.content.isEmpty()}">
+            <td colspan="3" class="text-center">조회된 주문이 없습니다.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이징 처리 -->
+    <nav th:if="${orders.totalPages > 1}" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/orders(status=${param.status}, page=${orders.number - 1}, size=${orders.size})}">이전</a>
+            </li>
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, orders.totalPages - 1)}"
+                th:classappend="${pageNum == orders.number} ? 'active'">
+                <a class="page-link" th:href="@{/admin/orders(status=${param.status}, page=${pageNum}, size=${orders.size})}"
+                   th:text="${pageNum + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+                <a class="page-link" th:href="@{/admin/orders(status=${param.status}, page=${orders.number + 1}, size=${orders.size})}">다음</a>
+            </li>
+        </ul>
+    </nav>
+</main>
+</body>
+</html>
