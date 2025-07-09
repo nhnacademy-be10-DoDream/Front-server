@@ -131,14 +131,10 @@ public class CartController {
 	@PostMapping("/cart/merge")
 	public String mergeCart(HttpServletRequest request) {
 		String accessToken = getAccessTokenFromCookies(request.getCookies());
-		if(accessToken == null || accessToken.isEmpty()){
-			//return "error";
-		}
 		String guestId = getGuestIdFromCookie(request);
-		if(guestId == null){
-			//return "error";
+		if (accessToken != null && guestId != null) {
+			cartClient.mergeCart();
 		}
-		cartClient.mergeCart();
 		return "redirect:/cart";
 	}
 	
