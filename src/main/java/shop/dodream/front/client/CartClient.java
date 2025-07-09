@@ -50,4 +50,7 @@ public interface CartClient {
 	
 	@PutMapping("/public/carts/{guestId}/quantity")
 	GuestCartResponse updateGuestCartItem(@PathVariable String guestId,@RequestBody GuestCartItemRequest request);
+	
+	@DeleteMapping("/public/carts/{guestId}")
+	void deleteGuestCart(@PathVariable String guestId);
 }
