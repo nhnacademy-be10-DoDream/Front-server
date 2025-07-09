@@ -37,7 +37,7 @@ public class TagController {
 
     @GetMapping("/admin/tag/register")
     public String showRegisterForm() {
-        return "admin/tagRegister";
+        return "admin/tag/tagRegister";
     }
 
 
@@ -57,17 +57,18 @@ public class TagController {
         int end = Math.min(start + size, tags.size());
         List<TagResponse> pagedTags = tags.subList(start, end);
 
+        model.addAttribute("activeMenu", "tags");
         model.addAttribute("tags", pagedTags);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) tags.size() / size));
-        return "/admin/tagList";
+        return "/admin/tag/tagList";
     }
 
     @GetMapping("/admin/tag/modify/{tag-id}")
     public String showModifyForm(@PathVariable("tag-id") Long tagId, Model model) {
         TagResponse tag = bookClient.getTag(tagId);
         model.addAttribute("tag", tag);
-        return "admin/tagModify";
+        return "admin/tag/tagModify";
     }
 
 

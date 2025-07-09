@@ -33,6 +33,12 @@
                 <a th:href="@{/admin/user-coupons/issue}" class="admin-nav-link" th:classappend="${activeMenu=='issue-coupon'}?'active':''">
                     <i class="bi bi-gift me-2"></i> 쿠폰 발급
                 </a>
+                <a th:href="@{/admin/categories}" class="admin-nav-link" th:classappend="${activeMenu=='categories'}?'active':''">
+                    <i class="bi bi-folder"></i> 카테고리 관리
+                </a>
+                <a th:href="@{/admin/tags}" class="admin-nav-link" th:classappend="${activeMenu=='tags'}?'active':''">
+                    <i class="bi bi-tag"></i> 태그 관리
+                </a>
             </nav>
         </aside>
         <section class="col-md-9">

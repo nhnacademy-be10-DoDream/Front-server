@@ -50,7 +50,7 @@ public class CategoryController {
 
     @GetMapping("/admin/category/register")
     public String showCategoryRegisterForm() {
-        return "admin/categoryRegister";
+        return "admin/category/categoryRegister";
     }
 
 
@@ -62,7 +62,7 @@ public class CategoryController {
 
     @GetMapping("/admin/categories")
     public String getCategories(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "50") int size,
+                                @RequestParam(defaultValue = "30") int size,
                                 Model model){
         List<CategoryResponse> categories = bookClient.getAllCategories();
 
@@ -70,17 +70,18 @@ public class CategoryController {
         int end = Math.min(start + size, categories.size());
         List<CategoryResponse> pagedCategories = categories.subList(start, end);
 
-        model.addAttribute("categories", pagedCategories);
+        model.addAttribute("activeMenu", "categories");
+        model.addAttribute("categoryList", pagedCategories);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) categories.size() / size));
-        return "/admin/categoryList";
+        return "admin/category/categoryList";
     }
 
     @GetMapping("/admin/category/modify/{category-id}")
     public String showCategoryModifyForm(@PathVariable("category-id") Long categoryId, Model model) {
         CategoryResponse category = bookClient.getCategory(categoryId);
         model.addAttribute("category", category);
-        return "admin/categoryModify";
+        return "admin/category/categoryModify";
     }
 
 

@@ -121,11 +121,13 @@ public class BookController {
         try {
             books = bookClient.searchBooks(keyword, sort, page, size);
         } catch (Exception e) {
+            e.printStackTrace();
             model.addAttribute("books", Collections.emptyList());
             model.addAttribute("totalPages", 0);
             model.addAttribute("currentPage", 0);
             return "book/bookSearchList";
         }
+        System.out.println(books.getContent().size());
 
         List<BookDto> bookDtos = new ArrayList<>();
         for (BookItemResponse book : books.getContent()) {
@@ -146,11 +148,6 @@ public class BookController {
         model.addAttribute("sort", sort);
         return "book/bookSearchList";
     }
-
-
-
-
-
 
 
 }

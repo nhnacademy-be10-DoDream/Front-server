@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title">카테고리 등록</title>
+</head>
+
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0">새 카테고리 등록</h2>
+        <form th:action="@{/admin/categories}" method="get" style="display: inline;">
+            <button type="submit"  class="btn-admin btn-secondary">목록으로 돌아가기</button>
+        </form>
+
+    </div>
+
+    <form th:action="@{/admin/category/register}"
+          method="post">
+        <div class="form-group mb-3">
+            <label for="categoryName" class="form-label">카테고리 이름</label>
+            <input type="text" class="form-control" id="categoryName" name="categoryName" required>
+        </div>
+        <div class="form-group mb-3">
+            <label for="depth" class="form-label">깊이 (Depth)</label>
+            <select class="form-select" id="depth" name="depth" required>
+                <option value="1">1차</option>
+                <option value="2">2차</option>
+                <option value="3">3차</option>
+                <option value="3">4차</option>
+                <option value="3">5차</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="parentId" class="form-label">부모 카테고리 ID (없으면 비워두세요)</label>
+            <input type="number" class="form-control" id="parentId" name="parentId">
+        </div>
+
+        <button type="submit" class="btn btn-primary">등록</button>
+        <a th:href="@{/admin/categories}" class="btn btn-secondary">취소</a>
+    </form>
+
+</main>
+</body>
+</html>

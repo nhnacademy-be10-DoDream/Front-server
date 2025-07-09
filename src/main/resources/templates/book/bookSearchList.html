@@ -20,15 +20,11 @@
         <div class="sidebar-section category-scroll-section">
             <h5>분야별 보기</h5>
             <ul>
-                <li th:each="entry : ${categories}">
-                    <!-- 1차 카테고리 (볼드, 비활성) -->
-                    <span class="parent-category" th:text="${entry.key.categoryName}">1차카테고리</span>
+                <li th:each="parentCategory : ${categories.keySet()}">
+                    <a th:text="${parentCategory.categoryName}" class="parent-category"></a>
                     <ul>
-                        <!-- 2차 카테고리 (이름 + 수) -->
-                        <li th:each="child : ${entry.value}">
-                            <a class="child-category"
-                               th:href="@{'/categories/' + ${child.categoryId}}"
-                               th:text="${child.categoryName + ' (' + child.count + ')'}"></a>
+                        <li th:each="childCategory : ${categories.get(parentCategory)}">
+                            <a th:text="${childCategory.categoryName}" class="child-category"></a>
                         </li>
                     </ul>
                 </li>
@@ -53,6 +49,7 @@
             <div class="filter-item">
                 <label>정렬</label>
                 <select>
+                    <option>정확도순</option>
                     <option>인기순</option>
                     <option>최신순</option>
                     <option>최고가순</option>
