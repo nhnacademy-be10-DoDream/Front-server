@@ -17,7 +17,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @FeignClient(name = "bookClient", url = "${gateway.url}", configuration = FeignMultipartSupportConfig.class)
-//@FeignClient(name = "bookClient", url = "http://localhost:10320", configuration = FeignMultipartSupportConfig.class)
+//@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
 
     @GetMapping("/admin/books")
@@ -36,6 +36,11 @@ public interface BookClient {
 
     @GetMapping("/public/categories/{category-id}")
     CategoryResponse getCategory(@PathVariable("category-id") Long categoryId);
+
+
+    // 해당도서의 카테고리 트리 조회
+    @GetMapping("/public/books/{book-id}/categories")
+    List<CategoryTreeResponse> getCategoriesByBookId(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/public/tags/{tag-id}/books")
     PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId);
@@ -65,7 +70,6 @@ public interface BookClient {
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
     Void createReview(
             @PathVariable("book-id") Long bookId,
-//            @RequestHeader("X-USER-ID") String userId,
             @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
@@ -95,8 +99,11 @@ public interface BookClient {
 
 
 
+    @PostMapping("/books/{book-id}/likes")
+    Void registerBookLike(@PathVariable("book-id") Long bookId);
 
-
+    @GetMapping("/books/{book-id}/me")
+    Boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
 
 
 

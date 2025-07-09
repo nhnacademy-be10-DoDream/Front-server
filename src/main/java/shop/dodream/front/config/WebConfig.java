@@ -33,8 +33,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/auth/login-form").setViewName("auth/login");
         registry.addViewController("/auth/signup-form").setViewName("auth/signup");
-        registry.addViewController("/admin/books/api-register-form").setViewName("admin/book-api-register");
-        registry.addViewController("/admin/books/register-form").setViewName("admin/book-register");
+        registry.addViewController("/admin/books/api-register-form").setViewName("admin/book/book-api-register");
+        registry.addViewController("/admin/books/register-form").setViewName("admin/book/book-register");
     }
 
     @Override
