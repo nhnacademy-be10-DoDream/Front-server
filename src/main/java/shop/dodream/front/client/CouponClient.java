@@ -13,8 +13,8 @@ import java.util.List;
 @FeignClient(name = "couponClient", url = "${gateway.url}")
 public interface CouponClient {
 	
-	@GetMapping("/coupons")
-	List<BookAvailableCouponResponse> getAvailableCoupons(@RequestParam Long bookId, @RequestParam Long salePrice);
+	@GetMapping("/coupons/book/{bookId}")
+	List<BookAvailableCouponResponse> getAvailableCoupons(@PathVariable Long bookId);
 
 	@GetMapping("/coupons/me/available")
 	List<AvailableCouponResponse> getAvailableCoupons();
