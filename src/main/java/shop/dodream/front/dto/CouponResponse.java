@@ -1,18 +1,20 @@
 package shop.dodream.front.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@AllArgsConstructor
+@Setter
 @NoArgsConstructor
-public class BookAvailableCouponResponse {
+@AllArgsConstructor
+@Builder
+public class CouponResponse {
     private Long couponId;
+    private Long policyId;
     private String policyName;
+    private String type;
     private Long discountValue;
     private Long minPurchaseAmount;
     private Long maxDiscountAmount;
-    private Long finalPrice;
+    private Long bookId;
+    private Long categoryId;
 }

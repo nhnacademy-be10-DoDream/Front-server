@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<head>
+    <title th:text="#{mypage.orders.title}"></title>
+    <link rel="stylesheet" href="/css/mypage.css">
+
+</head>
+
+<body>
+<div layout:fragment="content" class="mypage-content-area" style="max-width: 1300px; margin: 0 auto;">
+
+    <div class="mypage-content-header">
+        <h2 class="mypage-section-title" th:text="#{mypage.orders.heading}"></h2>
+    </div>
+
+    <!-- 주문 내역이 없는 경우 -->
+    <div th:if="${orders == null or orders.isEmpty()}" class="empty-container">
+        <i class="bi bi-bag empty-icon"></i>
+        <p class="empty-text" th:text="#{mypage.order.noOrders}"></p>
+        <a th:href="@{/}" class="btn-mypage btn-dark" th:text="#{mypage.button.startShopping}"></a>
+    </div>
+
+    <!-- 주문 내역 목록 -->
+    <div th:if="${orders != null and not orders.isEmpty()}">
+        <div th:each="order : ${orders}" class="info-card">
+
+            <!-- 주문 헤더 -->
+            <div class="info-card-header">
+                <div>
+                    <h6 class="mypage-subtitle">
+                        <span th:text="#{mypage.order.orderNumber}"></span>:
+                        <span class="text-primary" th:text="${order.orderId}"></span>
+                    </h6>
+                </div>
+
+                <div>
+                <span class="mypage-badge"
+                      th:classappend="'status-' + ${order.status}">
+                    <span th:text="#{mypage.order.status} + ': ' + ${order.status}"></span>
+                </span>
+                    <span th:text="#{mypage.order.orderDate}"></span>:
+                    <span th:text="${#temporals.format(order.orderAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </div>
+            </div>
+
+            <!-- 주문 내용 -->
+            <div class="info-card-body">
+
+                <!-- 주문 아이템들 -->
+                <div th:each="item, itemStat : ${order.orderItems}"
+                     th:if="${item != null}"
+                     class="info-card-item">
+
+                    <div class="info-card-label">
+                        <i class="bi bi-box me-1"></i>
+                        <span th:text="#{mypage.order.item} + ' #' + ${itemStat.count}"></span>
+                    </div>
+
+                    <div class="info-card-value">
+                        <div class="w-100">
+                            <div class="row align-items-start">
+                                <div class="col-md-8">
+                                    <h6 class="section-title mb-2" th:text="${item.title}"></h6>
+                                    <div class="counter-text mb-2">
+                                        <span th:text="#{mypage.order.quantity}"></span>:
+                                        <span th:text="${item.quantity} + ' ' + #{mypage.text.items}"></span>
+                                        <span th:text="${#numbers.formatCurrency(item.price)}"></span>
+                                    </div>
+
+                                    <!-- 포장 정보 -->
+                                    <div th:if="${item.wrappingInfo != null and not #strings.isEmpty(item.wrappingInfo.name)}"
+                                         class="counter-text text-success">
+                                        <i class="bi bi-gift me-1"></i>
+                                        <span th:text="${item.wrappingInfo.name}"></span>
+                                        <span th:text="'(+' + ${#numbers.formatCurrency(item.wrappingInfo.price)} + ')'"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <div class="section-title"
+                                         th:text="${#numbers.formatCurrency(item.price * item.quantity)}"></div>
+                                    <div th:if="${item.wrappingInfo != null and item.wrappingInfo.price != null}"
+                                         class="counter-text text-success">
+                                        <span th:text="#{mypage.order.wrappingFee} + ': ' + ${#numbers.formatCurrency(item.wrappingInfo.price)}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 주문 정보 안내 -->
+                <div class="info-card-item">
+                    <div class="info-card-label">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <span th:text="#{mypage.order.notice}"></span>
+                    </div>
+                    <div class="info-card-value">
+                        <div class="alert alert-light mb-0 w-100">
+                            <span class="counter-text" th:text="#{mypage.order.info}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 주문 금액 요약 -->
+                <div class="info-card-item">
+                    <div class="info-card-label">
+                        <i class="bi bi-calculator me-1"></i>
+                        <span th:text="#{mypage.order.paymentSummary}"></span>
+                    </div>
+                    <div class="info-card-value">
+                        <div class="info-card-item">
+                            <div class="d-flex justify-content-between">
+                                <span th:text="#{mypage.order.subtotal}"></span>
+                                <span th:text="${#numbers.formatCurrency(order.totalPrice)}"></span>
+                            </div>
+
+                            <div th:if="${order.pointUsed > 0}"
+                                 class="d-flex justify-content-between text-danger mt-1">
+                                <span th:text="#{mypage.order.pointUsed}"></span>
+                                <span th:text="'-' + ${#numbers.formatCurrency(order.pointUsed)}"></span>
+                            </div>
+
+                            <div th:if="${order.couponDiscount > 0}"
+                                 class="d-flex justify-content-between text-danger mt-1">
+                                <span th:text="#{mypage.order.couponDiscount}"></span>
+                                <span th:text="'-' + ${#numbers.formatCurrency(order.couponDiscount)}"></span>
+                            </div>
+
+                            <hr class="my-2">
+
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span th:text="#{mypage.order.paymentAmount}"></span>
+                                <span class="point-amount"
+                                      th:text="${#numbers.formatCurrency(order.paymentAmount)}"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 주문 관리 버튼 -->
+            <div class="info-card-actions">
+                <a th:href="@{/order/detail/{id}(id=${order.orderId})}"
+                   class="btn-mypage btn-outline-gray">
+                    <i class="bi bi-eye me-1"></i><span th:text="#{mypage.button.detail}"></span>
+                </a>
+
+                <button th:if="${order.status == '배송완료'}"
+                        type="button"
+                        class="btn-mypage btn-outline-primary"
+                        th:onclick="'writeReview(''' + ${order.orderId} + ''')'">
+                    <i class="bi bi-star me-1"></i><span th:text="#{mypage.button.writeReview}"></span>
+                </button>
+
+                <button th:if="${order.status == '대기'}"
+                        type="button"
+                        class="btn-mypage btn-outline-danger"
+                        th:onclick="'cancelOrder(''' + ${order.orderId} + ''', this)'">
+                    <i class="bi bi-x-circle me-1"></i><span th:text="#{mypage.button.orderCancel}"></span>
+                </button>
+
+                <button th:if="${order.status == '배송완료'}"
+                        type="button"
+                        class="btn-mypage btn-outline-danger"
+                        th:onclick="'requestReturn(''' + ${order.orderId} + ''')'">
+                    <i class="bi bi-arrow-return-left me-1"></i><span th:text="#{mypage.button.orderReturn}"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+</body>
+</html>
