@@ -13,7 +13,7 @@ import java.util.List;
 public interface CouponClient {
 	
 	@GetMapping("/coupons/book/{bookId}")
-	List<BookAvailableCouponResponse> getAvailableCoupons(@PathVariable Long bookId);
+	List<BookAvailableCouponResponse> getAvailableCouponsforBook(@PathVariable Long bookId);
 
 	@GetMapping("/coupons/me/available")
 	List<AvailableCouponResponse> getAvailableCoupons();
