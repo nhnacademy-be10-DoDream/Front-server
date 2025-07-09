@@ -2,6 +2,7 @@ package shop.dodream.front.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +11,8 @@ import shop.dodream.front.client.CartClient;
 import shop.dodream.front.client.CouponClient;
 import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.dto.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -55,25 +55,25 @@ public class CartController {
 		List<CartItemResponse> cartItems = cartClient.getCartItems(cart.getCartId());
 		model.addAttribute("cartItems", cartItems);
 		
-		// 각 카트 아이템에 대해 사용 가능한 쿠폰 조회
-		Map<Long, List<BookAvailableCouponResponse>> couponsMap = new HashMap<>();
-		for (CartItemResponse item : cartItems) {
-			List<BookAvailableCouponResponse> coupons = couponClient.getAvailableCoupons(item.getBookId(), item.getSalePrice());
-			couponsMap.put(item.getCartItemId(), coupons);
-		}
-		model.addAttribute("couponsMap", couponsMap);
-		
 		List<WrappingDto> wrappingOptions = orderClient.getGiftWraps();
 		model.addAttribute("wrappingOptions", wrappingOptions);
 		
 		return "cart";
 	}
-	
+
 	@PostMapping("/cart/add")
-	public String addCartItem(@ModelAttribute CartItemRequest request,HttpServletRequest httpServletRequest) {
+	public String addCartItem(@ModelAttribute CartItemRequest request, HttpServletRequest httpServletRequest, HttpServletResponse response) {
 		String accessToken = getAccessTokenFromCookies(httpServletRequest.getCookies());
 		if (accessToken == null || accessToken.isEmpty()) {
 			String guestId = getGuestIdFromCookie(httpServletRequest);
+			if(guestId == null){
+				GuestCartResponse guestCartResponse = cartClient.getPublicCart();
+				guestId = guestCartResponse.getGuestId();
+				Cookie cookie = new Cookie("guestId", guestId);
+				cookie.setPath("/");
+				cookie.setMaxAge(60 * 60 * 24 * 30); // 30일
+				response.addCookie(cookie);
+			}
 			GuestCartItemRequest guestRequest = new GuestCartItemRequest();
 			guestRequest.setBookId(request.getBookId());
 			guestRequest.setQuantity(request.getQuantity());
@@ -95,9 +95,10 @@ public class CartController {
 		return "redirect:/cart";
 	}
 	
-	@DeleteMapping("/cart/{cartItemId}")
-	public String deleteCartItem(@PathVariable Long cartItemId) {
-		cartClient.deleteCartItem(cartItemId);
+	@PostMapping("/cart/{bookId}")
+	public String deleteCartItem(@PathVariable Long bookId) {
+		CartResponse cart = cartClient.getCart();
+		cartClient.deleteCartItemByBookId(cart.getCartId(),bookId);
 		return "redirect:/cart";
 	}
 	
@@ -119,6 +120,12 @@ public class CartController {
 		String guestId = getGuestIdFromCookie(request);
 		cartClient.deleteGuestCartItem(guestId, bookId);
 		return "redirect:/cart";
+	}
+	
+	@GetMapping("/cart/coupons")
+	@ResponseBody
+	public List<BookAvailableCouponResponse> getAvailableCoupons(@RequestParam Long bookId) {
+		return couponClient.getAvailableCouponsforBook(bookId);
 	}
 	
 	// === 쿠키에서 accessToken 추출 ===

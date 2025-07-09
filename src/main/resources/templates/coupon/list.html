@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>쿠폰 관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <h2>쿠폰 목록</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>쿠폰 ID</th>
+                <th>정책 이름</th>
+                <th>할인 유형</th>
+                <th>할인 값</th>
+                <th>최소 구매 금액</th>
+                <th>최대 할인 금액</th>
+                <th>도서 ID</th>
+                <th>카테고리 ID</th>
+                <th>상태</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="coupon : ${coupons.content}">
+                <td th:text="${coupon.couponId}"></td>
+                <td th:text="${coupon.policyName}"></td>
+                <td th:text="${coupon.discountType}"></td>
+                <td th:text="${coupon.discountValue}"></td>
+                <td th:text="${coupon.minPurchaseAmount}"></td>
+                <td th:text="${coupon.maxDiscountAmount}"></td>
+                <td th:text="${coupon.bookId}"></td>
+                <td th:text="${coupon.categoryId}"></td>
+                <td th:text="${coupon.status}"></td>
+                <td>
+                    <a th:href="@{/admin/coupons/edit/{id}(id=${coupon.couponId})}" class="btn btn-primary">수정</a>
+                    <form th:action="@{/admin/coupons/delete/{id}(id=${coupon.couponId})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${coupons.first} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/admin/coupons(page=0)}">First</a>
+                </li>
+                <li class="page-item" th:classappend="${coupons.first} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/admin/coupons(page=${coupons.number - 1})}">Previous</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, coupons.totalPages - 1)}" th:classappend="${i == coupons.number} ? 'active' : ''">
+                    <a class="page-link" th:href="@{/admin/coupons(page=${i})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${coupons.last} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/admin/coupons(page=${coupons.number + 1})}">Next</a>
+                </li>
+                <li class="page-item" th:classappend="${coupons.last} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/admin/coupons(page=${coupons.totalPages - 1})}">Last</a>
+                </li>
+            </ul>
+        </nav>
+
+        <a th:href="@{/admin/coupons/add}" class="btn btn-success">새 쿠폰 추가</a>
+    </div>
+</div>
+</body>
+</html>

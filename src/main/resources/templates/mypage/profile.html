@@ -10,6 +10,16 @@
 
 <body>
 <div layout:fragment="content" class="mypage-content-area">
+
+    <div id="validationMessages" class="validation-messages" style="display: none;">
+        <span class="msg-invalid-email" th:text="#{validation.invalidEmail}"></span>
+        <span class="msg-duplicate-email" th:text="#{validation.duplicateEmail}"></span>
+        <span class="msg-available-email" th:text="#{validation.availableEmail}"></span>
+        <span class="msg-password-mismatch" th:text="#{validation.passwordMismatch}"></span>
+        <span class="msg-network-error" th:text="#{validation.networkError}"></span>
+    </div>
+
+
     <div class="mypage-content-header">
         <h2 class="mypage-section-title" th:text="#{mypage.profile.heading}"></h2>
     </div>

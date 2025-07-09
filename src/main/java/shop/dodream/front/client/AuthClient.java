@@ -5,20 +5,21 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.LoginRequest;
+import shop.dodream.front.dto.TokenResponse;
 
-@FeignClient(name = "authClient", url = "${gateway.url}")
+@FeignClient(name = "authClient", url = "localhost:10320")
 public interface AuthClient {
     @PostMapping("/auth/login")
-    ResponseEntity<Void> login(@RequestBody LoginRequest request);
+    ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request);
 
     @PostMapping("/auth/refresh")
-    ResponseEntity<Void> refresh(@RequestHeader(HttpHeaders.COOKIE) String refreshToken);
+    ResponseEntity<TokenResponse> refresh(@RequestHeader(HttpHeaders.COOKIE) String refreshToken);
 
     @PostMapping("/auth/logout")
     ResponseEntity<Void> logout(@RequestHeader(HttpHeaders.COOKIE) String refreshToken);
 
     @PostMapping("/auth/payco/callback")
-    ResponseEntity<Void> paycoCallback(
+    ResponseEntity<TokenResponse> paycoCallback(
             @RequestParam("code") String code,
             @RequestParam("state") String state
     );

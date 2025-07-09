@@ -1,0 +1,121 @@
+<!-- templates/admin/policies/edit.html -->
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title">쿠폰 정책 수정</title>
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+    <!-- 상단: 제목 + 목록 복귀 버튼 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0">쿠폰 정책 수정</h2>
+        <form th:action="@{/admin/policies}" method="get" style="display: inline;">
+            <button type="submit" class="btn-admin btn-secondary">목록으로 돌아가기</button>
+        </form>
+    </div>
+
+    <form th:action="@{/admin/policies/edit/{policyId}(policyId=${policy.id})}"
+          method="post">
+        <!-- PUT 메서드 오버라이드 -->
+        <input type="hidden" name="_method" value="put"/>
+
+        <!-- 1) 화면에 보여주고 전송도 되는 read-only field -->
+        <div class="form-group mb-3">
+            <label for="name" class="form-label">정책 이름</label>
+            <input type="text"
+                   id="name"
+                   name="name"
+            th:value="${policy.name}"
+            class="form-control"
+            readonly />
+        </div>
+
+        <!-- 2) enum 도 String 으로 전송 -->
+        <div class="form-group mb-3">
+            <label for="discountType" class="form-label">할인 유형</label>
+            <input type="text"
+                   id="discountType"
+                   name="discountType"
+            th:value="${policy.discountType}"
+            class="form-control"
+            />
+        </div>
+
+        <!-- 3) 실제 수정 가능한 값들 -->
+        <div class="form-group mb-3">
+            <label for="discountValue" class="form-label">할인 값</label>
+            <input type="number"
+                   id="discountValue"
+                   name="discountValue"
+            th:value="${policy.discountValue}"
+            class="form-control"/>
+        </div>
+
+        <!-- 최소 구매 금액 -->
+        <div class="form-group mb-3">
+            <label for="minPurchaseAmount" class="form-label">최소 구매 금액</label>
+            <input type="number"
+                   id="minPurchaseAmount"
+                   name="minPurchaseAmount"
+            th:value="${policy.minPurchaseAmount}"
+            class="form-control"
+            />
+        </div>
+
+        <!-- 최대 할인 금액 -->
+        <div class="form-group mb-3">
+            <label for="maxDiscountAmount" class="form-label">최대 할인 금액</label>
+            <input type="number"
+                   id="maxDiscountAmount"
+                   name="maxDiscountAmount"
+            th:value="${policy.maxDiscountAmount}"
+            class="form-control"/>
+        </div>
+
+        <!-- 만료 전략 -->
+        <div class="form-group mb-3">
+            <label for="expiredStrategy" class="form-label">만료 전략</label>
+            <input type="text"
+                   id="expiredStrategy"
+                   name="expiredStrategy"
+            th:value="${policy.expiredStrategy}"
+            class="form-control"
+            />
+        </div>
+
+        <!-- 고정 만료일 -->
+        <div class="form-group mb-3">
+            <label for="fixedDate" class="form-label">고정 만료일</label>
+            <input
+                    type="datetime-local"
+                    id="fixedDate"
+                    name="fixedDate"
+                    class="form-control"
+                    th:value="${#temporals.format(policy.fixedDate, 'yyyy-MM-dd''T''HH:mm')}" />
+        </div>
+
+        <!-- 추가 일수 -->
+        <div class="form-group mb-4">
+            <label for="plusDay" class="form-label">추가 일수</label>
+            <input type="number"
+                   id="plusDay"
+                   name="plusDay"
+            th:value="${policy.plusDay}"
+            class="form-control"/>
+        </div>
+
+        <!-- 제출 -->
+        <div class="mt-4">
+            <button type="submit" class="btn-admin btn-primary">변경 사항 저장</button>
+            <form th:action="@{/admin/policies}" method="get" style="display: inline;">
+                <button type="submit" class="btn-admin btn-secondary">취소</button>
+            </form>
+        </div>
+    </form>
+</main>
+</body>
+</html>
