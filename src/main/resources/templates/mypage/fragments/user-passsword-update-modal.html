@@ -1,0 +1,44 @@
+<div th:fragment="userPasswordUpdateModalFragment">
+    <div class="modal fade" id="userPasswordUpdateModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="mypage-modal-content modal-content">
+                <div class="mypage-modal-header">
+                    <h5 class="mypage-modal-title" th:text="#{mypage.profile.edit.password.title}"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form id="userUpdatePasswordForm" th:action="@{/mypage/password}" method="post" novalidate>
+                    <input type="hidden" name="_method" value="put" />
+
+                    <div class="mypage-modal-body">
+
+                        <!-- 현재 비밀번호 -->
+                        <div class="mypage-form-group">
+                            <label for="currentPassword" class="mypage-form-label" th:text="#{mypage.profile.currentPassword}"></label>
+                            <input type="password" class="mypage-form-control" id="currentPassword" name="currentPassword" required>
+                        </div>
+
+                        <!-- 새 비밀번호 -->
+                        <div class="mypage-form-group">
+                            <label for="newPassword" class="mypage-form-label" th:text="#{mypage.profile.newPassword}"></label>
+                            <input type="password" class="mypage-form-control" id="newPassword" name="newPassword" data-new-password required>
+                        </div>
+
+                        <!-- 새 비밀번호 확인 -->
+                        <div class="mypage-form-group">
+                            <label for="confirmPassword" class="mypage-form-label" th:text="#{mypage.profile.confirmPassword}"></label>
+                            <input type="password" class="mypage-form-control" id="confirmPassword" data-confirm-password required>
+                            <div class="form-feedback" data-password-feedback></div>
+                        </div>
+
+                    </div>
+
+                    <div class="mypage-modal-footer">
+                        <button type="button" class="btn-mypage btn-outline-gray" data-bs-dismiss="modal" th:text="#{modal.cancel}"></button>
+                        <button type="submit" class="btn-mypage btn-dark" th:text="#{modal.save}"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

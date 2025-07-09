@@ -12,42 +12,42 @@
     <link rel="stylesheet" th:href="@{/css/mypage.css}" />
     <th:block layout:fragment="css"></th:block>
 </head>
-<body>
+<body th:data-active-menu="${activeMenu ?: 'default'}">
 <header th:replace="~{layout/header :: header}"></header>
 
-<main class="container-fluid mypage-container mt-4">
+<main class="mypage-container">
     <div class="row">
         <div class="col-lg-3 col-md-4">
             <div class="mypage-sidebar">
-                <div class="sidebar-header">
+                <div class="mypage-sidebar-header">
                     <h5 th:text="#{mypage.title}"></h5>
                 </div>
-                <nav class="sidebar-nav">
-                    <a th:href="@{/mypage/profile}" class="nav-link" th:classappend="${activeMenu == 'profile'} ? 'active' : ''">
+                <nav class="mypage-sidebar-nav">
+                    <a th:href="@{/mypage/profile}" class="mypage-nav-link" th:classappend="${activeMenu == 'profile'} ? 'active' : ''">
                         <i class="bi bi-person"></i>
                         <span th:text="#{mypage.profile.heading}"></span>
                     </a>
-                    <a th:href="@{/mypage/addresses}" class="nav-link" th:classappend="${activeMenu == 'addresses'} ? 'active' : ''">
+                    <a th:href="@{/mypage/addresses}" class="mypage-nav-link" th:classappend="${activeMenu == 'addresses'} ? 'active' : ''">
                         <i class="bi bi-geo-alt"></i>
                         <span th:text="#{mypage.address.heading}"></span>
                     </a>
-                    <a th:href="@{/mypage/orders}" class="nav-link" th:classappend="${activeMenu == 'orders'} ? 'active' : ''">
+                    <a th:href="@{/mypage/orders}" class="mypage-nav-link" th:classappend="${activeMenu == 'orders'} ? 'active' : ''">
                         <i class="bi bi-bag"></i>
                         <span th:text="#{mypage.orders.heading}"></span>
                     </a>
-                    <a th:href="@{/mypage/points}" class="nav-link" th:classappend="${activeMenu == 'points'} ? 'active' : ''">
+                    <a th:href="@{/mypage/points}" class="mypage-nav-link" th:classappend="${activeMenu == 'points'} ? 'active' : ''">
                         <i class="bi bi-coin"></i>
                         <span th:text="#{mypage.points.heading}"></span>
                     </a>
-                    <a th:href="@{/mypage/reviews}" class="nav-link" th:classappend="${activeMenu == 'reviews'} ? 'active' : ''">
+                    <a th:href="@{/mypage/reviews}" class="mypage-nav-link" th:classappend="${activeMenu == 'reviews'} ? 'active' : ''">
                         <i class="bi bi-star"></i>
                         <span th:text="#{mypage.reviews.heading}"></span>
                     </a>
-                    <a th:href="@{/mypage/liked-books}" class="nav-link" th:classappend="${activeMenu == 'liked-books'} ? 'active' : ''">
+                    <a th:href="@{/mypage/liked-books}" class="mypage-nav-link" th:classappend="${activeMenu == 'liked-books'} ? 'active' : ''">
                         <i class="bi bi-heart"></i>
-                        <span th:text="#{mypage.liked.books.heading}"></span>
+                        <span th:text="#{mypage.likedBooks.heading}"></span>
                     </a>
-                    <a th:href="@{/mypage/coupons}" class="nav-link" th:classappend="${activeMenu == 'coupons'} ? 'active' : ''">
+                    <a th:href="@{/mypage/coupons}" class="mypage-nav-link" th:classappend="${activeMenu == 'coupons'} ? 'active' : ''">
                         <i class="bi bi-ticket-perforated"></i>
                         <span th:text="#{mypage.coupons.heading}"></span>
                     </a>
@@ -55,7 +55,7 @@
             </div>
         </div>
         <div class="col-lg-9 col-md-8">
-            <div class="content-area">
+            <div class="mypage-content-area">
                 <div layout:fragment="content">...</div>
             </div>
         </div>

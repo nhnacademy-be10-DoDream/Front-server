@@ -7,16 +7,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.config.FeignMultipartSupportConfig;
 import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import shop.dodream.front.dto.*;
 
 import java.util.List;
 
 
-//@FeignClient(name = "bookClient", url = "http://localhost:10320", configuration = FeignMultipartSupportConfig.class)
-@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
+@FeignClient(name = "bookClient", url = "${gateway.url}")
 public interface BookClient {
     @GetMapping("/admin/books")
     List<BookDto> getBooks();
@@ -27,6 +27,7 @@ public interface BookClient {
     // 카테고리 영역
     @PostMapping("/admin/categories")
     void createCategory(@RequestBody CategoryRequest request);
+
 
     @GetMapping("/public/categories/{depth}/depth")
     List<CategoryResponse> getCategoriesByDepth(@PathVariable("depth") Long depth);
@@ -121,7 +122,7 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}/reviews")
     Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/admin/reviews/{book-id}/review-summary")
+    @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/books/search")
@@ -138,5 +139,9 @@ public interface BookClient {
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 
+    @GetMapping("/reviews/me")
+    Page<ReviewResponse> getReviews(Pageable pageable);
 
+    @GetMapping("/likes/me")
+    Page<BookListResponse> getLikedBooks(Pageable pageable);
 }

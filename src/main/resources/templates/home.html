@@ -56,6 +56,7 @@
 
                                 <form th:action="@{/cart/add}" method="post" class="mt-2">
                                     <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                                    <input type="hidden" name="quantity" value="1" />
                                     <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
                                 </form>
                             </div>

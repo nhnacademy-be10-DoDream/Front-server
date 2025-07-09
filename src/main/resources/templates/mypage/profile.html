@@ -9,70 +9,90 @@
 </head>
 
 <body>
-<div layout:fragment="content" class="content-area">
-    <div class="content-header">
-        <h2 class="section-title section-title-lg" th:text="#{mypage.profile.heading}"></h2>
+<div layout:fragment="content" class="mypage-content-area">
+
+    <div id="validationMessages" class="validation-messages" style="display: none;">
+        <span class="msg-invalid-email" th:text="#{validation.invalidEmail}"></span>
+        <span class="msg-duplicate-email" th:text="#{validation.duplicateEmail}"></span>
+        <span class="msg-available-email" th:text="#{validation.availableEmail}"></span>
+        <span class="msg-password-mismatch" th:text="#{validation.passwordMismatch}"></span>
+        <span class="msg-network-error" th:text="#{validation.networkError}"></span>
     </div>
 
-    <table class="info-table table-default">
-        <!-- 테이블 내용 동일 -->
+
+    <div class="mypage-content-header">
+        <h2 class="mypage-section-title" th:text="#{mypage.profile.heading}"></h2>
+    </div>
+
+    <table class="info-table">
         <tr>
-            <th th:text="#{user.userId}"></th>
-            <td th:text="${user.userId}"></td>
+            <th th:text="#{mypage.profile.userId}"></th>
+            <td th:text="${currentUser.userId}"></td>
         </tr>
         <tr>
-            <th th:text="#{user.name}"></th>
-            <td th:text="${user.name}"></td>
+            <th th:text="#{mypage.profile.name}"></th>
+            <td th:text="${currentUser.name}"></td>
         </tr>
         <tr>
-            <th th:text="#{user.email}"></th>
-            <td th:text="${user.email}"></td>
+            <th th:text="#{mypage.profile.email}"></th>
+            <td th:text="${currentUser.email}"></td>
         </tr>
         <tr>
-            <th th:text="#{user.phone}"></th>
-            <td th:text="${user.phone}"></td>
+            <th th:text="#{mypage.profile.phone}"></th>
+            <td th:text="${currentUser.phone}"></td>
         </tr>
         <tr>
-            <th th:text="#{user.birth}"></th>
-            <td th:text="${#dates.format(user.birthDate, 'yyyy-MM-dd')}"></td>
+            <th th:text="#{mypage.profile.birth}"></th>
+            <td th:text="${#dates.format(currentUser.birthDate, 'yyyy-MM-dd')}"></td>
         </tr>
         <tr>
-            <th th:text="#{user.grade}"></th>
+            <th th:text="#{mypage.profile.grade}"></th>
             <td>
-                <span class="grade-badge"
-                      th:classappend="'grade-' + ${#strings.toLowerCase(user.grade)}"
-                      th:text="${user.grade}"></span>
+                <span class="mypage-badge"
+                      th:classappend="'grade-' + ${#strings.toLowerCase(currentUser.grade)}"
+                      th:text="${currentUser.grade}"></span>
             </td>
         </tr>
         <tr>
-            <th th:text="#{user.point}"></th>
+            <th th:text="#{mypage.profile.point}"></th>
             <td>
-                <span class="point-amount" th:text="${#numbers.formatInteger(user.point, 0, 'COMMA')} + 'P'"></span>
+                <span class="mypage-amount" th:text="${#numbers.formatInteger(currentUser.point, 0, 'COMMA')} + 'P'"></span>
             </td>
         </tr>
         <tr>
-            <th th:text="#{user.joinDate}"></th>
-            <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <th th:text="#{mypage.profile.joinDate}"></th>
+            <td th:text="${#temporals.format(currentUser.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         <tr>
-            <th th:text="#{user.lastLogin}"></th>
-            <td th:text="${#temporals.format(user.lastLoginAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <th th:text="#{mypage.profile.lastLogin}"></th>
+            <td th:text="${#temporals.format(currentUser.lastLoginAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
     </table>
 
-    <div class="mt-4 d-flex justify-content-end">
-        <button type="button" class="btn btn-custom-dark me-2 open-edit-modal"
+    <div class="right-group" style="margin-top: 20px">
+        <button type="button" class="btn-mypage btn-dark user-edit-modal"
                 data-bs-toggle="modal" data-bs-target="#userUpdateModal"
-                th:data-email="${user.email}"
-                th:data-name="${user.name}"
-                th:data-phone="${user.phone}"
-                th:data-birthdate="${#dates.format(user.birthDate, 'yyyy-MM-dd')}">
-            <span th:text="#{button.edit}">수정</span>
+                th:data-email="${currentUser.email}"
+                th:data-name="${currentUser.name}"
+                th:data-phone="${currentUser.phone}"
+                th:data-birthdate="${#dates.format(currentUser.birthDate, 'yyyy-MM-dd')}">
+            <i class="bi bi-pencil btn-icon"></i><span th:text="#{button.edit}"></span>
         </button>
-        <button type="button" class="btn-outline-gray" th:text="#{button.changePassword}"></button>
+        <button type="button" class="btn-mypage btn-outline-gray"
+                data-bs-toggle="modal" data-bs-target="#userPasswordUpdateModal">
+            <i class="bi bi-key btn-icon"></i><span th:text="#{mypage.button.changePassword}"></span>
+        </button>
+        <form th:action="@{/mypage/profile}" method="post"
+              th:data-confirm-message="#{confirm.account.delete}"
+              onsubmit="return confirm(this.dataset.confirmMessage);">
+            <button type="submit" class="btn-mypage btn-outline-danger">
+                <i class="bi bi-person-x btn-icon"></i><span th:text="#{mypage.button.deleteAccount}"></span>
+            </button>
+        </form>
     </div>
 
     <div th:replace="~{mypage/fragments/user-update-modal :: userUpdateModalFragment}"></div>
+    <div th:replace="~{mypage/fragments/user-passsword-update-modal :: userPasswordUpdateModalFragment}"></div>
 
 </div>
 </body>

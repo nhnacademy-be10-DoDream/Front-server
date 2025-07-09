@@ -1,7 +1,5 @@
 package shop.dodream.front.dto;
 
-import lombok.Data;
-
 import java.time.ZonedDateTime;
 import java.util.Date;
 

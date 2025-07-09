@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>휴면 계정 인증</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="login-container">
+        <h2>휴면 계정 인증</h2>
+
+        <!-- 메시지 영역 -->
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- 타이머 -->
+        <div id="timer-display" class="mb-3 text-danger fw-bold">⏱ 남은 시간: 5:00</div>
+
+        <!-- 인증 폼 -->
+        <form th:action="@{/dormant/verify}" method="post">
+            <input type="hidden" name="userId" th:value="${userId}" id="userId"/>
+            <div class="mb-3">
+                <label for="code" class="form-label">인증번호</label>
+                <input type="text" id="code" name="code" class="form-control" placeholder="인증번호 입력" required />
+            </div>
+            <button id="submit-btn" type="submit" class="btn btn-primary w-100">인증</button>
+        </form>
+
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm mt-3 w-100"
+                id="send-code-btn"
+                onclick="handleSendCode()">인증번호 전송</button>
+
+        <div class="forgot-password-link mt-4 text-center">
+            <a th:href="@{/auth/login-form}">로그인 페이지로 돌아가기</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const verifySuccess = /*[[${verifySuccess}]]*/ false;
+    const verifyMessage = /*[[${message}]]*/ "";
+    /*]]>*/
+</script>
+

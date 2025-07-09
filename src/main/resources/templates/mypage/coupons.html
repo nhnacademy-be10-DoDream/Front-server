@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mypage}">
+
+<head>
+    <title th:text="#{mypage.coupons.title}"></title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div class="mypage-content-header">
+        <h2 class="mypage-section-title" th:text="#{mypage.coupons.heading}"></h2>
+    </div>
+
+    <!-- 쿠폰 없음 -->
+    <div th:if="${availableCoupons.isEmpty()}" class="empty-container">
+        <i class="bi bi-ticket-perforated empty-icon"></i>
+        <p class="empty-text" th:text="#{mypage.coupons.noCoupons}"></p>
+        <a th:href="@{/}" class="btn-mypage btn-dark" th:text="#{mypage.button.startShopping}"></a>
+    </div>
+
+
+    <div th:if="${!availableCoupons.isEmpty()}" class="info-card">
+        <div class="info-card-body">
+            <table class="info-table">
+                <thead>
+                <tr>
+                    <th style="width: 20%;">
+                        <i class="bi bi-ticket me-1"></i>
+                        <span th:text="#{mypage.coupon.name}"></span>
+                    </th>
+                    <th style="width: 15%;" class="text-center">
+                        <i class="bi bi-diagram-2 me-1"></i>
+                        <span th:text="#{mypage.coupon.discountType}"></span>
+                    </th>
+                    <th style="width: 13%;" class="text-center">
+                        <i class="bi bi-cash-coin me-1"></i>
+                        <span th:text="#{mypage.coupon.discountValue}"></span>
+                    </th>
+                    <th style="width: 13%;" class="text-center">
+                        <i class="bi bi-cart-plus me-1"></i>
+                        <span th:text="#{mypage.coupon.minOrderAmount}"></span>
+                    </th>
+                    <th style="width: 13%;" class="text-center">
+                        <i class="bi bi-shield-check me-1"></i>
+                        <span th:text="#{mypage.coupon.maxDiscountAmount}"></span>
+                    </th>
+                    <th style="width: 13%;" class="text-center">
+                        <i class="bi bi-calendar-plus me-1"></i>
+                        <span th:text="#{mypage.coupon.issueDate}"></span>
+                    </th>
+                    <th style="width: 13%;" class="text-center">
+                        <i class="bi bi-calendar-x me-1"></i>
+                        <span th:text="#{mypage.coupon.expiryDate}"></span>
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="coupon : ${availableCoupons}">
+                    <td th:text="${coupon.policyName}"></td>
+
+                    <td class="text-center">
+                        <span th:if="${coupon.discountType.toString() == 'PERCENTAGE'}" th:text="#{mypage.coupon.percentage}"></span>
+                        <span th:if="${coupon.discountType.toString() == 'FLAT'}" th:text="#{mypage.coupon.fixed}"></span>
+                    </td>
+
+                    <td class="text-center">
+                        <span th:if="${coupon.discountValue != null}">
+                            <span th:if="${coupon.discountType.toString() == 'PERCENTAGE'}" th:text="${#numbers.formatDecimal(coupon.discountValue, 0, 'COMMA', 0, 'POINT')} + #{mypage.coupon.percentage}"></span>
+                            <span th:if="${coupon.discountType.toString() == 'FLAT'}" th:text="${#numbers.formatDecimal(coupon.discountValue, 0, 'COMMA', 0, 'POINT')} + #{currency.won}"></span>
+                        </span>
+                        <span th:if="${coupon.discountValue == null}" th:text="#{text.none}"></span>
+                    </td>
+
+                    <td class="text-center">
+                        <span th:if="${coupon.minPurchaseAmount != null}" th:text="${#numbers.formatDecimal(coupon.minPurchaseAmount, 0, 'COMMA', 0, 'POINT')} + #{currency.won}"></span>
+                        <span th:if="${coupon.minPurchaseAmount == null}" th:text="#{text.none}"></span>
+                    </td>
+
+                    <td class="text-center">
+                        <span th:if="${coupon.maxDiscountAmount != null}" th:text="${#numbers.formatDecimal(coupon.maxDiscountAmount, 0, 'COMMA', 0, 'POINT')} + #{currency.won}"></span>
+                        <span th:if="${coupon.maxDiscountAmount == null}" th:text="#{text.none}"></span>
+                    </td>
+
+                    <td class="text-center">
+                        <span th:if="${coupon.issuedAt != null}" th:text="${#temporals.format(coupon.issuedAt, 'yyyy-MM-dd')}"></span>
+                        <span th:if="${coupon.issuedAt == null}" th:text="#{text.none}"></span>
+                    </td>
+
+                    <td class="text-center">
+                        <span th:if="${coupon.expiredAt != null}" th:text="${#temporals.format(coupon.expiredAt, 'yyyy-MM-dd')}"></span>
+                        <span th:if="${coupon.expiredAt == null}" th:text="#{text.none}"></span>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

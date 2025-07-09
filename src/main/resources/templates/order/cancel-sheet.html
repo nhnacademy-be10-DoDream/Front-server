@@ -1,0 +1,26 @@
+<!-- 주문 취소/환불 사유 입력 모달 -->
+<div th:fragment="cancel-modal">
+<div class="modal fade" id="cancelReasonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="cancelForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelReasonLabel">사유 입력</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="type" id="cancelType" />
+                    <div class="mb-3">
+                        <label for="cancelReason" class="form-label">사유</label>
+                        <textarea id="cancelReason" name="cancelReason" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">제출</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>

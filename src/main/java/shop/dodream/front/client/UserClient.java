@@ -9,7 +9,7 @@ import shop.dodream.front.dto.*;
 
 import java.util.List;
 
-@FeignClient(name = "userClient", url = "http://localhost:10320")
+@FeignClient(name = "userClient", url = "${gateway.url}")
 public interface UserClient {
     @PostMapping("/public/users/signup")
     void createUserAccount(SignupRequest signupRequest);
@@ -17,8 +17,20 @@ public interface UserClient {
     @GetMapping("/users/me")
     UserDto getUser();
 
+    @GetMapping("/public/users/email-check")
+    boolean checkEmail(@RequestParam("email") String email);
+
+    @GetMapping("/public/users/id-check")
+    boolean checkUserId(@RequestParam("user-id") String userId);
+
     @PutMapping("/users/me")
-    void updateUser(@RequestBody UserUpdateDto userUpdateDto);
+    UserDto updateUser(@RequestBody UserUpdateDto userUpdateDto);
+
+    @PutMapping("/users/me/password")
+    UserDto updateUser(@RequestBody UserPasswordUpdateDto userPasswordUpdateDto);
+
+    @DeleteMapping("/users/me")
+    void deleteUser();
 
     @PostMapping("/users/me/addresses")
     void createUserAddress(@RequestBody UserAddressDto userAddressDto);
