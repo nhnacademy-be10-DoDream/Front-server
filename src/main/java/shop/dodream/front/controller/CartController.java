@@ -128,18 +128,8 @@ public class CartController {
 		return couponClient.getAvailableCouponsforBook(bookId);
 	}
 	
-	@PostMapping("/cart/merge")
-	public String mergeCart(HttpServletRequest request) {
-		String accessToken = getAccessTokenFromCookies(request.getCookies());
-		String guestId = getGuestIdFromCookie(request);
-		if (accessToken != null && guestId != null) {
-			cartClient.mergeCart();
-		}
-		return "redirect:/cart";
-	}
-	
 	// === 쿠키에서 accessToken 추출 ===
-	private String getAccessTokenFromCookies(Cookie[] cookies) {
+	public String getAccessTokenFromCookies(Cookie[] cookies) {
 		if (cookies == null) return null;
 		for (Cookie cookie : cookies) {
 			if ("accessToken".equals(cookie.getName())) {
@@ -159,6 +149,13 @@ public class CartController {
 			}
 		}
 		return null;
+	}
+	
+	public void deleteGuestIdCookie(HttpServletResponse response) {
+		Cookie cookie = new Cookie("guestId", null);
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
 	}
 	
 }
