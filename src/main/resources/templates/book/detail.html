@@ -1,7 +1,7 @@
-<!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/default}">
 
 
@@ -15,7 +15,8 @@
     <div class="book-detail-container">
         <div class="book-header">
             <h1 th:text="${book.title}">책 제목</h1>
-            <div class="book-meta" th:text="${book.author} + #{book.meta.separator} + ${book.publisher} + #{book.meta.separator} + ${book.publishedAt}">
+            <div class="book-meta"
+                 th:text="${book.author} + #{book.meta.separator} + ${book.publisher} + #{book.meta.separator} + ${book.publishedAt}">
                 저자 | 출판사 | 출판일
             </div>
         </div>
@@ -29,10 +30,12 @@
                 <div class="price-info">
                     <div>
                         <strong th:text="#{book.price.original}">정가:</strong>
-                        <del th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">정가</del></div>
+                        <del th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">정가</del>
+                    </div>
                     <div>
                         <strong th:text="#{book.price.sale}">판매가:</strong>
-                        <span style="color: #d32f2f;" th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">판매가</span>
+                        <span style="color: #d32f2f;"
+                              th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">판매가</span>
                         <span style="color: #388e3c; margin-left: 10px;"
                               th:with="discountAmount=${book.regularPrice - book.salePrice}"
                               th:text="#{book.price.discount.format(${book.discountRate}, ${#numbers.formatInteger(discountAmount, 0, 'COMMA')})}">
@@ -88,7 +91,6 @@
                 </div>
 
 
-
                 <div>
                     <strong th:text="#{book.quantity.label}">수량:</strong>
                     <div class="quantity-box">
@@ -105,8 +107,8 @@
 
                 <div class="btns">
                     <form th:action="@{/cart/add}" method="post" class="mt-2">
-                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
-                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="bookId" th:value="${book.bookId}"/>
+                        <input type="hidden" name="quantity" value="1"/>
                         <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
                     </form>
                     <button class="btn-buy" th:text="#{button.buy}">바로구매</button>
@@ -123,49 +125,61 @@
 
 
         <!-- 리뷰 작성 -->
-        <div class="review-write-section">
-            <h2 th:text="#{review.write.title}">리뷰 작성</h2>
-            <form th:action="@{'/books/' + ${book.bookId} + '/reviews'}"
-                  method="post"
-                  enctype="multipart/form-data"
-                  class="review-write-inner">
 
-                <div class="star-box" id="rating-stars">
-                    <span onclick="setRating(1)">★</span>
-                    <span onclick="setRating(2)">★</span>
-                    <span onclick="setRating(3)">★</span>
-                    <span onclick="setRating(4)">★</span>
-                    <span onclick="setRating(5)">★</span>
-                    <input type="hidden" name="rating" id="rating" value="0">
-                </div>
+        <th:block sec:authorize="isAuthenticated()">
+            <div class="review-write-section">
+                <form th:action="@{'/books/' + ${book.bookId} + '/reviews'}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="review-write-inner">
 
-                <textarea name="content"
-                          th:placeholder="#{review.write.placeholder}"
-                          maxlength="200"
-                          wrap="soft"></textarea>
 
-                <div class="review-btns">
-                    <!-- 등록 버튼 -->
-                    <button type="submit" th:text="#{button.review.submit}">등록</button>
-                    <!-- 파일 업로드 버튼 -->
-                    <label class="upload-label">
-                        이미지 업로드
-                        <input type="file" name="files" multiple accept=".png, .jpeg, .jpg" hidden>
-                    </label>
+                    <h2 th:text="#{review.write.title}">리뷰 작성</h2>
 
-                </div>
-            </form>
-        </div>
+                    <div class="review-write-inner">
+                        <div class="star-rating space-x-4 mx-auto">
+                            <input type="radio" id="5-stars" name="rating" value="5" v-model="ratings"/>
+                            <label for="5-stars" class="star pr-4">★</label>
+                            <input type="radio" id="4-stars" name="rating" value="4" v-model="ratings"/>
+                            <label for="4-stars" class="star">★</label>
+                            <input type="radio" id="3-stars" name="rating" value="3" v-model="ratings"/>
+                            <label for="3-stars" class="star">★</label>
+                            <input type="radio" id="2-stars" name="rating" value="2" v-model="ratings"/>
+                            <label for="2-stars" class="star">★</label>
+                            <input type="radio" id="1-star" name="rating" value="1" v-model="ratings"/>
+                            <label for="1-star" class="star">★</label>
+                        </div>
+
+                        <textarea name="content"
+                                  th:placeholder="#{review.write.placeholder}"
+                                  maxlength="200"
+                                  wrap="soft"></textarea>
+
+                        <div class="review-btns">
+                            <button type="submit" th:text="#{button.review.submit}">등록</button>
+
+                            <label class="upload-btn"> 이미지 업로드
+                                <input type="file" name="files" multiple accept=".png, .jpeg, .jpg" onchange="updateFileNames(this)">
+                            </label>
+                        </div>
+
+                        <div class="file-info-container">
+                            <div id="file-names"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </th:block>
 
 
         <!-- 리뷰목록 -->
         <div class="review-section">
             <h2 th:text="#{review.my.title}">리뷰 목록</h2>
-            <div class="filter-info">
-                <div class="filter-info"
-                     th:text="#{review.count.label(${reviewCount})}">
-                    전체 (0)
-                </div>
+
+            <div class="filter-info"
+                 th:text="#{review.count.label(${reviewCount})}">
+                전체 (0)
             </div>
             <div class="review-list" id="review-list">
                 <div class="review" th:each="review : ${reviews.content}">
@@ -176,16 +190,45 @@
                           th:class="${i <= review.rating} ? 'filled' : ''">★</span>
                 </span>
                     </div>
-                    <p th:text="${review.content}">리뷰 내용</p>
+
+                    <div class="review-content">
+                        <p th:text="${review.content}">리뷰 내용</p>
+                    </div>
+
+                    <div class="review-images"
+                         th:if="${review.images != null and !review.images.isEmpty()}">
+                        <div class="image-gallery">
+                            <div class="image-item"
+                                 th:each="img, iterStat : ${review.images}">
+                                <!-- 새 탭 버전 -->
+                                <a th:href="@{|${minioPath.review}${img}|}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="image-link">
+                                    <img th:src="@{|${minioPath.review}${img}|}"
+                                         th:alt="|리뷰 이미지 ${iterStat.index + 1}|"
+                                         class="review-image">
+                                    <div class="image-overlay"><span>새 탭</span></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="image-count"
+                             th:if="${#lists.size(review.images) > 3}">
+                            <span th:text="|+${#lists.size(review.images) - 3} more|"></span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             <input type="hidden" id="is-last" th:value="${reviews.last}">
 
-            <div style="text-align: center; margin-top: 1rem;">
+            <div th:if="${!reviews.last}" style="text-align: center; margin-top: 1rem;">
                 <button id="load-more-btn" type="button">더보기</button>
             </div>
         </div>
+
 
 
     </div>
@@ -195,6 +238,21 @@
 
 <div layout:fragment="scripts">
     <script th:inline="javascript">
+        function updateFileNames(input) {
+            const fileNamesDiv = document.getElementById('file-names');
+            const files = Array.from(input.files);
+
+            if (files.length === 0) {
+                fileNamesDiv.textContent = '';
+                return;
+            }
+
+            if (files.length === 1) {
+                fileNamesDiv.textContent = `${files[0].name}`;
+            } else {
+                fileNamesDiv.textContent = `${files.length}개 파일 선택됨: ${files.map(f => f.name).join(', ')}`;
+            }
+        }
 
         const unitPrice = [[${book.salePrice}]];
 
@@ -209,15 +267,6 @@
                 '총 상품금액 ' + (qty * unitPrice).toLocaleString() + '원';
         }
 
-        function setRating(score) {
-            document.getElementById("rating").value = score;
-            const stars = document.querySelectorAll("#rating-stars span");
-            stars.forEach((star, index) => {
-                star.classList.toggle("filled", index < score);
-            });
-        }
-
-
 
         document.addEventListener("DOMContentLoaded", () => {
             let size = [[${size}]];
@@ -231,7 +280,6 @@
                 const hiddenQtyInput = this.querySelector('input[name="quantity"]');
                 hiddenQtyInput.value = qty;
             });
-
 
 
             // 리뷰 더보기 버튼

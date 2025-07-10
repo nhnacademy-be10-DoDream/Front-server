@@ -47,6 +47,12 @@
                 <a th:href="@{/admin/books}" class="admin-nav-link" th:classappend="${activeMenu=='books'}?'active':''">
                     <i class="bi bi-gift me-2"></i> 책 관리
                 </a>
+                <a th:href="@{/admin/point-policies}" class="admin-nav-link" th:classappend="${activeMenu=='books'}?'active':''">
+                    <i class="bi bi-gift me-2"></i> 포인트 정책 관리
+                </a>
+                <a th:href="@{/admin/grades}" class="admin-nav-link" th:classappend="${activeMenu=='books'}?'active':''">
+                    <i class="bi bi-gift me-2"></i> 회원 등급 관리
+                </a>
             </nav>
         </aside>
         <section class="col-md-9">
