@@ -15,8 +15,8 @@ public interface CartClient {
 	@DeleteMapping("/carts/{cartId}")
 	void deleteCart(@PathVariable Long cartId);
 	
-	@PostMapping("/carts/merge")
-	void mergeCart();
+	@PostMapping("/carts/merge/{guestId}")
+	void mergeCart(@PathVariable String guestId);
 	
 	@GetMapping("/carts/{cartId}/cart-items")
 	List<CartItemResponse> getCartItems(@PathVariable Long cartId);
