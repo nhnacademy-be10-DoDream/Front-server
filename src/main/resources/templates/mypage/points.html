@@ -37,17 +37,17 @@
                     <input type="radio" name="filter" id="pointAll" value="ALL" class="toggleRadio"
                            th:checked="${currentFilter == null || currentFilter == 'ALL'}"
                            onchange="this.form.submit()">
-                    <label for="pointAll" class="toggleLabel">전체 내역</label>
+                    <label for="pointAll" class="toggleLabel" th:text="#{mypage.points.historyAll}"></label>
 
                     <input type="radio" name="filter" id="pointEarn" value="EARN" class="toggleRadio"
                            th:checked="${currentFilter == 'EARN'}"
                            onchange="this.form.submit()">
-                    <label for="pointEarn" class="toggleLabel">적립 내역</label>
+                    <label for="pointEarn" class="toggleLabel" th:text="#{mypage.points.historyEarn}"></label>
 
                     <input type="radio" name="filter" id="pointUse" value="USE" class="toggleRadio"
                            th:checked="${currentFilter == 'USE'}"
                            onchange="this.form.submit()">
-                    <label for="pointUse" class="toggleLabel">사용 내역</label>
+                    <label for="pointUse" class="toggleLabel" th:text="#{mypage.points.historyUse}"></label>
                 </div>
             </div>
         </form>
