@@ -2,7 +2,6 @@ package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.*;
@@ -48,7 +47,8 @@ public interface UserClient {
     @GetMapping("/users/me/point-histories")
     Page<PointHistoryResponse> getPointHistories(@RequestParam("page") int page,
                                                  @RequestParam("size") int size,
-                                                 @RequestParam(value = "sort", required = false) Sort sort);
+                                                 @RequestParam(value = "sort", required = false) String sort,
+                                                 @RequestParam(value = "point-type", required = false) String pointType);
 
     @GetMapping("/users/me/point-histories/{point-history-id}")
     PointHistoryResponse getPointHistory(@PathVariable("point-history-id") Long pointHistoryId);
