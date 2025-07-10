@@ -22,11 +22,11 @@ public class CategoryController {
                                      Model model) {
         int size  = 8;
         PageResponse<BookDto> bookPage = bookClient.getBooksByCategoryId(categoryId, page, size);
-        for( BookDto book : bookPage.getContent()) {
-            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-            String imageUrl = bookUrlPrefix + book.getBookUrl();
-            book.setBookUrl(imageUrl);
-        }
+//        for( BookDto book : bookPage.getContent()) {
+//            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
+//            String imageUrl = bookUrlPrefix + book.getBookUrl();
+//            book.setBookUrl(imageUrl);
+//        }
         model.addAttribute("books", bookPage.getContent());
 
         model.addAttribute("currentPage", bookPage.getNumber());

@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>두드림 책방</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/searchSidebar.css}">
     <link rel="stylesheet" th:href="@{/css/paging.css}">
 </head>
 <body>
@@ -21,10 +21,18 @@
             <h5>분야별 보기</h5>
             <ul>
                 <li th:each="parentCategory : ${categories.keySet()}">
-                    <a th:text="${parentCategory.categoryName}" class="parent-category"></a>
+                    <a th:href="@{/search(keyword=${keyword}, categoryId=${parentCategory.categoryId})}"
+                       th:text="${parentCategory.categoryName}"
+                       th:classappend="${selectedCategoryId == parentCategory.categoryId} ? 'active' : ''"
+                       class="parent-category">
+                    </a>
                     <ul>
                         <li th:each="childCategory : ${categories.get(parentCategory)}">
-                            <a th:text="${childCategory.categoryName}" class="child-category"></a>
+                            <a th:href="@{/search(keyword=${keyword}, categoryId=${childCategory.categoryId})}"
+                               th:text="${childCategory.categoryName}"
+                               th:classappend="${selectedCategoryId == childCategory.categoryId} ? 'active' : ''"
+                               class="child-category">
+                            </a>
                         </li>
                     </ul>
                 </li>

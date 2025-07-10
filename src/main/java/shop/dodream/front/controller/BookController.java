@@ -107,7 +107,6 @@ public class BookController {
 
 
         return "redirect:/books/"+bookId;
-
     }
 
     @GetMapping("/search")
@@ -115,19 +114,18 @@ public class BookController {
                               @RequestParam(defaultValue = "NONE") BookSortType sort,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "8") int size,
+                              @RequestParam(required = false) Long categoryId,
                               Model model) {
 
         PageResponse<BookItemResponse> books;
         try {
-            books = bookClient.searchBooks(keyword, sort, page, size);
+            books = bookClient.searchBooks(keyword, sort, page, size, categoryId);
         } catch (Exception e) {
-            e.printStackTrace();
             model.addAttribute("books", Collections.emptyList());
             model.addAttribute("totalPages", 0);
             model.addAttribute("currentPage", 0);
             return "book/bookSearchList";
         }
-        System.out.println(books.getContent().size());
 
         List<BookDto> bookDtos = new ArrayList<>();
         for (BookItemResponse book : books.getContent()) {
@@ -141,6 +139,8 @@ public class BookController {
                 continue;
             }
         }
+
+
         model.addAttribute("books", bookDtos);
         model.addAttribute("keyword", keyword);
         model.addAttribute("totalPages", books.getTotalPages());

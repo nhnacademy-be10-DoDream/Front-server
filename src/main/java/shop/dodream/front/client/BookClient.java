@@ -127,7 +127,8 @@ public interface BookClient {
     PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
                                                @RequestParam("page") int page,
-                                               @RequestParam("size") int size);
+                                               @RequestParam("size") int size,
+                                               @RequestParam(required = false) Long categoryId);
 
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     Void createReview(
