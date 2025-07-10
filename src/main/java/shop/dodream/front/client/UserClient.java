@@ -52,4 +52,7 @@ public interface UserClient {
 
     @GetMapping("/users/me/point-histories/{point-history-id}")
     PointHistoryResponse getPointHistory(@PathVariable("point-history-id") Long pointHistoryId);
+
+    @GetMapping("/users/{user-id}/points")
+    Integer getAvailablePoint(@PathVariable("user-id") String userId);
 }
