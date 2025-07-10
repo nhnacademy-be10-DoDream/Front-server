@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -126,6 +127,13 @@ public class CartController {
 	@ResponseBody
 	public List<BookAvailableCouponResponse> getAvailableCoupons(@RequestParam Long bookId) {
 		return couponClient.getAvailableCouponsforBook(bookId);
+	}
+	
+	@ResponseBody
+	@PutMapping("/cart/coupons/multiple")
+	public ResponseEntity<Void> multipleCoupons(@RequestBody ApplyCouponsRequest request) {
+		couponClient.applyCoupon(request);
+		return ResponseEntity.ok().build();
 	}
 	
 	// === 쿠키에서 accessToken 추출 ===
