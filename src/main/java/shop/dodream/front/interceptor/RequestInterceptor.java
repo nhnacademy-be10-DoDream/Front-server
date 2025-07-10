@@ -29,18 +29,8 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String accessToken = null;
-        String refreshToken = null;
-
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    accessToken = cookie.getValue();
-                } else if ("refreshToken".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                }
-            }
-        }
+        String accessToken = CookieUtils.extractAccessCookie(request);
+        String refreshToken = CookieUtils.extractRefreshCookie(request);
 
         if (accessToken == null && refreshToken != null) {
             ResponseEntity<TokenResponse> result = authClient.refresh(request.getHeader(HttpHeaders.COOKIE));
@@ -49,9 +39,12 @@ public class RequestInterceptor implements HandlerInterceptor {
             CookieUtils.setCookie(response, "accessToken", tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), true);
             accessToken = tokenResponse.getAccessToken();
             AccessTokenHolder.set(accessToken);
-            UserDto user = userClient.getUser();
-            AccessTokenHolder.clear();
-            redisUserSessionService.saveUser(accessToken, user);
+            try {
+                UserDto user = userClient.getUser();
+                redisUserSessionService.saveUser(accessToken, user);
+            } finally {
+                AccessTokenHolder.clear();
+            }
         }
 
         if (accessToken != null) {
@@ -71,13 +64,8 @@ public class RequestInterceptor implements HandlerInterceptor {
         if (modelAndView == null) return;
 
         String accessToken = AccessTokenHolder.get();
-        if (accessToken == null && request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    accessToken = cookie.getValue();
-                    break;
-                }
-            }
+        if (accessToken == null) {
+           accessToken = CookieUtils.extractAccessCookie(request);
         }
 
         if (accessToken != null) {

@@ -1,6 +1,7 @@
 package shop.dodream.front.util;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
@@ -18,12 +19,36 @@ public class CookieUtils {
         return null;
     }
 
+    public static String extractAccessCookie(HttpServletRequest request) {
+        if(request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    public static String extractRefreshCookie(HttpServletRequest request) {
+        if(request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+
     public static void deleteCookie(HttpServletResponse response, String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
+
 
     public static List<String> convertToSetCookieList(Cookie[] cookies) {
         List<String> list = new ArrayList<>();

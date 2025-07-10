@@ -25,9 +25,13 @@ public class AuthService {
         CookieUtils.setCookie(response, "accessToken", tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), true);
         CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 86400, true);
         AccessTokenHolder.set(tokenResponse.getAccessToken());
-        UserDto user = userClient.getUser();
-        AccessTokenHolder.clear();
-        redisUserSessionService.saveUser(tokenResponse.getAccessToken(),user);
+        try {
+            UserDto user = userClient.getUser();
+            redisUserSessionService.saveUser(tokenResponse.getAccessToken(), user);
+        } finally {
+            AccessTokenHolder.clear();
+        }
+
 
 
     }
@@ -40,9 +44,13 @@ public class AuthService {
         CookieUtils.setCookie(response, "accessToken", tokenResponse.getAccessToken(), tokenResponse.getExpiresIn(), true);
         CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 86400, true);
         AccessTokenHolder.set(tokenResponse.getAccessToken());
-        UserDto user = userClient.getUser();
-        AccessTokenHolder.clear();
-        redisUserSessionService.saveUser(tokenResponse.getAccessToken(),user);
+        try {
+            UserDto user = userClient.getUser();
+            redisUserSessionService.saveUser(tokenResponse.getAccessToken(), user);
+        } finally {
+            AccessTokenHolder.clear();
+        }
+
     }
 
     public void logout(HttpServletRequest request,HttpServletResponse response) {
@@ -52,12 +60,7 @@ public class AuthService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        String accessToken = null;
-        if (request.getCookies() != null) {
-            accessToken = CookieUtils.extractCookieValue(
-                    CookieUtils.convertToSetCookieList(request.getCookies()), "accessToken"
-            );
-        }
+        String accessToken = CookieUtils.extractAccessCookie(request);
 
         if (accessToken != null) {
             redisUserSessionService.deleteUser(accessToken);
