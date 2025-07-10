@@ -136,7 +136,7 @@
       let bookId = null;
       if (bookLink) {
         const href = bookLink.getAttribute('href');
-        const match = href.match(/\/book\/(\d+)/);
+        const match = href.match(/\/books\/(\d+)/);
         if (match) bookId = match[1];
       }
 

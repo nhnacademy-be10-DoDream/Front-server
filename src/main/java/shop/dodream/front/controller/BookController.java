@@ -3,10 +3,13 @@ package shop.dodream.front.controller;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.BookDto;
 import shop.dodream.front.dto.BookTagInfo;
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookClient bookClient;
+
 
     // Controller
     @GetMapping("/")
@@ -66,28 +70,45 @@ public class BookController {
 
 
     @GetMapping("/books/{book-id}")
-    public String bookDetail(@PathVariable("book-id") Long bookId, Model model){
+    public String bookDetail(@PathVariable("book-id") Long bookId,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "5") int size,
+                             Model model){
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
-        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-        List<String> convertedUrls = new ArrayList<>();
-
-        for (String url : bookDetailDto.getBookUrls()) {
-            convertedUrls.add(bookUrlPrefix + url);
-        }
-
-        bookDetailDto.setBookUrls(convertedUrls);
-
-        Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId);
+        Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
+
+
+
+        // 컨트롤러에서 로그인 여부 조회 검증하는게 되면 가능
+//        boolean isLiked = bookClient.bookLikeFindMe(bookId);
+
+
+
 
 
         model.addAttribute("book", bookDetailDto);
         model.addAttribute("reviews", reviewResponse);
-        model.addAttribute("reviewCount", reviewResponse.getContent().size());
+        model.addAttribute("reviewCount", reviewResponse.getTotalElements());
         model.addAttribute("reviewSummary", reviewSummaryResponse);
+//        model.addAttribute("isLiked", isLiked);
         return "book/detail";
     }
+
+    @PostMapping("/books/{bookId}/like")
+    public String likeBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes){
+        try {
+            bookClient.registerBookLike(bookId);
+            redirectAttributes.addFlashAttribute("likeMsg", "book.like.success");
+        } catch (FeignException.Conflict e) {
+            redirectAttributes.addFlashAttribute("likeMsg", "book.like.already");
+        }
+        return "redirect:/books/" + bookId;
+
+    }
+
+
 
 
     @PostMapping("/books/{book-id}/reviews")
@@ -101,13 +122,82 @@ public class BookController {
                 .toList().toArray(MultipartFile[]::new);
 
 
-
-
-        bookClient.createReview(bookId,"1234", reviewCreateRequest, nonEmptyFiles);
+        bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
 
 
         return "redirect:/books/"+bookId;
     }
+
+
+    @GetMapping("/admin/books")
+    public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable){
+        Page<BookDto> bookDtoList = bookClient.getBooks(pageable);
+        model.addAttribute("activeMenu", "books");
+
+        model.addAttribute("books", bookDtoList);
+        return "admin/book/book";
+    }
+
+    @PostMapping("/admin/books/register")
+    public String registerBook(@ModelAttribute BookRegisterRequest registerRequest,
+                               @RequestParam(value = "files", required = false)List<MultipartFile> files) {
+
+
+        MultipartFile[] nonEmptyFiles = files.stream()
+                .filter(file -> !file.isEmpty())
+                .toList().toArray(MultipartFile[]::new);
+
+        bookClient.registerBook(registerRequest, nonEmptyFiles);
+
+        return "redirect:/admin/books";
+
+    }
+
+    @PostMapping("/admin/books/register-api")
+    public String registerBookFromAladdin(@RequestParam("isbn") String isbn){
+        bookClient.aladdinRegisterBook(isbn);
+        return "redirect:/admin/books";
+    }
+
+    @DeleteMapping("/admin/books/delete/{book-id}")
+    public String deleteBook(@PathVariable("book-id") Long bookId){
+        bookClient.deleteBook(bookId);
+        return "redirect:/admin/books";
+    }
+
+    @GetMapping("/admin/books/detail/{book-id}")
+    public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model){
+        BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
+
+        model.addAttribute("book", bookDetailDto);
+
+        return "admin/book/book-detail";
+
+    }
+
+    @GetMapping("/admin/books/edit")
+    public String editBookForm(@RequestParam("bookId") Long bookId, Model model){
+        BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
+        model.addAttribute("book", bookDetailDto);
+
+        return "admin/book/book-edit";
+    }
+
+    @PutMapping("/admin/books/{book-id}/edit")
+    public String updateBook(@PathVariable("book-id") Long bookId,
+                              @ModelAttribute BookUpdateRequest bookUpdateRequest,
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+
+        MultipartFile[] nonEmptyFiles = files.stream()
+                .filter(file -> !file.isEmpty())
+                .toList().toArray(MultipartFile[]::new);
+
+        bookClient.updateBook(bookId, bookUpdateRequest, nonEmptyFiles);
+
+        return "redirect:/admin/books/detail/"+bookId;
+
+    }
+
 
     @GetMapping("/search")
     public String searchBooks(@RequestParam String keyword,
@@ -148,6 +238,12 @@ public class BookController {
         model.addAttribute("sort", sort);
         return "book/bookSearchList";
     }
+
+
+
+
+
+
 
 
 }

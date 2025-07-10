@@ -7,17 +7,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
+import shop.dodream.front.config.FeignMultipartSupportConfig;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
-@FeignClient(name = "bookClient", url = "${gateway.url}" )
+@FeignClient(name = "bookClient", url = "${gateway.url}", configuration = FeignMultipartSupportConfig.class)
+//@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
+
     @GetMapping("/admin/books")
-    List<BookDto> getBooks();
+    Page<BookDto> getBooks(Pageable pageable);
 
     @GetMapping("/public/books/all")
     List<BookDto> getAllBooks();
@@ -93,6 +96,7 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}/tags")
     BookWithTagsResponse getTagsByBookId(@PathVariable("book-id") Long bookId);
 
+
     @GetMapping("/public/tags/{tag-id}/books")
     PageResponse<BookDto> getBooksByTagId(@PathVariable("tag-id") Long tagId);
 
@@ -118,7 +122,9 @@ public interface BookClient {
     BookDto getBook(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/public/books/{book-id}/reviews")
-    Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId);
+    Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId,
+                                        @RequestParam("page") int page,
+                                        @RequestParam("size") int size);
 
     @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
@@ -127,16 +133,58 @@ public interface BookClient {
     PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
                                                @RequestParam("page") int page,
+                                               @RequestParam("size") int size);
+
+    @GetMapping("/books/search")
+    PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
+                                               @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
+                                               @RequestParam("page") int page,
                                                @RequestParam("size") int size,
                                                @RequestParam(required = false) Long categoryId);
 
-    @PostMapping(value = "/books/{book-id}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
     Void createReview(
             @PathVariable("book-id") Long bookId,
-            @RequestHeader("X-USER-ID") String userId,
             @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
+
+    @PostMapping("/admin/books/aladdin-api")
+    Void aladdinRegisterBook(@RequestParam("isbn") String isbn);
+
+    @PostMapping(value = "/admin/books", consumes = MULTIPART_FORM_DATA_VALUE)
+    Void registerBook(@RequestPart(value = "book") BookRegisterRequest bookRegisterRequest,
+                      @RequestPart(value = "files", required = false) MultipartFile[] files);
+
+
+
+    @DeleteMapping("/admin/books/{book-id}")
+    Void deleteBook(@PathVariable("book-id") Long bookId);
+
+    @GetMapping("/admin/books/{book-id}")
+    BookDetailDto getAdminBookDetail(@PathVariable("book-id") Long bookId);
+
+
+    @PutMapping(value = "/admin/books/{book-id}", consumes = MULTIPART_FORM_DATA_VALUE)
+    Void updateBook(@PathVariable("book-id") Long bookId,
+                    @RequestPart(value = "book") BookUpdateRequest bookUpdateRequest,
+                    @RequestPart(value = "files", required = false) MultipartFile[] files);
+
+
+
+
+
+    @PostMapping("/books/{book-id}/likes")
+    Void registerBookLike(@PathVariable("book-id") Long bookId);
+
+    @GetMapping("/books/{book-id}/me")
+    Boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
+
+
+
+
+
+
 
     @GetMapping("/reviews/me")
     Page<ReviewResponse> getReviews(Pageable pageable);
