@@ -296,7 +296,7 @@
             body: JSON.stringify({
                 requests: selectedCoupons.map(c => ({
                     bookId: c.bookId,
-                    userCouponId: c.couponId
+                    userCouponId: c.userCouponId
                 }))
             })
         }).then(response => {
