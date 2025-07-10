@@ -1,7 +1,6 @@
 package shop.dodream.front.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -11,7 +10,10 @@ import shop.dodream.front.client.BookClient;
 import shop.dodream.front.client.CouponClient;
 import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.client.UserClient;
-import shop.dodream.front.dto.*;
+import shop.dodream.front.dto.AvailableCouponResponse;
+import shop.dodream.front.dto.UserAddressDto;
+import shop.dodream.front.dto.UserPasswordUpdateDto;
+import shop.dodream.front.dto.UserUpdateDto;
 
 import java.util.List;
 
@@ -19,20 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/mypage")
 public class UserProfileController {
+	private static final String LAYOUT_NAME = "activeMenu";
 	private final UserClient userClient;
 	private final OrderClient orderClient;
     private final CouponClient couponClient;
 	private final BookClient bookClient;
 
-//	@Value("${app.image.review-prefix}")
-//	private String reviewPrefix;
-//	@Value("${app.image.book-prefix}")
-//	private String bookPrefix;
 
 	@GetMapping(path = {"/profile", ""})
 	public String getProfile(Model model) {
 		model.addAttribute("currentUser",userClient.getUser());
-		model.addAttribute("activeMenu", "profile");
+		model.addAttribute(LAYOUT_NAME, "profile");
 		return "mypage/profile";
 	}
 
@@ -40,7 +39,7 @@ public class UserProfileController {
 	public String updateProfile(UserUpdateDto userUpdateDto,
 								Model model) {
 		model.addAttribute("currentUser", userClient.updateUser( userUpdateDto));
-		model.addAttribute("activeMenu", "profile");
+		model.addAttribute(LAYOUT_NAME, "profile");
 		return "mypage/profile";
 	}
 
@@ -48,7 +47,7 @@ public class UserProfileController {
 	public String updatePassword(UserPasswordUpdateDto userPasswordUpdateDto,
 								 Model model) {
 		model.addAttribute("currentUser", userClient.updateUser(userPasswordUpdateDto));
-		model.addAttribute("activeMenu", "profile");
+		model.addAttribute(LAYOUT_NAME, "profile");
 		return "mypage/profile";
 	}
 
@@ -62,7 +61,7 @@ public class UserProfileController {
 	@GetMapping("/addresses")
 	public String getAddresses(Model model) {
 		model.addAttribute("addresses", userClient.getAddresses());
-		model.addAttribute("activeMenu", "addresses");
+		model.addAttribute(LAYOUT_NAME, "addresses");
 		return "mypage/addresses";
 	}
 
@@ -86,17 +85,24 @@ public class UserProfileController {
 	}
 
 	@GetMapping("/points")
-	public String getPointHistories(@PageableDefault Pageable pageable,
+	public String getPointHistories(@RequestParam(defaultValue = "1") int page,
+									@RequestParam(defaultValue = "10") int size,
+									@RequestParam(defaultValue = "ALL") String filter,
 									Model model) {
-		model.addAttribute("points", userClient.getPointHistories( pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
-		model.addAttribute("activeMenu", "points");
+
+		String sortParam = "createdAt,desc";
+		model.addAttribute("points",
+				userClient.getPointHistories(page, size, sortParam,
+						filter.equals("ALL") ? null : filter));
+		model.addAttribute("currentFilter", filter);
+		model.addAttribute(LAYOUT_NAME, "points");
 		return "mypage/points";
 	}
 
 	@GetMapping("/orders")
 	public String getOrders(Model model) {
 		model.addAttribute("orders", orderClient.getOrders());
-		model.addAttribute("activeMenu", "orders");
+		model.addAttribute(LAYOUT_NAME, "orders");
 		return "mypage/orders";
 	}
 
@@ -104,7 +110,7 @@ public class UserProfileController {
 	public String getMyCoupons(Model model) {
 		List<AvailableCouponResponse> availableCoupons = couponClient.getAvailableCoupons();
 		model.addAttribute("availableCoupons", availableCoupons);
-		model.addAttribute("activeMenu", "coupons");
+		model.addAttribute(LAYOUT_NAME, "coupons");
 		return "mypage/coupons";
 	}
 
@@ -112,8 +118,7 @@ public class UserProfileController {
 	public String getReviews(@PageableDefault(size = 5) Pageable pageable,
 							 Model model) {
 		model.addAttribute("reviews", bookClient.getReviews(pageable));
-//		model.addAttribute("reviewPrefix", reviewPrefix);
-		model.addAttribute("activeMenu", "reviews");
+		model.addAttribute(LAYOUT_NAME, "reviews");
 		return "mypage/reviews";
 	}
 
@@ -121,8 +126,7 @@ public class UserProfileController {
 	public String getLikedBooks(@PageableDefault(size = 5) Pageable pageable,
 								Model model) {
 		model.addAttribute("likedBooks", bookClient.getLikedBooks(pageable));
-//		model.addAttribute("bookPrefix", bookPrefix);
-		model.addAttribute("activeMenu", "liked-books");
+		model.addAttribute(LAYOUT_NAME, "liked-books");
 		return "mypage/liked-books";
 	}
 

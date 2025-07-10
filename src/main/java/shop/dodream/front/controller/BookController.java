@@ -22,6 +22,7 @@ import shop.dodream.front.dto.*;
 import shop.dodream.front.util.CookieUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -48,11 +49,6 @@ public class BookController {
                 .collect(Collectors.toMap(BookTagInfo::getTagId, b -> chunkBooks(b.getBooks(), 6))));
 
         List<BookDto> books = bookClient.getAllBooks();
-        for( BookDto book : books) {
-            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-            String imageUrl = bookUrlPrefix + book.getBookUrl();
-            book.setBookUrl(imageUrl);
-        }
         model.addAttribute("books", books);
         String guestId = cartController.getGuestIdFromCookie(request);
         String acessToken = cartController.getAccessTokenFromCookies(request.getCookies());
@@ -74,8 +70,6 @@ public class BookController {
     private BookTagInfo getBookTagInfo(Long tagId) {
         PageResponse<BookDto> response = bookClient.getBooksByTagId(tagId);
         List<BookDto> books = response.getContent();
-        String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-        books.forEach(book -> book.setBookUrl(bookUrlPrefix + book.getBookUrl()));
         TagResponse tag = bookClient.getTag(tagId);
         return new BookTagInfo(tagId, tag, books);
     }
@@ -138,10 +132,8 @@ public class BookController {
 
 
         return "redirect:/books/"+bookId;
-
-
-
     }
+
 
     @GetMapping("/admin/books")
     public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable){
@@ -218,33 +210,34 @@ public class BookController {
                               @RequestParam(defaultValue = "NONE") BookSortType sort,
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "8") int size,
+                              @RequestParam(required = false) Long categoryId,
                               Model model) {
 
         PageResponse<BookItemResponse> books;
         try {
-            books = bookClient.searchBooks(keyword, sort, page, size);
+            books = bookClient.searchBooks(keyword, sort, page, size, categoryId);
         } catch (Exception e) {
-            e.printStackTrace();
             model.addAttribute("books", Collections.emptyList());
             model.addAttribute("totalPages", 0);
             model.addAttribute("currentPage", 0);
             return "book/bookSearchList";
         }
-        System.out.println(books.getContent().size());
+        Map<Long, CategoryCountResponse> rootCategories = new HashMap<>();
 
-        List<BookDto> bookDtos = new ArrayList<>();
         for (BookItemResponse book : books.getContent()) {
-            try {
-                BookDto bookDto = bookClient.getBook(book.getBookId());
-                String prefix = "https://dodream.shop/dodream-images/book/";
-                String imageUrl = prefix + bookDto.getBookUrl();
-                bookDto.setBookUrl(imageUrl);
-                bookDtos.add(bookDto);
-            } catch (FeignException.NotFound e) {
-                continue;
+            List<CategoryTreeResponse> categories = bookClient.getCategoriesByBookId(book.getBookId());
+
+            for (CategoryTreeResponse c : categories) {
+                if (!rootCategories.containsKey(c.getCategoryId())) {
+                    rootCategories.put(c.getCategoryId(), new CategoryCountResponse(c.getCategoryId(), c.getCategoryName(), 0));
+                }
+                mergeCategoryTree(c, rootCategories.get(c.getCategoryId()));
             }
         }
-        model.addAttribute("books", bookDtos);
+
+        model.addAttribute("categoryCountTree", rootCategories.values());
+
+        model.addAttribute("books", books.getContent());
         model.addAttribute("keyword", keyword);
         model.addAttribute("totalPages", books.getTotalPages());
         model.addAttribute("currentPage", books.getNumber());
@@ -252,11 +245,21 @@ public class BookController {
         return "book/bookSearchList";
     }
 
+    private void mergeCategoryTree(CategoryTreeResponse source, CategoryCountResponse target) {
+        target.increment();
 
+        Map<Long, CategoryCountResponse> childMap = target.getChildren().stream()
+                .collect(Collectors.toMap(CategoryCountResponse::getCategoryId, Function.identity()));
 
-
-
-
+        for (CategoryTreeResponse child : source.getChildren()) {
+            CategoryCountResponse childCount = childMap.get(child.getCategoryId());
+            if (childCount == null) {
+                childCount = new CategoryCountResponse(child.getCategoryId(), child.getCategoryName(), 0);
+                target.getChildren().add(childCount);
+            }
+            mergeCategoryTree(child, childCount);
+        }
+    }
 
 
 }

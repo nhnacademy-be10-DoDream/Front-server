@@ -8,5 +8,6 @@ public class OrderItemRequest {
     private String title;
     private Integer quantity;
     private Integer price;
-    private Long wrappingId; // optional
+    private Long wrappingId;
+    private WrappingDto wrappingInfo;
 }
