@@ -1,6 +1,5 @@
 package shop.dodream.front.interceptor;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,6 @@ import shop.dodream.front.dto.UserDto;
 import shop.dodream.front.holder.AccessTokenHolder;
 import shop.dodream.front.service.RedisUserSessionService;
 import shop.dodream.front.util.CookieUtils;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
