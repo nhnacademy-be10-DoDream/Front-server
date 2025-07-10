@@ -1,10 +1,8 @@
 package shop.dodream.front.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.client.UserClient;
@@ -28,20 +26,26 @@ public class OrderController {
     @PostMapping
     public String orderSheet(Model model, @ModelAttribute("items") CartOrderRequest cartOrderRequest) {
         List<OrderItemRequest> cartItems = cartOrderRequest.getItems();
+        cartItems.forEach(item -> {
+            if (item.getWrappingId() != null) {
+                item.setWrappingInfo(orderClient.getGiftWrapById(item.getWrappingId()));
+            }
+        });
+
         try {
             model.addAttribute("addressList", userClient.getAddresses());
         } catch (Exception e) {
-            // 예외가 발생하면 빈 리스트로 설정
             model.addAttribute("addressList", Collections.emptyList());
         }
 
         model.addAttribute("shippingPolicies", orderClient.getShippingPolicies());
 
-        // 장바구니에서 선택된 아이템을 주문서로 전달
         model.addAttribute("orderItems", cartItems);
-        // 총 금액 계산
+
         model.addAttribute("totalAmount", cartOrderRequest.getOrderTotal());
-//        model.addAttribute("userId", "user");
+
+        model.addAttribute("availablePoint", userClient.getAvailablePoint(cartOrderRequest.getUserId()));
+
 
         return "order/order-sheet"; // 주문서 페이지로 이동
     }
