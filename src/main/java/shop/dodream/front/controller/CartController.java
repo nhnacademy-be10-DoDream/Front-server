@@ -128,6 +128,11 @@ public class CartController {
 		return couponClient.getAvailableCouponsforBook(bookId);
 	}
 	
+	@PutMapping("/cart/coupons/multiple")
+	public void multipleCoupons(@RequestBody ApplyCouponsRequest request) {
+		couponClient.applyCoupon(request);
+	}
+	
 	// === 쿠키에서 accessToken 추출 ===
 	private String getAccessTokenFromCookies(Cookie[] cookies) {
 		if (cookies == null) return null;

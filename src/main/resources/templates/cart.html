@@ -80,7 +80,7 @@
                 </table>
 
                 <!-- 장바구니 요약 정보 -->
-                <form th:action="@{/order}" method="post">
+                <form th:action="@{/order}" method="post" id="orderForm">
                     <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px; text-align: center;">
                         <p><strong>총 제품 금액:</strong> <span id="totalProductPrice">0원</span></p>
                         <p><strong>할인 금액:</strong> <span id="totalDiscount">0원</span></p>
@@ -250,41 +250,63 @@
         document.getElementById("couponModal").style.display = "none";
     }
 
-    function getSelectedCouponIds() {
+    function getSelectedCoupons() {
         const result = [];
 
-        document.querySelectorAll("input[id^='selectedCouponId-']").forEach(input => {
-            const couponId = input.value;
-            if (couponId) {
-                result.push(parseInt(couponId));
+        document.querySelectorAll("tr[data-sale-price]").forEach(row => {
+            const link = row.querySelector("a");
+            const bookIdMatch = link?.getAttribute("href")?.match(/\/books\/(\d+)/);
+            const bookId = bookIdMatch ? parseInt(bookIdMatch[1]) : null;
+
+            const couponInput = row.querySelector("input[id^='selectedCouponId-']");
+            let userCouponId = null;
+
+            if (couponInput && couponInput.value.trim() !== "") {
+                const parsed = parseInt(couponInput.value);
+                if (!isNaN(parsed)) {
+                    userCouponId = parsed;
+                }
+            }
+
+            if (bookId !== null && userCouponId !== null) {
+                result.push({
+                    bookId,
+                    userCouponId
+                });
             }
         });
 
         return result;
     }
 
-    // function submitOrder() {
-    //     const couponIds = getSelectedCouponIds();
-    //
-    //     if (couponIds.length === 0) {
-    //         document.getElementById("orderForm").submit();
-    //         return;
-    //     }
-    //
-    //     // fetch("/coupons/me/use-multiple", {
-    //     //     method: "PUT",
-    //     //     headers: {
-    //     //         "Content-Type": "application/json"
-    //     //     },
-    //     //     body: JSON.stringify({ couponIds: couponIds })
-    //     // }).then(response => {
-    //     //     if (!response.ok) throw new Error("쿠폰 사용 실패");
-    //     //     document.getElementById("orderForm").submit();
-    //     // }).catch(error => {
-    //     //     alert("쿠폰 사용 중 오류가 발생했습니다.");
-    //     //     console.error(error);
-    //     // });
-    // }
+
+    function submitOrder() {
+        const selectedCoupons = getSelectedCoupons();
+
+        if (selectedCoupons.length === 0) {
+            document.getElementById("orderForm").submit();
+            return;
+        }
+
+        fetch("/cart/coupons/multiple", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                requests: selectedCoupons.map(c => ({
+                    bookId: c.bookId,
+                    userCouponId: c.couponId
+                }))
+            })
+        }).then(response => {
+            if (!response.ok) throw new Error("쿠폰 사용 실패");
+            document.getElementById("orderForm").submit();
+        }).catch(error => {
+            alert("쿠폰 사용 중 오류가 발생했습니다.");
+            console.error(error);
+        });
+    }
 
     window.onload = () => {
         document.querySelectorAll('[id^="priceDisplay-"]').forEach(span => {
