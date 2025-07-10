@@ -129,13 +129,7 @@ public interface BookClient {
     @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/books/search")
-    PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
-                                               @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
-                                               @RequestParam("page") int page,
-                                               @RequestParam("size") int size);
-
-    @GetMapping("/books/search")
+    @GetMapping("public/books/search")
     PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
                                                @RequestParam("page") int page,

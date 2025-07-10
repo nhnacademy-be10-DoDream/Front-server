@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,4 +24,6 @@ public class BookItemResponse {
     private Long viewCount;
     private Float ratingAvg;
     private Long reviewCount;
+    private List<String> categoryNames;
+    private String imageUrl;
 }
