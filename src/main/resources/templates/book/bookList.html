@@ -34,7 +34,7 @@
       <!-- 이전 버튼 -->
       <li>
         <a th:if="${currentPage > 0}"
-           th:href="@{|/categories/${categoryId}?page=${currentPage - 1}|}"
+           th:href="@{|/tags/${tagId}?page=${currentPage - 1}|}"
            class="page-link">«</a>
         <span th:if="${currentPage == 0}" class="page-link disabled">«</span>
       </li>

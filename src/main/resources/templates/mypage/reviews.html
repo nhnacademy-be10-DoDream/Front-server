@@ -69,10 +69,10 @@
                     </div>
                     <div class="info-card-value">
                         <a th:each="image : ${review.images}"
-                           th:href="@{${reviewPrefix + image}}"
+                           th:href="@{${minioPath.review + image}}"
                            target="_blank"
                            rel="noopener noreferrer">
-                            <img th:src="${reviewPrefix + image}"
+                            <img th:src="${minioPath.review + image}"
                                  th:alt="#{mypage.review.image.alt}"
                                  class="review-thumbnail">
                         </a>

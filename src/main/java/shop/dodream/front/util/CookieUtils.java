@@ -18,14 +18,6 @@ public class CookieUtils {
         return null;
     }
 
-    public static String extractAccessToken(List<String> cookies) {
-        return extractCookieValue(cookies, "accessToken");
-    }
-
-    public static String extractRefreshToken(List<String> cookies) {
-        return extractCookieValue(cookies, "refreshToken");
-    }
-
     public static void deleteCookie(HttpServletResponse response, String name) {
         Cookie cookie = new Cookie(name, null);
         cookie.setPath("/");
@@ -43,11 +35,21 @@ public class CookieUtils {
         return list;
 
     }
-    public static void addSetCookieHeaders(HttpServletResponse response, List<String> setCookieHeaders) {
-        if (setCookieHeaders == null) return;
-        for (String header : setCookieHeaders) {
-            response.addHeader("Set-Cookie", header);
+
+    public static void setCookie(HttpServletResponse response, String name, String value, int maxAgeSeconds, boolean httpOnly) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append("=").append(value)
+                .append("; Max-Age=").append(maxAgeSeconds)
+                .append("; Path=/")
+                .append("; Secure")
+                .append("; SameSite=None");
+
+        if (httpOnly) {
+            sb.append("; HttpOnly");
         }
+
+        response.addHeader("Set-Cookie", sb.toString());
     }
+
 
 }

@@ -85,7 +85,8 @@ function createDuplicateValidator(config) {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const data = await res.json();
-            const isDuplicate = data.duplicate === true;
+
+            const isDuplicate = data === false;
 
             show(isDuplicate ? config.messages.duplicate : config.messages.available, !isDuplicate);
         } catch (error) {
