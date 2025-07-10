@@ -44,10 +44,6 @@ public class RequestInterceptor implements HandlerInterceptor {
             }
         }
 
-        if (accessToken != null) {
-            AccessTokenHolder.set(accessToken);
-        }
-
         return true;
     }
 

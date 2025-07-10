@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import shop.dodream.front.client.AuthClient;
 import shop.dodream.front.dto.SessionUser;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class RoleCheckFilter extends OncePerRequestFilter {
     private final AuthClient authClient;
@@ -28,6 +26,12 @@ public class RoleCheckFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
+            String uri = request.getRequestURI();
+            if (uri.startsWith("/auth")||uri.startsWith("/css")||uri.startsWith("/js")||uri.startsWith("/images")||uri.contains("devtools")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             SessionUser sessionUser = authClient.getSessionUser().getBody();
             if (sessionUser != null) {
                 List<GrantedAuthority> authorities =
@@ -39,6 +43,7 @@ public class RoleCheckFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             SecurityContextHolder.clearContext();
         }
 

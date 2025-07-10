@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import shop.dodream.front.client.AuthClient;
+import shop.dodream.front.filter.AccessTokenInjectionFilter;
 import shop.dodream.front.filter.RoleCheckFilter;
 
 @Configuration
@@ -24,6 +25,12 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/auth/login-form");
+                        })
+                )
+                .addFilterBefore(new AccessTokenInjectionFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new RoleCheckFilter(authClient), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
