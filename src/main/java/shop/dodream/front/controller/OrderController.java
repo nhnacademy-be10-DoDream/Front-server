@@ -43,8 +43,9 @@ public class OrderController {
         model.addAttribute("orderItems", cartItems);
 
         model.addAttribute("totalAmount", cartOrderRequest.getOrderTotal());
-
-        model.addAttribute("availablePoint", userClient.getAvailablePoint(cartOrderRequest.getUserId()));
+            if (cartOrderRequest.getUserId() != null) {
+            model.addAttribute("availablePoint", userClient.getAvailablePoint(cartOrderRequest.getUserId()));
+        }
 
 
         return "order/order-sheet"; // 주문서 페이지로 이동
