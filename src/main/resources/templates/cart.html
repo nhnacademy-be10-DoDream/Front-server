@@ -94,6 +94,8 @@
                             <input type="hidden" th:name="|items[${stat.index}].price|" th:value="${item.salePrice}" />
                             <input type="hidden" th:name="|items[${stat.index}].quantity|" th:value="${item.quantity}" />
                             <input type="hidden" th:name="|items[${stat.index}].wrappingId|" />
+                            <input type="hidden" th:id="'couponId-' + ${stat.index}" th:name="|items[${stat.index}].couponId|" />
+                            <input type="hidden" th:id="'finalPrice-' + ${stat.index}" th:name="|items[${stat.index}].finalPrice|" />
                         </div>
 
                         <button type="submit" style="
@@ -219,6 +221,7 @@
             }
         });
 
+
         // 현재 항목에 쿠폰 적용
         document.getElementById("selectedCouponId-" + cartItemId).value = couponId;
         selectedCouponIds.add(couponId);
@@ -226,6 +229,17 @@
         const priceSpan = document.getElementById("priceDisplay-" + cartItemId);
         if (priceSpan) {
             priceSpan.innerText = finalPrice.toLocaleString() + "원";
+        }
+
+        // 히든 인풋 채우기
+        const cartItemRow = document.querySelector(`tr[data-sale-price] [id='priceDisplay-${cartItemId}']`)?.closest("tr");
+        if (cartItemRow) {
+            const index = cartItemRow.querySelector(".wrapping-select")?.getAttribute("data-index");
+
+            const couponInput = document.getElementById(`couponId-${index}`);
+            const finalPriceInput = document.getElementById(`finalPrice-${index}`);
+            if (couponInput) couponInput.value = couponId;
+            if (finalPriceInput) finalPriceInput.value = finalPrice;
         }
 
         closeCouponModal();
