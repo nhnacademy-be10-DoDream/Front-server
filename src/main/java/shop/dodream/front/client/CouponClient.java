@@ -56,8 +56,8 @@ public interface CouponClient {
     @PutMapping("/coupons/me/{user-coupon-id}/use")
     void useCoupon(@PathVariable("user-coupon-id") Long userCouponId);
 
-    @PutMapping("/coupons/me/{user-coupon-id}/apply")
-    void applyCoupon(@PathVariable("user-coupon-id") Long userCouponId);
+    @PutMapping("/coupons/me/apply-multiple")
+    void applyCoupon(@RequestBody ApplyCouponsRequest request);
 
     @PutMapping("/coupons/me/use-multiple")
     void useMultipleCoupons(@RequestBody UseCouponsRequest request);
