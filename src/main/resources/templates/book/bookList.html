@@ -16,15 +16,15 @@
       <div class="book-grid">
         <div th:each="book : ${books}" class="book-card">
           <a th:href="@{/books/{id}(id=${book.bookId})}">
-            <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
+            <img th:src="@{|${minioPath.book}${book.getBookUrl()}|}" th:alt="${book.title}" class="img-fluid mb-2" />
           </a>
           <h3 th:text="${book.title}">책 제목</h3>
           <p th:text="${book.author}">작가</p>
           <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
-          <form th:action="@{/cart/add}" method="post">
+          <form th:action="@{/cart/add}" method="post" class="mt-2">
             <input type="hidden" name="bookId" th:value="${book.bookId}" />
             <input type="hidden" name="quantity" value="1" />
-            <button type="submit">장바구니 담기</button>
+            <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
           </form>
         </div>
       </div>
