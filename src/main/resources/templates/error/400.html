@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>400 - 잘못된 요청</title>
+</head>
+<body>
+<main layout:fragment="content" class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+    <div class="error-container text-center">
+        <h1 class="display-4 fw-bold text-danger">400</h1>
+        <p class="fs-4">잘못된 요청입니다.</p>
+        <p class="text-muted">요청이 유효하지 않거나 잘못된 형식이에요.</p>
+        <a href="/" class="btn btn-primary mt-3">홈으로 가기</a>
+    </div>
+</main>
+</body>
+</html>
