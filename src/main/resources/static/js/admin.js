@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initEditor();
 });
 
+let editor = null;
 
 
 function initEditor() {
@@ -23,6 +24,7 @@ function initEditor() {
  */
 function initFormValidation() {
     const forms = document.querySelectorAll(".needs-validation");
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     Array.from(forms).forEach(form => {
         form.addEventListener("submit", event => {
@@ -30,6 +32,9 @@ function initFormValidation() {
 
             const regularInput = document.getElementById("regularPrice");
             const saleInput = document.getElementById("salePrice");
+            const publishedAtInput = document.getElementById("publishedAt");
+            const publishedAtFeedback = document.getElementById("publishedAtFeedback");
+
 
             // 정가/판매가 검증
             if (regularInput && saleInput) {
@@ -41,6 +46,23 @@ function initFormValidation() {
                     saleInput.classList.add("is-invalid");
                 } else {
                     saleInput.classList.remove("is-invalid");
+                }
+            }
+
+            // 출판일 검증
+            if (publishedAtInput && publishedAtFeedback) {
+                const dateValue = publishedAtInput.value.trim();
+
+                if (!dateValue) {
+                    valid = false;
+                    publishedAtInput.classList.add("is-invalid");
+                    publishedAtFeedback.textContent = "출판일을 선택해주세요.";
+                } else if (!dateRegex.test(dateValue) || Number.isNaN(new Date(dateValue).getTime())) {
+                    valid = false;
+                    publishedAtInput.classList.add("is-invalid");
+                    publishedAtFeedback.textContent = "날짜 형식이 맞지 않습니다.";
+                } else {
+                    publishedAtInput.classList.remove("is-invalid");
                 }
             }
 
