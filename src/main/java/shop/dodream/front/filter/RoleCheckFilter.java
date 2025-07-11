@@ -47,7 +47,6 @@ public class RoleCheckFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
             SecurityContextHolder.clearContext();
         }
 
