@@ -18,7 +18,7 @@
             <a th:href="@{/mypage}" class="nav-item" sec:authorize="isAuthenticated()">마이페이지</a>
             <a th:href="@{/admin}" class="nav-item" sec:authorize="hasRole('ADMIN')">관리자</a>
             <th:block sec:authorize="isAuthenticated()">
-                <span class="username" th:text="|${user.name}님 반갑습니다!|"></span>
+                <span class="username" th:if="${user != null}" th:text="|${user.name}님 반갑습니다!|"></span>
 
                 <a href="#" class="nav-item" onclick="document.getElementById('logoutForm').submit(); return false;">로그아웃</a>
 
