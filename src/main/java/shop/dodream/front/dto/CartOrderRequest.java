@@ -9,5 +9,6 @@ import java.util.List;
 @Setter
 public class CartOrderRequest {
     private Integer orderTotal;
+    private String userId;
     private List<OrderItemRequest> items;
 }

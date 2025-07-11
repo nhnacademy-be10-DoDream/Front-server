@@ -28,5 +28,6 @@ public class OrderRequest {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime wantedDate;
     private Integer totalPrice;
+    private Integer pointUsed;
     private Long shippingPolicyId;
 }

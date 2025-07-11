@@ -1,6 +1,8 @@
 package shop.dodream.front.controller;
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,13 +13,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shop.dodream.front.client.BookClient;
+import shop.dodream.front.client.CartClient;
 import shop.dodream.front.dto.BookDto;
 import shop.dodream.front.dto.BookTagInfo;
 import shop.dodream.front.dto.PageResponse;
 import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
+import shop.dodream.front.util.CookieUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -25,12 +30,14 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookClient bookClient;
+    private final CartClient cartClient;
+    private final CartController cartController;
 
 
     // Controller
     @GetMapping("/")
     public String home(@RequestParam(value = "page", defaultValue = "0") int page,
-                       Model model) {
+                       Model model, HttpServletRequest request, HttpServletResponse response) {
         List<Long> tagIds = List.of(1L, 2L, 3L);
 
         List<BookTagInfo> bookTagInfos = tagIds.stream()
@@ -42,6 +49,12 @@ public class BookController {
                 .collect(Collectors.toMap(BookTagInfo::getTagId, b -> chunkBooks(b.getBooks(), 6))));
 
         List<BookDto> books = bookClient.getAllBooks();
+        String guestId = cartController.getGuestIdFromCookie(request);
+        String acessToken = cartController.getAccessTokenFromCookies(request.getCookies());
+        if (guestId != null && acessToken != null) {
+            cartClient.mergeCart(guestId);
+            cartController.deleteGuestIdCookie(response);
+        }
         model.addAttribute("books", books);
         return "home";
     }
@@ -66,19 +79,15 @@ public class BookController {
     public String bookDetail(@PathVariable("book-id") Long bookId,
                              @RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "5") int size,
-                             Model model){
+                             Model model) {
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
 
 
-
         // 컨트롤러에서 로그인 여부 조회 검증하는게 되면 가능
 //        boolean isLiked = bookClient.bookLikeFindMe(bookId);
-
-
-
 
 
         model.addAttribute("book", bookDetailDto);
@@ -90,7 +99,7 @@ public class BookController {
     }
 
     @PostMapping("/books/{bookId}/like")
-    public String likeBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes){
+    public String likeBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes) {
         try {
             bookClient.registerBookLike(bookId);
             redirectAttributes.addFlashAttribute("likeMsg", "book.like.success");
@@ -102,12 +111,10 @@ public class BookController {
     }
 
 
-
-
     @PostMapping("/books/{book-id}/reviews")
     public String postReview(@PathVariable("book-id") Long bookId,
                              @ModelAttribute ReviewCreateRequest reviewCreateRequest,
-                             @RequestParam(value = "files", required = false)List<MultipartFile> files){
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
 
         MultipartFile[] nonEmptyFiles = files.stream()
@@ -118,12 +125,12 @@ public class BookController {
         bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
 
 
-        return "redirect:/books/"+bookId;
+        return "redirect:/books/" + bookId;
     }
 
 
     @GetMapping("/admin/books")
-    public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable){
+    public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable) {
         Page<BookDto> bookDtoList = bookClient.getBooks(pageable);
         model.addAttribute("activeMenu", "books");
 
@@ -133,7 +140,7 @@ public class BookController {
 
     @PostMapping("/admin/books/register")
     public String registerBook(@ModelAttribute BookRegisterRequest registerRequest,
-                               @RequestParam(value = "files", required = false)List<MultipartFile> files) {
+                               @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
 
         MultipartFile[] nonEmptyFiles = files.stream()
@@ -147,19 +154,19 @@ public class BookController {
     }
 
     @PostMapping("/admin/books/register-api")
-    public String registerBookFromAladdin(@RequestParam("isbn") String isbn){
+    public String registerBookFromAladdin(@RequestParam("isbn") String isbn) {
         bookClient.aladdinRegisterBook(isbn);
         return "redirect:/admin/books";
     }
 
     @DeleteMapping("/admin/books/delete/{book-id}")
-    public String deleteBook(@PathVariable("book-id") Long bookId){
+    public String deleteBook(@PathVariable("book-id") Long bookId) {
         bookClient.deleteBook(bookId);
         return "redirect:/admin/books";
     }
 
     @GetMapping("/admin/books/detail/{book-id}")
-    public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model){
+    public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model) {
         BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
 
         model.addAttribute("book", bookDetailDto);
@@ -169,7 +176,7 @@ public class BookController {
     }
 
     @GetMapping("/admin/books/edit")
-    public String editBookForm(@RequestParam("bookId") Long bookId, Model model){
+    public String editBookForm(@RequestParam("bookId") Long bookId, Model model) {
         BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
         model.addAttribute("book", bookDetailDto);
 
@@ -178,7 +185,7 @@ public class BookController {
 
     @PutMapping("/admin/books/{book-id}/edit")
     public String updateBook(@PathVariable("book-id") Long bookId,
-                              @ModelAttribute BookUpdateRequest bookUpdateRequest,
+                             @ModelAttribute BookUpdateRequest bookUpdateRequest,
                              @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
         MultipartFile[] nonEmptyFiles = files.stream()
@@ -187,7 +194,7 @@ public class BookController {
 
         bookClient.updateBook(bookId, bookUpdateRequest, nonEmptyFiles);
 
-        return "redirect:/admin/books/detail/"+bookId;
+        return "redirect:/admin/books/detail/" + bookId;
 
     }
 
@@ -229,4 +236,5 @@ public class BookController {
         model.addAttribute("maxPrice", maxPrice);
         return "book/bookSearchList";
     }
+
 }

@@ -137,7 +137,7 @@ public class CartController {
 	}
 	
 	// === 쿠키에서 accessToken 추출 ===
-	private String getAccessTokenFromCookies(Cookie[] cookies) {
+	public String getAccessTokenFromCookies(Cookie[] cookies) {
 		if (cookies == null) return null;
 		for (Cookie cookie : cookies) {
 			if ("accessToken".equals(cookie.getName())) {
@@ -148,7 +148,7 @@ public class CartController {
 	}
 	
 	// === 쿠키에서 guestId 추출 ===
-	private String getGuestIdFromCookie(HttpServletRequest request) {
+	public String getGuestIdFromCookie(HttpServletRequest request) {
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
 				if ("guestId".equals(cookie.getName())) {
@@ -157,6 +157,13 @@ public class CartController {
 			}
 		}
 		return null;
+	}
+	
+	public void deleteGuestIdCookie(HttpServletResponse response) {
+		Cookie cookie = new Cookie("guestId", null);
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
 	}
 	
 }
