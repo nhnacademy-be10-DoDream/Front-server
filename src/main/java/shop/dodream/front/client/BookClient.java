@@ -57,6 +57,9 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}/categories")
     List<CategoryTreeResponse> getCategoriesByBookId(@PathVariable("book-id") Long bookId);
 
+//    @GetMapping("/public/books/{book-id}/categories/flat")
+//    List<CategoryResponse> getFlatCategoriesByBookId(@PathVariable("book-id") Long bookId);
+
     @GetMapping("/public/categories/{category-id}/books")
     PageResponse<BookDto> getBooksByCategoryId(@PathVariable("category-id") Long categoryId,
                                                @RequestParam("page") int page,

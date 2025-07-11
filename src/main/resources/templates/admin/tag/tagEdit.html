@@ -16,7 +16,7 @@
     </form>
   </div>
 
-      <form th:action="@{'/admin/tag/modify/' + ${tag.tagId}}" method="post">
+      <form th:action="@{'/admin/tag/edit/' + ${tag.tagId}}" method="post">
         <div class="form-group mb-3">
           <label for="tagName" class="form-label">태그 이름</label>
           <input type="text" class="form-control" id="tagName" name="tagName"
