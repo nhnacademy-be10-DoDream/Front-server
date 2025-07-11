@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+  <meta charset="UTF-8">
+  <title>403 - 접근 거부</title>
+</head>
+<body>
+<main layout:fragment="content" class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+  <div class="error-container text-center">
+    <h1 class="display-4 fw-bold text-warning">403</h1>
+    <p class="fs-4">접근이 제한된 페이지입니다.</p>
+    <p class="text-muted">권한이 없거나 로그인 상태가 아닙니다.</p>
+    <a href="/" class="btn btn-primary mt-3">홈으로 가기</a>
+  </div>
+</main>
+</body>
+</html>
