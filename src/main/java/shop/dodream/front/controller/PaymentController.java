@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import shop.dodream.front.client.CartClient;
 import shop.dodream.front.client.PaymentClient;
+import shop.dodream.front.dto.CartResponse;
 
 import java.util.Map;
 
@@ -16,6 +18,8 @@ import java.util.Map;
 public class PaymentController {
 
     private final PaymentClient paymentClient;
+    private final CartClient cartClient;
+    private final CartController cartController;
     @RequestMapping(method = RequestMethod.GET)
     public String checkOut() {
         return "order/payment/checkout";
@@ -23,10 +27,15 @@ public class PaymentController {
 
     @RequestMapping(value = "/confirm")
     @ResponseBody
-    public ResponseEntity<Map<String ,Object>> confirmPayment(@RequestBody String jsonBody) {
+    public ResponseEntity<Map<String ,Object>> confirmPayment(@RequestBody String jsonBody,HttpServletRequest request) {
         Map<String ,Object> response = paymentClient.confirm(jsonBody);
         int statusCode = response.containsKey("error") ? 400 : 200;
-
+        String guestId = cartController.getGuestIdFromCookie(request);
+        if(guestId == null){
+            CartResponse cart = cartClient.getCart();
+            cartClient.deleteCart(cart.getCartId());
+        }
+        cartClient.deleteGuestCart(guestId);
         return ResponseEntity.status(statusCode).body(response);
     }
 

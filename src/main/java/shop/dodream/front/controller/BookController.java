@@ -1,6 +1,8 @@
 package shop.dodream.front.controller;
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,11 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shop.dodream.front.client.BookClient;
+import shop.dodream.front.client.CartClient;
 import shop.dodream.front.dto.BookDto;
 import shop.dodream.front.dto.BookTagInfo;
 import shop.dodream.front.dto.PageResponse;
 import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
+import shop.dodream.front.util.CookieUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -26,12 +30,14 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookClient bookClient;
+    private final CartClient cartClient;
+    private final CartController cartController;
 
 
     // Controller
     @GetMapping("/")
     public String home(@RequestParam(value = "page", defaultValue = "0") int page,
-                       Model model) {
+                       Model model, HttpServletRequest request, HttpServletResponse response) {
         List<Long> tagIds = List.of(1L, 2L, 3L);
 
         List<BookTagInfo> bookTagInfos = tagIds.stream()
@@ -44,6 +50,12 @@ public class BookController {
 
         List<BookDto> books = bookClient.getAllBooks();
         model.addAttribute("books", books);
+        String guestId = cartController.getGuestIdFromCookie(request);
+        String acessToken = cartController.getAccessTokenFromCookies(request.getCookies());
+        if(guestId != null && acessToken != null) {
+            cartClient.mergeCart(guestId);
+            cartController.deleteGuestIdCookie(response);
+        }
         return "home";
     }
 
