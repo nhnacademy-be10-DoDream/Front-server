@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <body>
 <!-- templates/fragments/header.html -->
 <div th:fragment="header">
     <header class="header-container d-flex justify-content-between align-items-end px-4 py-3">
-        <div class="branding" >
+        <div class="branding">
             <div>
                 <img src="/images/logo-32x32.png">
                 <a th:href="@{/}" class="logo fw-bold fs-4">두드림 책방</a>
@@ -13,26 +13,27 @@
 
         <nav class="menu d-flex align-items-center gap-4">
             <a th:href="@{/category/all}" class="nav-item">전체 도서</a>
-            <a th:href="@{/auth/guest}" class="nav-item">비회원 주문 목록</a>
+            <a th:href="@{/auth/guest}" class="nav-item" sec:authorize="isAnonymous()">비회원 주문 목록</a>
             <a th:href="@{/contact}" class="nav-item">쿠폰</a>
-            <a th:href="@{/mypage}" class="nav-item">마이페이지</a>
-            <a th:href="@{/admin}" class="nav-item">관리자</a>
-            <!-- 로그인 여부에 따라 출력 분기 -->
-            <div th:if="${user != null}" class="d-flex align-items-center gap-3 nav-item fw-semibold">
+            <a th:href="@{/mypage}" class="nav-item" sec:authorize="isAuthenticated()">마이페이지</a>
+            <a th:href="@{/admin}" class="nav-item" sec:authorize="hasRole('ADMIN')">관리자</a>
+            <th:block sec:authorize="isAuthenticated()">
                 <span class="username" th:text="|${user.name}님 반갑습니다!|"></span>
 
                 <a href="#" class="nav-item" onclick="document.getElementById('logoutForm').submit(); return false;">로그아웃</a>
 
                 <form id="logoutForm" th:action="@{/auth/logout}" method="post" style="display: none;"></form>
-            </div>
-            <a th:if="${user == null}" th:href="@{/auth/signup-form}" class="nav-item">회원가입</a>
-            <a th:if="${user == null}" th:href="@{/auth/login-form}" class="nav-item">로그인</a>
+            </th:block>
+            <a th:href="@{/auth/signup-form}" class="nav-item" sec:authorize="isAnonymous()">회원가입</a>
+            <a th:href="@{/auth/login-form}" class="nav-item" sec:authorize="isAnonymous()">로그인</a>
             <a th:href="@{/cart}" class="nav-item">장바구니🛒</a>
         </nav>
     </header>
     <nav class="navbar navbar-expand-lg " style="background-color: #ffffff;" data-bs-theme="light">
         <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -72,7 +73,8 @@
                     </li>
                 </ul>
                 <form class="d-flex" role="search" method="get" action="/search">
-                    <input class="form-control me-2" type="search" name="keyword" placeholder="Search" aria-label="Search" required />
+                    <input class="form-control me-2" type="search" name="keyword" placeholder="Search"
+                           aria-label="Search" required/>
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
             </div>

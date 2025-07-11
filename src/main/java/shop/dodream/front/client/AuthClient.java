@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.LoginRequest;
+import shop.dodream.front.dto.SessionUser;
 import shop.dodream.front.dto.TokenResponse;
 
 @FeignClient(name = "authClient", url = "${gateway.url}")
@@ -33,4 +34,6 @@ public interface AuthClient {
     ResponseEntity<String> verifyDormantCode(@RequestParam("userId") String userId,
                                              @RequestParam("code") String code);
 
+    @PostMapping("/auth/role")
+    ResponseEntity<SessionUser> getSessionUser();
 }

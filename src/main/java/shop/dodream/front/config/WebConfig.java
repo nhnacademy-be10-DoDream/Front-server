@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setBasenames("message", "mypage", "order");
+        messageSource.setBasenames("message", "mypage", "order", "admin");
 
         return messageSource;
     }

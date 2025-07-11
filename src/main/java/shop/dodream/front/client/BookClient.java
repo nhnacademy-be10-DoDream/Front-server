@@ -7,12 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.dto.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import shop.dodream.front.config.FeignMultipartSupportConfig;
-import shop.dodream.front.dto.*;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -134,11 +129,12 @@ public interface BookClient {
     @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/books/search")
+    @GetMapping("public/books/search")
     PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
                                                @RequestParam("page") int page,
-                                               @RequestParam("size") int size);
+                                               @RequestParam("size") int size,
+                                               @RequestParam(required = false) Long categoryId);
 
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
     Void createReview(

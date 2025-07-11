@@ -17,10 +17,11 @@
         <div id="carouselExampleAutoplaying" class="carousel slide w-50 h-100" data-bs-ride="carousel">
             <div class="carousel-inner h-100 overflow-hidden">
                 <div th:each="book, stat : ${books}" th:class="'carousel-item' + ${stat.index == 0 ? ' active' : ''}">
-                    <img th:src="@{${book.bookUrl}}"
+                    <img th:src="@{|${minioPath.book}${book.getBookUrl()}|}"
                          class="d-block mx-auto"
                          style="max-height: 200px; object-fit: contain;"
                          th:alt="${book.title}" />
+
                 </div>
             </div>
 
@@ -48,7 +49,7 @@
                         <div class="d-flex justify-content-between gap-3">
                             <div th:each="book : ${chunk}" class="book-card flex-fill">
                                 <a th:href="@{/books/{id}(id=${book.bookId})}">
-                                    <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
+                                    <img th:src="@{|${minioPath.book}${book.getBookUrl()}|}" th:alt="${book.title}" class="img-fluid mb-2" />
                                 </a>
                                 <h3 th:text="${book.title}">책 제목</h3>
                                 <p th:text="${book.author}">작가</p>
