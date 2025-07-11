@@ -103,7 +103,7 @@
                    th:href="@{/mypage/reviews(page=0, size=${reviews.size})}"
                    th:text="#{pagination.first}"></a>
             </li>
-            <li th:classappend="${!reviews.hasPrevious()} ? 'disabled'">
+            <li th:classappend="${reviews.first} ? 'disabled'">
                 <a class="pagination-link"
                    th:href="@{/mypage/reviews(page=${reviews.number - 1}, size=${reviews.size})}"
                    th:text="#{pagination.previous}"></a>
@@ -114,11 +114,13 @@
                    th:href="@{/mypage/reviews(page=${pageNum}, size=${reviews.size})}"
                    th:text="${pageNum + 1}"></a>
             </li>
-            <li th:classappend="${!reviews.hasNext()} ? 'disabled'">
+            <li th:classappend="${!reviews.last} ? 'disabled'">
                 <a class="pagination-link"
+                   th:if="${reviews.number < reviews.totalPages - 1}"
                    th:href="@{/mypage/reviews(page=${reviews.number + 1}, size=${reviews.size})}"
                    th:text="#{pagination.next}"></a>
             </li>
+
             <li th:classappend="${reviews.last} ? 'disabled'">
                 <a class="pagination-link"
                    th:href="@{/mypage/reviews(page=${reviews.totalPages - 1}, size=${reviews.size})}"

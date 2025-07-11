@@ -26,80 +26,104 @@
     </div>
 
     <!-- 포인트 이력 존재 -->
-    <div th:if="${!points.isEmpty()}" class="info-card">
+    <div th:if="${!points.isEmpty()}">
 
-        <!-- 카드 본문 - 기존 info-table 사용 -->
-        <div class="info-card-body">
-            <table class="info-table">
-                <thead>
-                <tr>
-                    <th style="width: 15%;" class="text-center">
-                        <i class="bi bi-calendar3 me-1"></i>
-                        <span th:text="#{mypage.points.date}"></span>
-                    </th>
-                    <th style="width: 15%;" class="text-center">
-                        <i class="bi bi-tag me-1"></i>
-                        <span th:text="#{mypage.points.type}"></span>
-                    </th>
-                    <th style="width: 40%;">
-                        <i class="bi bi-file-text me-1"></i>
-                        <span th:text="#{mypage.points.description}"></span>
-                    </th>
-                    <th style="width: 15%;" class="text-center">
-                        <i class="bi bi-coin me-1"></i>
-                        <span th:text="#{mypage.points.amount}"></span>
-                    </th>
-                    <th style="width: 15%;" class="text-center">
-                        <i class="bi bi-wallet me-1"></i>
-                        <span th:text="#{mypage.points.balance}"></span>
-                    </th>
-                </tr>
-                </thead>
+        <form method="GET" th:action="@{/mypage/points}" class="filter-form">
+            <input type="hidden" name="page" value="1">
+            <input type="hidden" name="size" th:value="${points.size}">
 
-                <tbody>
-                <tr th:each="point : ${points.content}">
-                    <td class="text-center">
-                        <div th:text="${#temporals.format(point.createdAt, 'yyyy-MM-dd')}"></div>
-                        <small class="text-muted" th:text="${#temporals.format(point.createdAt, 'HH:mm')}"></small>
-                    </td>
-                    <td class="text-center">
-                                <span class="mypage-badge"
-                                      th:classappend="${point.pointType == 'EARN'} ? 'points-earn' : 'points-use'"
-                                      th:text="#{${'mypage.points.type.' + point.pointType.toLowerCase()}}">
-                                </span>
-                    </td>
-                    <td>
-                        <span th:text="${point.description}"></span>
-                    </td>
-                    <td class="text-center">
-                                <span class="fw-bold"
-                                      th:classappend="${point.pointType == 'EARN'} ? 'text-success' : 'text-danger'"
-                                      th:text="${(point.pointType == 'EARN' ? '+' : '') + point.amount + 'P'}">
-                                </span>
-                    </td>
-                    <td class="text-center">
-                        <span class="text-muted" th:text="${point.balance + 'P'}"></span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="right-group">
+                <div class="toggleContainer">
+                    <input type="radio" name="filter" id="pointAll" value="ALL" class="toggleRadio"
+                           th:checked="${currentFilter == null || currentFilter == 'ALL'}"
+                           onchange="this.form.submit()">
+                    <label for="pointAll" class="toggleLabel" th:text="#{mypage.points.historyAll}"></label>
+
+                    <input type="radio" name="filter" id="pointEarn" value="EARN" class="toggleRadio"
+                           th:checked="${currentFilter == 'EARN'}"
+                           onchange="this.form.submit()">
+                    <label for="pointEarn" class="toggleLabel" th:text="#{mypage.points.historyEarn}"></label>
+
+                    <input type="radio" name="filter" id="pointUse" value="USE" class="toggleRadio"
+                           th:checked="${currentFilter == 'USE'}"
+                           onchange="this.form.submit()">
+                    <label for="pointUse" class="toggleLabel" th:text="#{mypage.points.historyUse}"></label>
+                </div>
+            </div>
+        </form>
+
+        <div class="info-card">
+            <div class="info-card-body">
+                <table class="info-table">
+                    <thead>
+                    <tr>
+                        <th style="width: 15%;" class="text-center">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            <span th:text="#{mypage.points.date}"></span>
+                        </th>
+                        <th style="width: 15%;" class="text-center">
+                            <i class="bi bi-tag me-1"></i>
+                            <span th:text="#{mypage.points.type}"></span>
+                        </th>
+                        <th style="width: 40%;">
+                            <i class="bi bi-file-text me-1"></i>
+                            <span th:text="#{mypage.points.description}"></span>
+                        </th>
+                        <th style="width: 15%;" class="text-center">
+                            <i class="bi bi-coin me-1"></i>
+                            <span th:text="#{mypage.points.amount}"></span>
+                        </th>
+                        <th style="width: 15%;" class="text-center">
+                            <i class="bi bi-wallet me-1"></i>
+                            <span th:text="#{mypage.points.balance}"></span>
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="point : ${points.content}">
+                        <td class="text-center">
+                            <div th:text="${#temporals.format(point.createdAt, 'yyyy-MM-dd')}"></div>
+                            <small class="text-muted" th:text="${#temporals.format(point.createdAt, 'HH:mm')}"></small>
+                        </td>
+                        <td class="text-center">
+                        <span class="mypage-badge"
+                              th:classappend="${point.pointType == 'EARN'} ? 'points-earn' : 'points-use'"
+                              th:text="#{${'mypage.points.type.' + point.pointType.toLowerCase()}}">
+                        </span>
+                        </td>
+                        <td>
+                            <span th:text="${point.description}"></span>
+                        </td>
+                        <td class="text-center">
+                        <span class="fw-bold"
+                              th:classappend="${point.pointType == 'EARN'} ? 'points-use-text' : 'points-earn-text'"
+                              th:text="${(point.pointType == 'EARN' ? '+' : '') + point.amount + 'P'}">
+                        </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="text-muted" th:text="${point.balance + 'P'}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- 페이지네이션 -->
     <div th:if="${points.totalPages > 1}" class="pagination-container">
         <ul class="custom-pagination">
             <!-- 처음 페이지 -->
-            <li th:classappend="${points.number == 0} ? 'disabled'">
+            <li th:classappend="${points.first} ? 'disabled'">
                 <a class="pagination-link"
-                   th:href="@{/mypage/points(page=1, size=${points.size})}"
+                   th:href="@{/mypage/points(page=1, size=${points.size}, filter=${currentFilter})}"
                    th:text="#{pagination.first}"></a>
             </li>
 
             <!-- 이전 페이지 -->
-            <li th:classappend="${points.number == 0} ? 'disabled'">
+            <li th:classappend="${points.first} ? 'disabled'">
                 <a class="pagination-link"
-                   th:href="@{/mypage/points(page=${points.number}, size=${points.size})}"
+                   th:href="@{/mypage/points(page=${points.number}, size=${points.size}, filter=${currentFilter})}"
                    th:text="#{pagination.previous}"></a>
             </li>
 
@@ -107,25 +131,27 @@
             <li th:each="pageNum : ${#numbers.sequence(1, points.totalPages)}"
                 th:classappend="${pageNum == points.number + 1} ? 'active'">
                 <a class="pagination-link"
-                   th:href="@{/mypage/points(page=${pageNum}, size=${points.size})}"
+                   th:href="@{/mypage/points(page=${pageNum}, size=${points.size}, filter=${currentFilter})}"
                    th:text="${pageNum}"></a>
             </li>
 
             <!-- 다음 페이지 -->
-            <li th:classappend="${points.number == points.totalPages - 1} ? 'disabled'">
+            <li th:classappend="${points.last} ? 'disabled'">
                 <a class="pagination-link"
-                   th:href="@{/mypage/points(page=${points.number + 2}, size=${points.size})}"
+                   th:href="@{/mypage/points(page=${points.number + 2}, size=${points.size}, filter=${currentFilter})}"
                    th:text="#{pagination.next}"></a>
             </li>
 
             <!-- 마지막 페이지 -->
-            <li th:classappend="${points.number == points.totalPages - 1} ? 'disabled'">
+            <li th:classappend="${points.last} ? 'disabled'">
                 <a class="pagination-link"
-                   th:href="@{/mypage/points(page=${points.totalPages}, size=${points.size})}"
+                   th:href="@{/mypage/points(page=${points.totalPages}, size=${points.size}, filter=${currentFilter})}"
                    th:text="#{pagination.last}"></a>
             </li>
         </ul>
     </div>
+
+
 
     <!-- 포인트 적립 안내 카드 -->
     <div class="info-card">
@@ -141,6 +167,7 @@
                     <ul>
                         <li th:text="#{points.info.purchase}"></li>
                         <li th:text="#{points.info.review}"></li>
+                        <li th:text="#{points.info.photoReview}"></li>
                         <li th:text="#{points.info.signup}"></li>
                     </ul>
                 </div>

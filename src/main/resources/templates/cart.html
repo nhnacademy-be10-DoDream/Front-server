@@ -35,8 +35,10 @@
                         </td>
 
                         <td style="text-align: center">
-                            정가: <s th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></s><br>
-                            <span th:id="'priceDisplay-' + ${item.cartItemId}" th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></span>
+                            <div>
+                                정가: <s th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></s><br>
+                                <span style="color: red;">할인가:<span th:id="'priceDisplay-' + ${item.cartItemId}" th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></span></span>
+                            </div>
                         </td>
 
                         <td align="center">
@@ -78,20 +80,22 @@
                 </table>
 
                 <!-- 장바구니 요약 정보 -->
-                <form th:action="@{/order}" method="post">
+                <form th:action="@{/order}" method="post" id="orderForm">
                     <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px; text-align: center;">
                         <p><strong>총 제품 금액:</strong> <span id="totalProductPrice">0원</span></p>
                         <p><strong>할인 금액:</strong> <span id="totalDiscount">0원</span></p>
                         <p><strong>적립 금액 (10%):</strong> <span id="rewardPoint">0원</span></p>
                         <p><strong>총 주문 금액:</strong> <span id="orderTotal">0원</span></p>
                         <input type="hidden" name="orderTotal" value="0" />
-
+                        <input type="hidden" name="userId" th:value="${user.userId}" />
                         <div th:each="item, stat : ${cartItems}">
                             <input type="hidden" th:name="|items[${stat.index}].bookId|" th:value="${item.bookId}" />
                             <input type="hidden" th:name="|items[${stat.index}].title|" th:value="${item.title}" />
                             <input type="hidden" th:name="|items[${stat.index}].price|" th:value="${item.salePrice}" />
                             <input type="hidden" th:name="|items[${stat.index}].quantity|" th:value="${item.quantity}" />
                             <input type="hidden" th:name="|items[${stat.index}].wrappingId|" />
+                            <input type="hidden" th:id="'couponId-' + ${stat.index}" th:name="|items[${stat.index}].couponId|" />
+                            <input type="hidden" th:id="'finalPrice-' + ${stat.index}" th:name="|items[${stat.index}].finalPrice|" />
                         </div>
 
                         <button type="submit" style="
@@ -108,7 +112,7 @@
                                 "
                            onmouseover="this.style.background='#0056b3'"
                            onmouseout="this.style.background='#007bff'"
-                        >주문하기</button>
+                                onclick="submitOrder()" >주문하기</button>
                     </div>
                 </form>
             </td>
@@ -118,7 +122,9 @@
 </body>
 </html>
 
+
 <script th:inline="javascript">
+    const selectedCouponIds = new Set();
 
     function formatPrice(val) {
         return val.toLocaleString() + '원';
@@ -140,7 +146,6 @@
             totalProductPrice += salePrice * quantity;
             totalDiscount += (salePrice - finalPrice) * quantity;
 
-            // wrapping price
             const wrappingSelect = row.querySelector('.wrapping-select');
             const selectedOption = wrappingSelect?.selectedOptions[0];
             const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
@@ -154,10 +159,7 @@
         const orderTotal = discountedPrice + totalWrapping;
         const rewardPoint = Math.floor(orderTotal * 0.1);
 
-        const orderTotalInput = document.querySelector("input[name='orderTotal']");
-        if (orderTotalInput) {
-            orderTotalInput.value = orderTotal; // 값 반영
-        }
+        document.querySelector("input[name='orderTotal']").value = orderTotal;
         document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
         document.getElementById("totalDiscount").innerText = formatPrice(totalDiscount);
         document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
@@ -180,8 +182,10 @@
             .then(coupons => {
                 couponListDiv.innerHTML = "";
 
-                if (coupons.length > 0) {
-                    coupons.forEach(coupon => {
+                const filteredCoupons = coupons.filter(c => !selectedCouponIds.has(c.couponId));
+
+                if (filteredCoupons.length > 0) {
+                    filteredCoupons.forEach(coupon => {
                         const couponDiv = document.createElement("div");
                         couponDiv.style.border = "1px solid #ccc";
                         couponDiv.style.padding = "10px";
@@ -192,12 +196,12 @@
                             : `${coupon.discountValue.toLocaleString()}원`;
 
                         couponDiv.innerHTML = `
-                        <strong>쿠폰 이름:</strong> ${coupon.couponName}<br>
-                        <strong>${coupon.discountValue <= 100 ? '할인율' : '할인금액'}:</strong> ${discountText}<br>
-                        <strong>최소 구매 금액:</strong> ${coupon.minPurchaseAmount.toLocaleString()}원<br>
-                        <strong>최대 할인 금액:</strong> ${coupon.maxDiscountAmount.toLocaleString()}원<br>
-                        <button onclick="selectCoupon(${cartItemId}, ${coupon.couponId}, ${coupon.finalPrice})">적용</button>
-                    `;
+                            <strong>쿠폰 이름:</strong> ${coupon.policyName}<br>
+                            <strong>${coupon.discountValue <= 100 ? '할인율' : '할인금액'}:</strong> ${discountText}<br>
+                            <strong>최소 구매 금액:</strong> ${coupon.minPurchaseAmount.toLocaleString()}원<br>
+                            <strong>최대 할인 금액:</strong> ${coupon.maxDiscountAmount.toLocaleString()}원<br>
+                            <button onclick="selectCoupon(${cartItemId}, ${coupon.couponId}, ${coupon.finalPrice})">적용</button>
+                        `;
                         couponListDiv.appendChild(couponDiv);
                     });
                 } else {
@@ -209,38 +213,106 @@
             });
     }
 
-
     function selectCoupon(cartItemId, couponId, finalPrice) {
+        // 기존 같은 쿠폰이 다른 항목에 적용되어 있다면 제거
+        document.querySelectorAll("input[id^='selectedCouponId-']").forEach(input => {
+            if (input.value === String(couponId)) {
+                input.value = ""; // 해당 input 비움
+            }
+        });
+
+
+        // 현재 항목에 쿠폰 적용
         document.getElementById("selectedCouponId-" + cartItemId).value = couponId;
+        selectedCouponIds.add(couponId);
 
         const priceSpan = document.getElementById("priceDisplay-" + cartItemId);
         if (priceSpan) {
             priceSpan.innerText = finalPrice.toLocaleString() + "원";
         }
 
-        fetch(`/coupons/me/${couponId}/apply`, {
-            method: 'PUT'
-        }).then(response => {
-            if (!response.ok) throw new Error("쿠폰 적용 실패");
-            recalculateTotal(); // ⬅ 쿠폰 적용 후 금액 다시 계산
-        }).catch(error => {
-            alert("쿠폰 적용 중 오류가 발생했습니다.");
-        });
+        // 히든 인풋 채우기
+        const cartItemRow = document.querySelector(`tr[data-sale-price] [id='priceDisplay-${cartItemId}']`)?.closest("tr");
+        if (cartItemRow) {
+            const index = cartItemRow.querySelector(".wrapping-select")?.getAttribute("data-index");
+
+            const couponInput = document.getElementById(`couponId-${index}`);
+            const finalPriceInput = document.getElementById(`finalPrice-${index}`);
+            if (couponInput) couponInput.value = couponId;
+            if (finalPriceInput) finalPriceInput.value = finalPrice;
+        }
 
         closeCouponModal();
+        recalculateTotal();
     }
 
     function closeCouponModal() {
         document.getElementById("couponModal").style.display = "none";
     }
 
+    function getSelectedCoupons() {
+        const result = [];
+
+        document.querySelectorAll("tr[data-sale-price]").forEach(row => {
+            const link = row.querySelector("a");
+            const bookIdMatch = link?.getAttribute("href")?.match(/\/books\/(\d+)/);
+            const bookId = bookIdMatch ? parseInt(bookIdMatch[1]) : null;
+
+            const couponInput = row.querySelector("input[id^='selectedCouponId-']");
+            let userCouponId = null;
+
+            if (couponInput && couponInput.value.trim() !== "") {
+                const parsed = parseInt(couponInput.value);
+                if (!isNaN(parsed)) {
+                    userCouponId = parsed;
+                }
+            }
+
+            if (bookId !== null && userCouponId !== null) {
+                result.push({
+                    bookId,
+                    userCouponId
+                });
+            }
+        });
+
+        return result;
+    }
+
+
+    function submitOrder() {
+        const selectedCoupons = getSelectedCoupons();
+
+        if (selectedCoupons.length === 0) {
+            document.getElementById("orderForm").submit();
+            return;
+        }
+
+        fetch("/cart/coupons/multiple", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                requests: selectedCoupons.map(c => ({
+                    bookId: c.bookId,
+                    userCouponId: c.userCouponId
+                }))
+            })
+        }).then(response => {
+            if (!response.ok) throw new Error("쿠폰 사용 실패");
+            document.getElementById("orderForm").submit();
+        }).catch(error => {
+            alert("쿠폰 사용 중 오류가 발생했습니다.");
+            console.error(error);
+        });
+    }
+
     window.onload = () => {
-        // 각 가격 요소에 data-original-price 등록
         document.querySelectorAll('[id^="priceDisplay-"]').forEach(span => {
             const rawPrice = span.textContent.replace(/[^0-9]/g, '');
             span.dataset.originalPrice = rawPrice;
         });
-
         recalculateTotal();
     };
 </script>

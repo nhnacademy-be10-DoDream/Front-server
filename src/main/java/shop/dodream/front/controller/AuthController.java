@@ -78,7 +78,7 @@ public class AuthController {
 
                 if ("DORMANT".equalsIgnoreCase(body.get("status"))) {
                     String userId = body.getOrDefault("userId", fallbackUserId);
-                    return "redirect:/dormant/verify-form?userId=" + userId;
+                    return "redirect:/auth/dormant/verify-form?userId=" + userId;
                 }
             }
 

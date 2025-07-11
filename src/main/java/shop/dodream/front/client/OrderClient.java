@@ -16,8 +16,8 @@ public interface OrderClient {
     @GetMapping("/public/orders/gift-wrap")
     List<WrappingDto> getGiftWraps();
 
-//    @GetMapping("/orders/gift-wrap/{gift-wrap-id}")
-//    WrappingDto getGiftWrapById(@PathVariable("gift-wrap-id") Long giftWrapId);
+    @GetMapping("/public/orders/gift-wrap/{gift-wrap-id}")
+    WrappingDto getGiftWrapById(@PathVariable("gift-wrap-id") Long giftWrapId);
 
     @GetMapping("/public/orders/shipping")
     List<ShippingPolicyDto> getShippingPolicies();
@@ -29,7 +29,7 @@ public interface OrderClient {
     @GetMapping("/orders/{order-id}")
     OrderDetailsDto getOrderDetail(@PathVariable("order-id") String orderId); // 주문 상세 조회
 
-    @PostMapping("/orders/{order-id}/cancel")
+    @PostMapping("/public/orders/{order-id}/cancel")
     Map<String, Object> cancelOrder(@PathVariable("order-id") String orderId, PaymentCancelRequest request); // 주문 취소
 
     @PostMapping("/orders/{order-id}/refund")

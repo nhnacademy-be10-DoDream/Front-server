@@ -7,67 +7,49 @@
     <meta charset="UTF-8">
     <title>두드림 책방</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/searchSidebar.css}">
     <link rel="stylesheet" th:href="@{/css/paging.css}">
 </head>
 <body>
 <!-- 도서 목록 영역 -->
 <div layout:fragment="content" class="booklist-container" style="display: flex; position: relative;">
+    <form action="/search" method="get" id="searchFilterForm">
+        <input type="hidden" name="keyword" th:value="${keyword}" />
+        <input type="hidden" name="minPrice" id="minPriceInput" th:value="${minPrice}" />
+        <input type="hidden" name="maxPrice" id="maxPriceInput" th:value="${maxPrice}" />
 
-    <div class="search-sidebar">
-        <h4>검색내 정렬</h4>
-        <!-- 분야별 보기 (스크롤 영역) -->
-        <div class="sidebar-section category-scroll-section">
-            <h5>분야별 보기</h5>
-            <ul>
-                <li th:each="parentCategory : ${categories.keySet()}">
-                    <a th:text="${parentCategory.categoryName}" class="parent-category"></a>
-                    <ul>
-                        <li th:each="childCategory : ${categories.get(parentCategory)}">
-                            <a th:text="${childCategory.categoryName}" class="child-category"></a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+        <div class="search-sidebar">
+            <h4>검색내 정렬</h4>
 
-        <!-- 가격대별 보기 -->
-        <div class="sidebar-section price-section">
-            <h5>가격대별 보기</h5>
-            <ul>
-                <li><a href="#">전체</a></li>
-                <li><a href="#">1만원 이하</a></li>
-                <li><a href="#">1만원 - 2만원</a></li>
-                <li><a href="#">2만원 - 3만원</a></li>
-                <li><a href="#">3만원 이상</a></li>
-            </ul>
-        </div>
-
-        <!-- 기타 필터 -->
-        <div class="sidebar-section other-sidebar-options">
-            <h5>기타 필터</h5>
-            <div class="filter-item">
-                <label>정렬</label>
-                <select>
-                    <option>정확도순</option>
-                    <option>인기순</option>
-                    <option>최신순</option>
-                    <option>최고가순</option>
-                    <option>최저가순</option>
-                    <option>평점순</option>
-                    <option>리뷰순</option>
-                </select>
+            <!-- 가격대별 보기 -->
+            <div class="sidebar-section price-section">
+                <h5>가격대별 보기</h5>
+                <ul>
+                    <li><a href="#" onclick="setPriceAndSubmit(null, null)">전체</a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(0, 10000)">1만원 이하</a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(10000, 20000)">1만원 - 2만원</a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(20000, 30000)">2만원 - 3만원</a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(30000, null)">3만원 이상</a></li>
+                </ul>
             </div>
-            <div class="filter-item">
-                <input type="checkbox" id="bestseller">
-                <label for="bestseller" class="checkbox-label">베스트셀러만</label>
-            </div>
-            <div class="filter-item">
-                <input type="checkbox" id="discount">
-                <label for="discount" class="checkbox-label">할인도서만</label>
+
+            <!-- 기타 필터 -->
+            <div class="sidebar-section other-sidebar-options">
+                <h5>필터</h5>
+                <div class="filter-item">
+                    <select id="sortSelect" name="sort" onchange="this.form.submit()">
+                        <option value="NONE" th:selected="${sort.name() == 'NONE'}">정확도순</option>
+                        <option value="POPULARITY" th:selected="${sort.name() == 'POPULARITY'}">인기순</option>
+                        <option value="RECENT" th:selected="${sort.name() == 'RECENT'}">최신순</option>
+                        <option value="HIGH_PRICE" th:selected="${sort.name() == 'HIGH_PRICE'}">최고가순</option>
+                        <option value="LOW_PRICE" th:selected="${sort.name() == 'LOW_PRICE'}">최저가순</option>
+                        <option value="RATING" th:selected="${sort.name() == 'RATING'}">평점순</option>
+                        <option value="REVIEW" th:selected="${sort.name() == 'REVIEW'}">리뷰순</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <div class="booklist-content" style="flex: 1; padding: 20px;">
         <div th:if="${#lists.isEmpty(books)}">
@@ -77,14 +59,15 @@
         <div class="book-grid" th:if="${not #lists.isEmpty(books)}">
             <div th:each="book : ${books}" class="book-card">
                 <a th:href="@{/books/{id}(id=${book.bookId})}">
-                    <img th:src="@{${book.bookUrl}}" th:alt="${book.title}" class="img-fluid mb-2" />
+                    <img th:src="@{|${minioPath.book}${book.getImageUrl()}|}" th:alt="${book.title}" class="img-fluid mb-2" />
                 </a>
                 <h3 th:text="${book.title}">책 제목</h3>
                 <p th:text="${book.author}">작가</p>
                 <span th:text="|₩${#numbers.formatInteger(book.salePrice, 0, 'COMMA')}|">₩0</span>
-                <form th:action="@{/cart/add}" method="post">
+                <form th:action="@{/cart/add}" method="post" class="mt-2">
                     <input type="hidden" name="bookId" th:value="${book.bookId}" />
-                    <button type="submit">장바구니 담기</button>
+                    <input type="hidden" name="quantity" value="1" />
+                    <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
                 </form>
             </div>
         </div>
@@ -115,6 +98,13 @@
             </li>
         </ul>
     </div>
+    <script>
+        function setPriceAndSubmit(min, max) {
+            document.getElementById("minPriceInput").value = min != null ? min : '';
+            document.getElementById("maxPriceInput").value = max != null ? max : '';
+            document.getElementById("searchFilterForm").submit();
+        }
+    </script>
 </div>
 </body>
 </html>

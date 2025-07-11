@@ -21,11 +21,7 @@ public class TagController {
 
         int size  = 8;
         PageResponse<BookDto> bookPage = bookClient.getBooksByTagId(tagId, page, size);
-        for (BookDto book : bookPage.getContent()) {
-            String bookUrlPrefix = "https://dodream.shop/dodream-images/book/";
-            String imageUrl = bookUrlPrefix + book.getBookUrl();
-            book.setBookUrl(imageUrl);
-        }
+
         model.addAttribute("books", bookPage.getContent());
 
         model.addAttribute("currentPage", bookPage.getNumber());
