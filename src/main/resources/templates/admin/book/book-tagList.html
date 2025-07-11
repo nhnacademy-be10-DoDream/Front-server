@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title">도서 태그 관리</title>
+
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0">도서 태그 관리</h2>
+        <span th:text="'도서 ID: ' + ${book.bookId}"></span>
+    </div>
+
+    <div class="mb-3">
+        <form th:action="@{/admin/book/{bookId}/tag/register(bookId=${book.bookId})}" method="post" class="d-flex align-items-center gap-2">
+            <select name="tagId" class="form-select" required>
+                <option value="">-- 태그 선택 --</option>
+                <option th:each="tag : ${tags}"
+                        th:value="${tag.tagId}"
+                        th:text="${tag.tagName}"></option>
+            </select>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-sm btn-outline-primary">+ 태그 추가</button>
+            </div>
+        </form>
+    </div>
+
+    <table class="table table-admin">
+        <thead>
+        <tr>
+            <th>태그 ID</th>
+            <th>태그 이름</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="tag : ${bookTag.tags}">
+            <td th:text="${tag.tagId}">1</td>
+            <td th:text="${tag.tagName}">베스트셀러</td>
+            <td class="d-flex gap-1">
+
+                <form th:action="@{/admin/book/{bookId}/tag/{tagId}/edit(bookId=${bookId}, tagId=${tag.tagId})}" method="post"
+                      th:object="${tag}" class="d-flex align-items-center gap-2">
+
+                    <input type="hidden" name="_method" value="post"/>
+
+                    <!-- 새 태그 선택 -->
+                    <select name="newTagId" class="form-select form-select-sm w-auto" required>
+                        <option value="">-- 새 태그 선택 --</option>
+                        <option th:each="t : ${tags}"
+                                th:value="${t.tagId}"
+                                th:text="${t.tagName}"
+                                th:if="${t.tagId != tag.tagId}">
+                        </option>
+                    </select>
+
+                    <button type="submit" class="btn btn-outline-secondary btn-sm" style="height: 32px;">
+                        <i class="bi bi-arrow-repeat"></i> 수정
+                    </button>
+                </form>
+
+
+                <form th:action="@{/admin/book/{bookId}/tag/remove(bookId=${bookId})}" method="post" class="d-inline">
+                    <input type="hidden" name="tagId" th:value="${tag.tagId}" />
+                    <button type="submit" class="btn btn-outline-danger btn-sm px-2 py-0" style="height: 32px;"
+                            onclick="return confirm('이 태그를 도서에서 제거하시겠습니까?');">
+                        <i class="bi bi-x-circle"></i> 제거
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</main>
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const selectedTag = document.querySelector('select[name="tagId"]').value;
+        const existingTags = [...document.querySelectorAll('.tag-item')].map(el => el.dataset.tagId);
+
+        if (existingTags.includes(selectedTag)) {
+            alert('이미 등록된 태그입니다.');
+            e.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>

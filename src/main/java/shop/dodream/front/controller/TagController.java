@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TagController {
     private final BookClient bookClient;
+    private static final String REDIRECT_BOOK_TAGS = "redirect:/admin/book/%d/tags";
 
     @GetMapping("/tags/{tag-id}")
     public String getBooksByTag(@PathVariable("tag-id") Long tagId,
@@ -28,7 +29,7 @@ public class TagController {
         model.addAttribute("totalPages", bookPage.getTotalPages());
         model.addAttribute("tagId", tagId);
 
-        return "/book/bookList";
+        return "book/bookList";
     }
 
     @GetMapping("/admin/tag/register")
@@ -57,19 +58,18 @@ public class TagController {
         model.addAttribute("tags", pagedTags);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", (int) Math.ceil((double) tags.size() / size));
-        return "/admin/tag/tagList";
+        return "admin/tag/tagList";
     }
 
-    @GetMapping("/admin/tag/modify/{tag-id}")
-    public String showModifyForm(@PathVariable("tag-id") Long tagId, Model model) {
+    @GetMapping("/admin/tag/edit/{tag-id}")
+    public String showEditForm(@PathVariable("tag-id") Long tagId, Model model) {
         TagResponse tag = bookClient.getTag(tagId);
         model.addAttribute("tag", tag);
-        return "admin/tag/tagModify";
+        return "admin/tag/tagEdit";
     }
 
-
-    @PostMapping("/admin/tag/modify/{tag-id}")
-    public String modifyTag(@PathVariable("tag-id") Long tagId, @RequestParam("tagName") String newTagName) {
+    @PostMapping("/admin/tag/edit/{tag-id}")
+    public String EditTag(@PathVariable("tag-id") Long tagId, @RequestParam("tagName") String newTagName) {
         bookClient.updateTag(tagId, newTagName);
         return "redirect:/admin/tags";
     }
@@ -81,46 +81,38 @@ public class TagController {
         return "redirect:/admin/tags";
     }
 
-    @GetMapping("/admin/book/tags")
-    public String getTags(@RequestParam("bookId") Long bookId, Model model) {
-        BookWithTagsResponse tags = bookClient.getTagsByBookId(bookId);
+    @GetMapping("/admin/book/{book-id}/tags")
+    public String getTags(@PathVariable("book-id") Long bookId, Model model) {
+        BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
+        List<TagResponse> tags = bookClient.getTags();
         BookDetailDto book = bookClient.getBookDetail(bookId);
+
         model.addAttribute("book", book);
+        model.addAttribute("bookId", bookId);
+        model.addAttribute("bookTag", bookTag);
         model.addAttribute("tags", tags);
-        return "admin/bookTagList";
+        return "admin/book/book-tagList";
     }
 
-    @GetMapping("/admin/book/tag/register")
-    public String showBookTagRegisterForm(Model model) {
-        return "admin/bookTagRegister";
-    }
-
-    @PostMapping("/admin/book/tag/register")
-    public String registerBookTag(@RequestParam("bookId") Long bookId,
-                                  @RequestParam("bookId") Long tagId) {
+    @PostMapping("/admin/book/{book-id}/tag/register")
+    public String registerBookTag(@PathVariable("book-id") Long bookId,
+                                  @RequestParam("tagId") Long tagId) {
         bookClient.registerTag(bookId, tagId);
-        return "redirect:/admin/book/tags?bookId=" + bookId;
+        return String.format(REDIRECT_BOOK_TAGS, bookId);
     }
 
-    @GetMapping("/admin/book/tag/modify")
-    public String showBookTagModifyForm(Model model) {
-        return "admin/bookTagModify";
-    }
-
-    @PostMapping("/admin/book/tag/modify")
-    public String modifyBookTag(@RequestParam("bookId") Long bookId,
-                                @RequestParam("tagId") Long tagId,
+    @PostMapping("/admin/book/{book-id}/tag/{tag-id}/edit")
+    public String editBookTag(@PathVariable("book-id") Long bookId,
+                                @PathVariable("tag-id") Long tagId,
                                 @RequestParam("newTagId") Long newTagId) {
         bookClient.updateTagByBook(bookId, tagId, newTagId);
-        return "redirect:/admin/book/tags?bookId=" + bookId;
+        return String.format(REDIRECT_BOOK_TAGS, bookId);
     }
 
-    @PostMapping("/admin/book/tag/remove")
-    public String removeBookTag(@RequestParam("bookId") Long bookId,
-                                @RequestParam("bookId") Long tagId) {
+    @PostMapping("/admin/book/{book-id}/tag/remove")
+    public String removeBookTag(@PathVariable("book-id") Long bookId,
+                                @RequestParam("tagId") Long tagId) {
         bookClient.deleteTagByBook(bookId, tagId);
-        return "redirect:/admin/book/tags?bookId=" + bookId;
+        return String.format(REDIRECT_BOOK_TAGS, bookId);
     }
-
-
 }

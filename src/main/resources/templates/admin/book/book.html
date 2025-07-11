@@ -48,13 +48,17 @@
             <td th:text="${#temporals.format(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">등록일</td>
             <td th:text="${book.status}">상태</td>
             <td>
-                <a th:href="@{'/admin/books/detail/' + ${book.bookId}}" class="btn btn-sm btn-primary">조회</a>
-                <form th:action="@{'/admin/books/delete/' + ${book.bookId}}" method="post" style="display:inline;">
-                    <input type="hidden" name="_method" value="delete"/>
-                    <input type="hidden" name="bookId" th:value="${book.bookId}" />
-                    <button type="submit" class="btn btn-sm btn-danger"
-                            onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
-                </form>
+                <div class="d-flex flex-wrap gap-1">
+                    <a th:href="@{'/admin/books/detail/' + ${book.bookId}}" class="btn btn-sm btn-outline-primary">도서조회</a>
+                    <a th:href="@{'/admin/book/' + ${book.bookId} + '/categories'}" class="btn btn-sm btn-outline-secondary">카테고리</a>
+                    <a th:href="@{'/admin/book/' + ${book.bookId} + '/tags'}" class="btn btn-sm btn-outline-secondary">태그관리</a>
+                    <form th:action="@{'/admin/books/delete/' + ${book.bookId}}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('정말 삭제하시겠습니까?');">도서삭제</button>
+                    </form>
+                </div>
             </td>
         </tr>
         </tbody>

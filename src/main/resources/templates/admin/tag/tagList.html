@@ -26,7 +26,7 @@
       <td th:text="${cat.tagId}">1</td>
       <td th:text="${cat.tagName}">태그명</td>
       <td>
-        <form th:action="'/admin/tag/modify/' + ${cat.tagId}" method="get" style="display: inline;">
+        <form th:action="'/admin/tag/edit/' + ${cat.tagId}" method="get" style="display: inline;">
           <button type="submit"  class="btn-admin btn-primary btn-sm">수정</button>
         </form>
         <form th:action="@{/admin/tag/remove}" method="post" style="display:inline;">
@@ -34,6 +34,7 @@
           <button type="submit" class="btn-admin btn-danger btn-sm" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
         </form>
       </td>
+
     </tr>
     </tbody>
   </table>

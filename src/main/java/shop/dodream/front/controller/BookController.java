@@ -21,7 +21,6 @@ import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -167,8 +166,13 @@ public class BookController {
     @GetMapping("/admin/books/detail/{book-id}")
     public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model) {
         BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
+        BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
+        List<CategoryTreeResponse> bookCategories = bookClient.getCategoriesByBookId(bookId);
+
 
         model.addAttribute("book", bookDetailDto);
+        model.addAttribute("bookTags", bookTag);
+        model.addAttribute("bookCategories", bookCategories);
 
         return "admin/book/book-detail";
 
