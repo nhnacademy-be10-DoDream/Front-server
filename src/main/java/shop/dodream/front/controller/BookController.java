@@ -18,7 +18,6 @@ import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -199,6 +198,8 @@ public class BookController {
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "8") int size,
                               @RequestParam(required = false) Long categoryId,
+                              @RequestParam(required = false) Integer minPrice,
+                              @RequestParam(required = false) Integer maxPrice,
                               Model model) {
 
         PageResponse<BookItemResponse> books;
@@ -210,44 +211,22 @@ public class BookController {
             model.addAttribute("currentPage", 0);
             return "book/bookSearchList";
         }
-        Map<Long, CategoryCountResponse> rootCategories = new HashMap<>();
 
-        for (BookItemResponse book : books.getContent()) {
-            List<CategoryTreeResponse> categories = bookClient.getCategoriesByBookId(book.getBookId());
+        List<BookItemResponse> filteredBooks = books.getContent().stream()
+                .filter(book -> {
+                    if (minPrice != null && book.getSalePrice() < minPrice) return false;
+                    if (maxPrice != null && book.getSalePrice() > maxPrice) return false;
+                    return true;
+                })
+                .toList();
 
-            for (CategoryTreeResponse c : categories) {
-                if (!rootCategories.containsKey(c.getCategoryId())) {
-                    rootCategories.put(c.getCategoryId(), new CategoryCountResponse(c.getCategoryId(), c.getCategoryName(), 0));
-                }
-                mergeCategoryTree(c, rootCategories.get(c.getCategoryId()));
-            }
-        }
-
-        model.addAttribute("categoryCountTree", rootCategories.values());
-
-        model.addAttribute("books", books.getContent());
+        model.addAttribute("books", filteredBooks);
         model.addAttribute("keyword", keyword);
         model.addAttribute("totalPages", books.getTotalPages());
         model.addAttribute("currentPage", books.getNumber());
         model.addAttribute("sort", sort);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
         return "book/bookSearchList";
     }
-
-    private void mergeCategoryTree(CategoryTreeResponse source, CategoryCountResponse target) {
-        target.increment();
-
-        Map<Long, CategoryCountResponse> childMap = target.getChildren().stream()
-                .collect(Collectors.toMap(CategoryCountResponse::getCategoryId, Function.identity()));
-
-        for (CategoryTreeResponse child : source.getChildren()) {
-            CategoryCountResponse childCount = childMap.get(child.getCategoryId());
-            if (childCount == null) {
-                childCount = new CategoryCountResponse(child.getCategoryId(), child.getCategoryName(), 0);
-                target.getChildren().add(childCount);
-            }
-            mergeCategoryTree(child, childCount);
-        }
-    }
-
-
 }
