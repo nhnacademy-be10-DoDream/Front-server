@@ -5,7 +5,39 @@
       layout:decorate="~{layout/default}">
 
 <head>
-  <title>비회원 장바구니</title>
+  <title th:text="#{guestCart.title}">비회원 장바구니</title>
+  <!-- ======================= CSS 스타일 추가 시작 ======================= -->
+  <style>
+    /* 모든 테이블 셀의 내용을 세로 중앙으로 정렬합니다. */
+    .table_shop_blue tbody td {
+      vertical-align: middle;
+    }
+
+    /* 상품 정보(이미지+제목)를 담는 컨테이너 스타일 */
+    .product-cell {
+      display: flex;       /* Flexbox 레이아웃 적용 */
+      align-items: center; /* 자식 요소들을 세로 중앙에 배치 */
+      gap: 15px;           /* 이미지와 제목 사이의 간격을 15px로 설정 */
+      padding: 10px;       /* 셀 내부에 여백 추가 */
+    }
+
+    /* 상품 이미지 스타일 */
+    .product-cell img {
+      width: 80px;         /* 이미지 너비를 80px로 고정 */
+      height: auto;        /* 높이는 너비에 맞춰 자동으로 조절 */
+      object-fit: contain; /* 이미지 비율을 유지하면서 영역에 맞춤 */
+    }
+
+    /* 상품 제목 링크 스타일 */
+    .product-cell a {
+      text-decoration: none; /* 밑줄 제거 */
+      color: inherit;        /* 부모 요소의 글자색 상속 */
+    }
+    .product-cell a:hover {
+      text-decoration: underline; /* 마우스를 올리면 밑줄 표시 */
+    }
+  </style>
+  <!-- ======================= CSS 스타일 추가 끝 ========================= -->
 </head>
 
 <body>
@@ -17,21 +49,29 @@
         <table class="table_shop_blue" width="100%">
           <thead>
           <tr>
-            <th>상품명</th>
-            <th style="text-align: center">판매가</th>
-            <th style="text-align: center">수량</th>
-            <th style="text-align: center">포장여부</th>
-            <th style="text-align: center">삭제</th>
+            <th style="text-align: center" th:text="#{cart.header.productName}">상품명</th>
+            <th style="text-align: center" th:text="#{cart.header.salePrice}">판매가</th>
+            <th style="text-align: center" th:text="#{cart.header.quantity}">수량</th>
+            <th style="text-align: center" th:text="#{cart.header.wrapping}">포장여부</th>
+            <th style="text-align: center" th:text="#{cart.header.delete}">삭제</th>
           </tr>
           </thead>
           <tbody>
           <tr th:each="item, stat : ${cartItems}">
-            <!-- 상품 정보 -->
+            <!-- ============== HTML 구조 수정 시작 ============== -->
             <td>
-              <a th:href="@{/books/{id}(id=${item.bookId})}" th:text="${item.title}">
-                <img th:src="@{${item.bookUrl}}" style="width:48px;">
-              </a>
+              <div class="product-cell">
+                <!-- 이미지 -->
+                <a th:href="@{/books/{id}(id=${item.bookId})}">
+                  <img th:src="@{|${minioPath.book}${item.bookUrl}|}" alt="책 표지">
+                </a>
+                <!-- 제목 -->
+                <a th:href="@{/books/{id}(id=${item.bookId})}">
+                  <span th:text="${item.title}"></span>
+                </a>
+              </div>
             </td>
+            <!-- ============== HTML 구조 수정 끝 ================ -->
 
             <!-- 판매가 -->
             <td style="text-align: center">
@@ -43,14 +83,14 @@
               <form th:action="@{/guest-cart/update/{id}(id=${item.bookId})}" method="post">
                 <input type="hidden" name="_method" value="put"/>
                 <input type="number" name="quantity" th:value="${item.quantity}" min="1" style="width: 40px;">
-                <button type="submit">변경</button>
+                <button type="submit" th:text="#{cart.button.change}">변경</button>
               </form>
             </td>
 
             <td align="center">
               <select class="wrapping-select"
                       th:attr="data-index=${stat.index}">
-                <option data-price="0" value="">선택 안 함</option>
+                <option data-price="0" value="" th:text="#{cart.wrapping.noSelect}">선택 안 함</option>
                 <option th:each="wrap : ${wrappingOptions}"
                         th:value="${wrap.id}"
                         th:data-price="${wrap.price}"
@@ -62,7 +102,7 @@
             <!-- 삭제 버튼 -->
             <td align="center">
               <form th:action="@{/guest-cart/delete/{id}(id=${item.bookId})}" method="post">
-                <button type="submit">삭제</button>
+                <button type="submit" th:text="#{cart.button.delete}">삭제</button>
               </form>
             </td>
           </tr>
@@ -75,8 +115,8 @@
   <!-- 장바구니 요약 정보 -->
   <form th:action="@{/order}" method="post">
     <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px; text-align: center;">
-      <p><strong>총 제품 금액:</strong> <span id="totalProductPrice">0원</span></p>
-      <p><strong>총 주문 금액:</strong> <span id="orderTotal">0원</span></p>
+      <p><strong><span th:text="#{cart.summary.totalProductPrice}"></span>:</strong> <span id="totalProductPrice">0원</span></p>
+      <p><strong><span th:text="#{cart.summary.orderTotal}"></span>:</strong> <span id="orderTotal">0원</span></p>
       <input type="hidden" name="orderTotal" value="0" />
 
       <!-- 장바구니 DTO용 hidden 필드들 -->
@@ -102,75 +142,13 @@
     "
               onmouseover="this.style.background='#0056b3'"
               onmouseout="this.style.background='#007bff'"
-      >주문하기</button>
+              th:text="#{cart.button.order}">주문하기</button>
     </div>
   </form>
 </div>
+<!-- 여기에 외부 스크립트 파일을 연결합니다. -->
+<th:block layout:fragment="scripts">
+  <script src="/js/guest-cart.js"></script>
+</th:block>
 </body>
 </html>
-
-<script>
-  function formatPrice(value) {
-    return value.toLocaleString() + '원';
-  }
-
-  function recalculateGuestCartTotal() {
-    let totalProductPrice = 0;
-    let totalWrappingPrice = 0;
-    const seenBookIds = new Set();
-
-    document.querySelectorAll("tbody tr").forEach(row => {
-      const priceSpan = row.querySelector("td:nth-child(2) span");
-      const salePriceText = priceSpan ? priceSpan.textContent : '0';
-      const salePrice = Number(salePriceText.replace(/[^0-9]/g, "")) || 0;
-
-      const quantityInput = row.querySelector("input[type='number']");
-      let quantity = 1;
-      if (quantityInput && quantityInput.value !== "") {
-        quantity = Number(quantityInput.value);
-        if (isNaN(quantity) || quantity < 1) quantity = 1;
-      }
-
-      // bookId 추출 (상품명 td의 a 태그에서 id 파싱)
-      const bookLink = row.querySelector("td:nth-child(1) a");
-      let bookId = null;
-      if (bookLink) {
-        const href = bookLink.getAttribute('href');
-        const match = href.match(/\/books\/(\d+)/);
-        if (match) bookId = match[1];
-      }
-
-      // 0원 행, 중복 bookId 행 제외
-      if (salePrice > 0 && bookId && !seenBookIds.has(bookId)) {
-        seenBookIds.add(bookId);
-        totalProductPrice += salePrice * quantity;
-
-        const wrappingSelect = row.querySelector('.wrapping-select');
-        const selectedOption = wrappingSelect?.selectedOptions[0];
-        const wrappingPrice = selectedOption ? Number(selectedOption.dataset.price || 0) : 0;
-        totalWrappingPrice += wrappingPrice * quantity;
-
-        const index = wrappingSelect.getAttribute("data-index");
-        document.querySelector(`input[name='items[${index}].wrappingId']`).value = selectedOption?.value || "";
-      }
-    });
-
-    const orderTotal = totalProductPrice + totalWrappingPrice;
-    const orderTotalInput = document.querySelector("input[name='orderTotal']");
-    if (orderTotalInput) {
-      orderTotalInput.value = orderTotal; // 값 반영
-    }
-    document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
-    document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
-  }
-
-
-  window.onload = () => {
-
-    recalculateGuestCartTotal();
-    document.querySelectorAll("select").forEach(select => {
-      select.addEventListener("change", recalculateGuestCartTotal);
-    });
-
-  };
-</script>
