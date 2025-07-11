@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title" th:text="#{admin.menu.pointPolicies}"></title>
+</head>
+
+<body>
+<main layout:fragment="content" class="admin-content-area">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0" th:text="#{admin.menu.pointPolicies}"></h2>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+
+    <div class="admin-cards">
+        <div class="admin-card">
+            <div class="admin-card-header" style="background: #e7f3ff; color: #0066cc;">
+                <strong th:text="#{admin.pointPolicy.new}"></strong>
+            </div>
+
+            <div class="admin-card-body">
+                <form action="/admin/point-policies" method="post" class="admin-form">
+                    <div class="admin-form-fields">
+                        <div>
+                            <label th:text="#{admin.pointPolicy.type}"></label>
+                            <select name="policyType" class="admin-select" required>
+                                <option value="" th:text="#{admin.select.default}"></option>
+                                <option th:each="pt : ${policyTypes}" th:value="${pt}" th:text="${pt}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label th:text="#{admin.pointPolicy.grade}"></label>
+                            <select name="grade" class="admin-select" required>
+                                <option value="" th:text="#{admin.select.default}"></option>
+                                <option th:each="gr : ${grades}" th:value="${gr}" th:text="${gr}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label th:text="#{admin.pointPolicy.rate}"></label>
+                            <input type="number" name="rate" step="0.01" min="0" max="100" class="admin-input" placeholder="예: 5.50" required/>
+                        </div>
+
+                        <div>
+                            <label th:text="#{admin.pointPolicy.basePoint}"></label>
+                            <input type="number" name="basePoint" min="0" class="admin-input" placeholder="예: 1000" required/>
+                        </div>
+                    </div>
+
+                    <div class="admin-actions">
+                        <button type="submit" class="btn-admin btn-primary" th:text="#{admin.create}"></button>
+                        <button type="reset" class="btn-admin btn-danger" th:text="#{admin.reset}"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div th:each="policy : ${pointPolicies}" class="admin-card">
+
+            <div class="admin-card-header">
+                <span th:text="#{admin.pointPolicy.id} + ': ' + ${policy.pointPolicyId}"></span></span>
+
+                <form th:action="@{'/admin/point-policies/' + ${policy.pointPolicyId}}" method="post"
+                      class="admin-delete-form-x">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <button type="submit"
+                            class="btn-delete-x"
+                            th:classappend="${policy.grade.name() == 'COMMON'} ? ' btn-disabled' : ''"
+                            th:disabled="${policy.grade.name() == 'COMMON'}"
+                            title="정책 삭제">
+                        ×
+                    </button>
+                </form>
+            </div>
+
+            <div class="admin-card-body">
+                <form th:action="@{'/admin/point-policies/' + ${policy.pointPolicyId}}" method="post" class="admin-form">
+                    <div class="admin-form-fields">
+                        <div>
+                            <label th:text="#{admin.pointPolicy.type}"></label>
+                            <select name="policyType" class="admin-select">
+                                <option th:each="pt : ${policyTypes}" th:value="${pt}" th:text="${pt}" th:selected="${pt == policy.policyType}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label th:text="#{admin.pointPolicy.grade}"></label>
+                            <select name="grade" class="admin-select">
+                                <option th:each="gr : ${grades}" th:value="${gr}" th:text="${gr}" th:selected="${gr == policy.grade}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label th:text="#{admin.pointPolicy.rate}"></label>
+                            <input type="number" name="rate" step="0.01"
+                                   th:value="${policy.displayRate}"
+                                   class="admin-input"/>
+                        </div>
+
+                        <div>
+                            <label th:text="#{admin.pointPolicy.basePoint}"></label>
+                            <input type="number" name="basePoint" th:value="${policy.basePoint}" class="admin-input"/>
+                        </div>
+                    </div>
+
+                    <div class="admin-actions">
+                        <input type="hidden" name="_method" value="put"/>
+                        <button type="submit" class="btn-admin btn-primary" style="width: 100%" th:text="#{admin.update}"></button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+
+</main>
+</body>
+</html>
