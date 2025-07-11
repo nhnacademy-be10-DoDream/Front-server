@@ -97,7 +97,7 @@ public class CategoryController {
     @GetMapping("/admin/book/{book-id}/categories")
     public String getBookCategories(@PathVariable("book-id") Long bookId, Model model) {
         List<CategoryTreeResponse> bookCategory = bookClient.getCategoriesByBookId(bookId);
-        List<CategoryResponse> flatBookCategory = bookClient.getFlatCategoriesByBookId(bookId);
+        //List<CategoryResponse> flatBookCategory = bookClient.getFlatCategoriesByBookId(bookId);
         List<CategoryResponse> categories = bookClient.getAllCategories();
         BookDetailDto book = bookClient.getBookDetail(bookId);
 
