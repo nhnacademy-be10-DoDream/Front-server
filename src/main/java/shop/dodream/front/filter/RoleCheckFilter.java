@@ -27,12 +27,16 @@ public class RoleCheckFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String uri = request.getRequestURI();
-            if (uri.startsWith("/auth")||uri.startsWith("/css")||uri.startsWith("/js")||uri.startsWith("/images")||uri.contains("devtools")) {
+            if (uri.startsWith("/css")||uri.startsWith("/js")||uri.startsWith("/images")||uri.contains("devtools")) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
             SessionUser sessionUser = authClient.getSessionUser().getBody();
+            if (sessionUser != null && uri.startsWith("/auth")&& !uri.startsWith("/auth/logout")) {
+                response.sendRedirect("/");
+                return;
+            }
             if (sessionUser != null) {
                 List<GrantedAuthority> authorities =
                         List.of(new SimpleGrantedAuthority("ROLE_" + sessionUser.getRole().name()));

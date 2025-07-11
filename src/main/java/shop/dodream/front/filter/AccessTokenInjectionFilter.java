@@ -18,14 +18,12 @@ public class AccessTokenInjectionFilter implements Filter {
 
             if (accessToken != null) {
                 AccessTokenHolder.set(accessToken);
-                log.debug("AccessToken set in holder: {}", accessToken);
             }
 
             chain.doFilter(request, response);
 
         } finally {
             AccessTokenHolder.clear();
-            log.debug("AccessTokenHolder cleared");
         }
     }
 }
