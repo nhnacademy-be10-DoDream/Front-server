@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
-    <title layout:fragment="title">관리자 페이지</title>
+    <title layout:fragment="title" th:text="#{admin.title}"></title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
     <link rel="stylesheet" th:href="@{/css/admin.css}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
@@ -21,37 +21,43 @@
 <div class="container-fluid admin-container mt-4">
     <div class="row">
         <aside class="col-md-3 admin-sidebar" layout:fragment="sidebar">
-            <h5>관리자 메뉴</h5>
+            <h5 th:text="#{admin.menu.title}"></h5>
             <nav class="admin-nav flex-column">
                 <a th:href="@{/admin}" class="admin-nav-link" th:classappend="${activeMenu=='dashboard'}?'active':''">
-                    <i class="bi bi-speedometer2 me-2"></i> 대시보드
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    <span th:text="#{admin.menu.dashboard}"></span>
                 </a>
                 <a th:href="@{/admin/coupons}" class="admin-nav-link" th:classappend="${activeMenu=='coupons'}?'active':''">
-                    <i class="bi bi-ticket-perforated me-2"></i> 쿠폰 관리
+                    <i class="bi bi-ticket-perforated me-2"></i>
+                    <span th:text="#{admin.menu.coupons}"></span>
                 </a>
                 <a th:href="@{/admin/policies}" class="admin-nav-link" th:classappend="${activeMenu=='policies'}?'active':''">
-                    <i class="bi bi-journal-text me-2"></i> 쿠폰 정책 관리
+                    <i class="bi bi-journal-text me-2"></i>
+                    <span th:text="#{admin.menu.policies}"></span>
                 </a>
                 <a th:href="@{/admin/user-coupons/issue}" class="admin-nav-link" th:classappend="${activeMenu=='issue-coupon'}?'active':''">
-                    <i class="bi bi-gift me-2"></i> 쿠폰 발급
+                    <i class="bi bi-gift me-2"></i>
+                    <span th:text="#{admin.menu.issueCoupon}"></span>
                 </a>
                 <a th:href="@{/admin/categories}" class="admin-nav-link" th:classappend="${activeMenu=='categories'}?'active':''">
-                    <i class="bi bi-folder"></i> 카테고리 관리
+                    <i class="bi bi-folder"></i>
+                    <span th:text="#{admin.menu.categories}"></span>
                 </a>
                 <a th:href="@{/admin/tags}" class="admin-nav-link" th:classappend="${activeMenu=='tags'}?'active':''">
-                    <i class="bi bi-tag"></i> 태그 관리
+                    <i class="bi bi-tag"></i>
+                    <span th:text="#{admin.menu.tags}"></span>
                 </a>
                 <a th:href="@{/admin/orders}" class="admin-nav-link" th:classappend="${activeMenu=='adminOrder'}?'active':''">
-                    <i class="bi bi-journal-text me-2"></i> 주문 관리
+                    <i class="bi bi-journal-text me-2"></i>
+                    <span th:text="#{admin.menu.orders}"></span>
                 </a>
                 <a th:href="@{/admin/books}" class="admin-nav-link" th:classappend="${activeMenu=='books'}?'active':''">
-                    <i class="bi bi-gift me-2"></i> 책 관리
+                    <i class="bi bi-gift me-2"></i>
+                    <span th:text="#{admin.menu.books}"></span>
                 </a>
-                <a th:href="@{/admin/point-policies}" class="admin-nav-link" th:classappend="${activeMenu=='books'}?'active':''">
-                    <i class="bi bi-gift me-2"></i> 포인트 정책 관리
-                </a>
-                <a th:href="@{/admin/grades}" class="admin-nav-link" th:classappend="${activeMenu=='books'}?'active':''">
-                    <i class="bi bi-gift me-2"></i> 회원 등급 관리
+                <a th:href="@{/admin/point-policies}" class="admin-nav-link" th:classappend="${activeMenu=='point-policy'}?'active':''">
+                    <i class="bi bi-coin me-2"></i>
+                    <span th:text="#{admin.menu.pointPolicies}"></span>
                 </a>
             </nav>
         </aside>
