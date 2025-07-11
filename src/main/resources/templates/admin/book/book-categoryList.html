@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+  <title layout:fragment="title">도서 카테고리 관리</title>
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="admin-section-title mb-0">도서 카테고리 관리</h2>
+    <span th:text="'도서 ID: ' + ${book.bookId}"></span>
+  </div>
+
+  <div class="mb-4">
+    <h5>📘 현재 연결된 카테고리</h5>
+    <ul class="list-group">
+      <li th:each="cat : ${bookCategories}" class="list-group-item d-flex justify-content-between align-items-center">
+        <span>
+          <span th:text="${cat.categoryName}"></span>
+          <span th:if="${cat.children}">
+            <span th:each="child : ${cat.children}">
+              &nbsp;&gt;&nbsp;<span th:text="${child.categoryName}"></span>
+              <span th:if="${child.children}">
+                <span th:each="grandChild : ${child.children}">
+                  &nbsp;&gt;&nbsp;<span th:text="${grandChild.categoryName}"></span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </span>
+        <form th:action="@{/admin/book/{bookId}/category/remove(bookId=${bookId})}" method="post" class="d-inline">
+          <input type="hidden" name="categoryId" th:value="${cat.categoryId}" />
+          <button type="submit" class="btn btn-sm btn-outline-danger"
+                  onclick="return confirm('이 카테고리를 제거하시겠습니까?');">제거</button>
+        </form>
+      </li>
+    </ul>
+    <p th:if="${#lists.isEmpty(bookCategory)}" class="text-muted">등록된 카테고리가 없습니다.</p>
+  </div>
+
+  <div class="mb-4">
+    <h5>➕ 카테고리 추가</h5>
+    <form th:action="@{/admin/book/{bookId}/category/register(bookId=${bookId})}" method="post" class="d-flex align-items-center gap-2">
+      <select name="categoryId" class="form-select w-auto" required>
+        <option value="">-- 카테고리 선택 --</option>
+        <option th:each="cat : ${categoryList}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
+      </select>
+      <button type="submit" class="btn btn-sm btn-outline-primary">+ 추가</button>
+    </form>
+  </div>
+
+</main>
+</body>
+</html>

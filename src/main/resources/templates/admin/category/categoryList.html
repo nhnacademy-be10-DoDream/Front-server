@@ -33,7 +33,7 @@
       <td th:text="${cat.depth}">1</td>
       <td th:text="${cat.parentId}">-</td>
       <td>
-        <form th:action="'/admin/category/modify/' + ${cat.categoryId}" method="get" style="display: inline;">
+        <form th:action="'/admin/category/edit/' + ${cat.categoryId}" method="get" style="display: inline;">
           <button type="submit"  class="btn-admin btn-primary btn-sm">수정</button>
         </form>
         <form th:action="@{/admin/category/remove}" method="post" style="display:inline;">

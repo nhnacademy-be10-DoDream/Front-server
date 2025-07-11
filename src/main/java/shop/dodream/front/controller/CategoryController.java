@@ -15,6 +15,7 @@ import java.util.List;
 public class CategoryController {
 
     private final BookClient bookClient;
+    private static final String REDIRECT_BOOK_CATEGORIES = "redirect:/admin/book/%d/categories";
 
     @GetMapping("/categories/{category-id}")
     public String getBooksByCategory(@PathVariable("category-id") Long categoryId,
@@ -40,7 +41,7 @@ public class CategoryController {
         model.addAttribute("categoryTree", root);
 
 
-        return "/book/bookListCategory";
+        return "book/bookListCategory";
     }
 
     @GetMapping("/admin/category/register")
@@ -72,16 +73,16 @@ public class CategoryController {
         return "admin/category/categoryList";
     }
 
-    @GetMapping("/admin/category/modify/{category-id}")
-    public String showCategoryModifyForm(@PathVariable("category-id") Long categoryId, Model model) {
+    @GetMapping("/admin/category/edit/{category-id}")
+    public String showCategoryEditForm(@PathVariable("category-id") Long categoryId, Model model) {
         CategoryResponse category = bookClient.getCategory(categoryId);
         model.addAttribute("category", category);
-        return "admin/category/categoryModify";
+        return "admin/category/categoryEdit";
     }
 
 
-    @PostMapping("/admin/category/modify/{category-id}")
-    public String modifyCategory(@PathVariable("category-id") Long categoryId, @ModelAttribute CategoryRequest request) {
+    @PostMapping("/admin/category/edit/{category-id}")
+    public String EditCategory(@PathVariable("category-id") Long categoryId, @ModelAttribute CategoryRequest request) {
         bookClient.updateCategory(categoryId, request);
         return "redirect:/admin/categories";
     }
@@ -93,45 +94,43 @@ public class CategoryController {
         return "redirect:/admin/categories";
     }
 
-    @GetMapping("/admin/book/categories")
-    public String getCategories(@RequestParam("bookId") Long bookId, Model model) {
-        List<CategoryTreeResponse> categories = bookClient.getCategoriesByBookId(bookId);
+    @GetMapping("/admin/book/{book-id}/categories")
+    public String getBookCategories(@PathVariable("book-id") Long bookId, Model model) {
+        List<CategoryTreeResponse> bookCategory = bookClient.getCategoriesByBookId(bookId);
+        List<CategoryResponse> flatBookCategory = bookClient.getFlatCategoriesByBookId(bookId);
+        List<CategoryResponse> categories = bookClient.getAllCategories();
         BookDetailDto book = bookClient.getBookDetail(bookId);
+
         model.addAttribute("book", book);
-        model.addAttribute("categories", categories);
-        return "admin/bookCategoryList";
+        model.addAttribute("bookId", bookId);
+        //model.addAttribute("flatBookCategory", flatBookCategory);
+        model.addAttribute("bookCategories", bookCategory);
+        model.addAttribute("categoryList", categories);
+        return "admin/book/book-categoryList";
     }
 
-    @GetMapping("/admin/book/category/register")
-    public String showBookCategoryRegisterForm(Model model) {
-        return "admin/bookCategoryRegister";
+    @PostMapping("/admin/book/{book-id}/category/register")
+    public String registerBookCategory(@PathVariable("book-id") Long bookId,
+                                       @RequestParam("categoryId") Long categoryId) {
+        IdsListRequest request = new IdsListRequest(List.of(categoryId));
+        bookClient.registerCategory(bookId, request);
+        return String.format(REDIRECT_BOOK_CATEGORIES, bookId);
     }
 
-    @PostMapping("/admin/book/category/register")
-    public String registerBookCategory(@RequestParam("bookId") Long bookId,
-                                       @RequestBody IdsListRequest categoryIds) {
-        bookClient.registerCategory(bookId, categoryIds);
-        return "redirect:/admin/book/categories?bookId=" + bookId;
-    }
-
-    @GetMapping("/admin/book/category/modify")
-    public String showBookCategoryModifyForm(Model model) {
-        return "admin/bookCategoryModify";
-    }
-
-    @PostMapping("/admin/book/category/modify")
-    public String modifyBookCategory(@RequestParam("bookId") Long bookId,
+    @PostMapping("/admin/book/{book-id}/category/edit")
+    public String editBookCategory(@PathVariable("book-id") Long bookId,
                                      @RequestParam("categoryId") Long categoryId,
                                      @RequestParam("newCategoryId") Long newCategoryId) {
         bookClient.updateCategoryByBook(bookId, categoryId, newCategoryId);
-        return "redirect:/admin/book/categories?bookId=" + bookId;
+        return String.format(REDIRECT_BOOK_CATEGORIES, bookId);
     }
 
-    @PostMapping("/admin/book/category/remove")
-    public String removeBookCategory(@RequestParam("bookId") Long bookId,
-                                     @RequestBody IdsListRequest categoryIds) {
-        bookClient.deleteCategoriesByBook(bookId, categoryIds);
-        return "redirect:/admin/book/categories?bookId=" + bookId;
+    @PostMapping("/admin/book/{book-id}/category/remove")
+    public String removeBookCategory(@PathVariable("book-id") Long bookId,
+                                     @RequestParam("categoryId") Long categoryId) {
+        IdsListRequest request = new IdsListRequest(List.of(categoryId));
+        bookClient.deleteCategoriesByBook(bookId, request);
+        return String.format(REDIRECT_BOOK_CATEGORIES, bookId);
     }
 
 }
