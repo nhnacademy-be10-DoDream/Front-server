@@ -120,7 +120,7 @@
         <!-- 책 소개 -->
         <div class="book-intro">
             <div class="book-intro-title" th:text="#{book.intro.title}">책소개</div>
-            <div class="book-intro-content" th:text="${book.description}">책 소개 내용</div>
+            <div class="book-intro-content" th:utext="${book.description}">책 소개 내용</div>
         </div>
 
 

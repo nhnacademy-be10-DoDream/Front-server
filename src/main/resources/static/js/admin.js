@@ -1,7 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
     initFormValidation();
+    initEditor();
 });
 
+
+
+function initEditor() {
+    const editorEl = document.getElementById("editor");
+    if (editorEl) {
+        editor = new toastui.Editor({
+            el: editorEl,
+            height: '400px',
+            initialEditType: 'markdown',
+            previewStyle: 'vertical'
+        });
+    }
+}
 
 
 /**
@@ -28,6 +42,18 @@ function initFormValidation() {
                 } else {
                     saleInput.classList.remove("is-invalid");
                 }
+            }
+
+            // Toast UI Editor 값 hidden textarea에 세팅
+            if (editor) {
+                let hiddenTextarea = document.querySelector('textarea[name="description"]');
+                if (!hiddenTextarea) {
+                    hiddenTextarea = document.createElement('textarea');
+                    hiddenTextarea.name = 'description';
+                    hiddenTextarea.style.display = 'none';
+                    form.appendChild(hiddenTextarea);
+                }
+                hiddenTextarea.value = editor.getHTML();
             }
 
             // 기본 HTML 유효성 + 커스텀 유효성
