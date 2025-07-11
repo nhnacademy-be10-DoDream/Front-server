@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.client.AuthClient;
 
 @Controller
-@RequestMapping("/dormant")
+@RequestMapping("/auth/dormant")
 @RequiredArgsConstructor
 public class DormantUserController {
 
@@ -30,7 +30,7 @@ public class DormantUserController {
             ResponseEntity<String> response = authClient.verifyDormantCode(userId, code);
             model.addAttribute("verifySuccess", true);
             model.addAttribute("message", response.getBody());
-            return "auth/verify"; // 결과 페이지 말고 인증 폼 페이지 다시 보여줌
+            return "auth/verify";
         } catch (FeignException.Unauthorized e) {
             model.addAttribute("error", "인증번호가 일치하지 않습니다.");
             model.addAttribute("userId", userId);
