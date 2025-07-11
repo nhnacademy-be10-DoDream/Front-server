@@ -49,13 +49,13 @@ public class BookController {
                 .collect(Collectors.toMap(BookTagInfo::getTagId, b -> chunkBooks(b.getBooks(), 6))));
 
         List<BookDto> books = bookClient.getAllBooks();
-        model.addAttribute("books", books);
         String guestId = cartController.getGuestIdFromCookie(request);
         String acessToken = cartController.getAccessTokenFromCookies(request.getCookies());
-        if(guestId != null && acessToken != null) {
+        if (guestId != null && acessToken != null) {
             cartClient.mergeCart(guestId);
             cartController.deleteGuestIdCookie(response);
         }
+        model.addAttribute("books", books);
         return "home";
     }
 
@@ -79,19 +79,15 @@ public class BookController {
     public String bookDetail(@PathVariable("book-id") Long bookId,
                              @RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "5") int size,
-                             Model model){
+                             Model model) {
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
 
 
-
         // 컨트롤러에서 로그인 여부 조회 검증하는게 되면 가능
 //        boolean isLiked = bookClient.bookLikeFindMe(bookId);
-
-
-
 
 
         model.addAttribute("book", bookDetailDto);
@@ -103,7 +99,7 @@ public class BookController {
     }
 
     @PostMapping("/books/{bookId}/like")
-    public String likeBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes){
+    public String likeBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes) {
         try {
             bookClient.registerBookLike(bookId);
             redirectAttributes.addFlashAttribute("likeMsg", "book.like.success");
@@ -115,12 +111,10 @@ public class BookController {
     }
 
 
-
-
     @PostMapping("/books/{book-id}/reviews")
     public String postReview(@PathVariable("book-id") Long bookId,
                              @ModelAttribute ReviewCreateRequest reviewCreateRequest,
-                             @RequestParam(value = "files", required = false)List<MultipartFile> files){
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
 
         MultipartFile[] nonEmptyFiles = files.stream()
@@ -131,12 +125,12 @@ public class BookController {
         bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
 
 
-        return "redirect:/books/"+bookId;
+        return "redirect:/books/" + bookId;
     }
 
 
     @GetMapping("/admin/books")
-    public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable){
+    public String adminBookList(Model model, @PageableDefault(value = 20) Pageable pageable) {
         Page<BookDto> bookDtoList = bookClient.getBooks(pageable);
         model.addAttribute("activeMenu", "books");
 
@@ -146,7 +140,7 @@ public class BookController {
 
     @PostMapping("/admin/books/register")
     public String registerBook(@ModelAttribute BookRegisterRequest registerRequest,
-                               @RequestParam(value = "files", required = false)List<MultipartFile> files) {
+                               @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
 
         MultipartFile[] nonEmptyFiles = files.stream()
@@ -160,19 +154,19 @@ public class BookController {
     }
 
     @PostMapping("/admin/books/register-api")
-    public String registerBookFromAladdin(@RequestParam("isbn") String isbn){
+    public String registerBookFromAladdin(@RequestParam("isbn") String isbn) {
         bookClient.aladdinRegisterBook(isbn);
         return "redirect:/admin/books";
     }
 
     @DeleteMapping("/admin/books/delete/{book-id}")
-    public String deleteBook(@PathVariable("book-id") Long bookId){
+    public String deleteBook(@PathVariable("book-id") Long bookId) {
         bookClient.deleteBook(bookId);
         return "redirect:/admin/books";
     }
 
     @GetMapping("/admin/books/detail/{book-id}")
-    public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model){
+    public String adminDetailBook(@PathVariable("book-id") Long bookId, Model model) {
         BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
 
         model.addAttribute("book", bookDetailDto);
@@ -182,7 +176,7 @@ public class BookController {
     }
 
     @GetMapping("/admin/books/edit")
-    public String editBookForm(@RequestParam("bookId") Long bookId, Model model){
+    public String editBookForm(@RequestParam("bookId") Long bookId, Model model) {
         BookDetailDto bookDetailDto = bookClient.getAdminBookDetail(bookId);
         model.addAttribute("book", bookDetailDto);
 
@@ -191,7 +185,7 @@ public class BookController {
 
     @PutMapping("/admin/books/{book-id}/edit")
     public String updateBook(@PathVariable("book-id") Long bookId,
-                              @ModelAttribute BookUpdateRequest bookUpdateRequest,
+                             @ModelAttribute BookUpdateRequest bookUpdateRequest,
                              @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
         MultipartFile[] nonEmptyFiles = files.stream()
@@ -200,7 +194,7 @@ public class BookController {
 
         bookClient.updateBook(bookId, bookUpdateRequest, nonEmptyFiles);
 
-        return "redirect:/admin/books/detail/"+bookId;
+        return "redirect:/admin/books/detail/" + bookId;
 
     }
 
@@ -211,6 +205,8 @@ public class BookController {
                               @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "8") int size,
                               @RequestParam(required = false) Long categoryId,
+                              @RequestParam(required = false) Integer minPrice,
+                              @RequestParam(required = false) Integer maxPrice,
                               Model model) {
 
         PageResponse<BookItemResponse> books;
@@ -222,44 +218,23 @@ public class BookController {
             model.addAttribute("currentPage", 0);
             return "book/bookSearchList";
         }
-        Map<Long, CategoryCountResponse> rootCategories = new HashMap<>();
 
-        for (BookItemResponse book : books.getContent()) {
-            List<CategoryTreeResponse> categories = bookClient.getCategoriesByBookId(book.getBookId());
+        List<BookItemResponse> filteredBooks = books.getContent().stream()
+                .filter(book -> {
+                    if (minPrice != null && book.getSalePrice() < minPrice) return false;
+                    if (maxPrice != null && book.getSalePrice() > maxPrice) return false;
+                    return true;
+                })
+                .toList();
 
-            for (CategoryTreeResponse c : categories) {
-                if (!rootCategories.containsKey(c.getCategoryId())) {
-                    rootCategories.put(c.getCategoryId(), new CategoryCountResponse(c.getCategoryId(), c.getCategoryName(), 0));
-                }
-                mergeCategoryTree(c, rootCategories.get(c.getCategoryId()));
-            }
-        }
-
-        model.addAttribute("categoryCountTree", rootCategories.values());
-
-        model.addAttribute("books", books.getContent());
+        model.addAttribute("books", filteredBooks);
         model.addAttribute("keyword", keyword);
         model.addAttribute("totalPages", books.getTotalPages());
         model.addAttribute("currentPage", books.getNumber());
         model.addAttribute("sort", sort);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
         return "book/bookSearchList";
     }
-
-    private void mergeCategoryTree(CategoryTreeResponse source, CategoryCountResponse target) {
-        target.increment();
-
-        Map<Long, CategoryCountResponse> childMap = target.getChildren().stream()
-                .collect(Collectors.toMap(CategoryCountResponse::getCategoryId, Function.identity()));
-
-        for (CategoryTreeResponse child : source.getChildren()) {
-            CategoryCountResponse childCount = childMap.get(child.getCategoryId());
-            if (childCount == null) {
-                childCount = new CategoryCountResponse(child.getCategoryId(), child.getCategoryName(), 0);
-                target.getChildren().add(childCount);
-            }
-            mergeCategoryTree(child, childCount);
-        }
-    }
-
 
 }
