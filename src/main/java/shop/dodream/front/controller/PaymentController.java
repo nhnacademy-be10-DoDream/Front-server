@@ -27,8 +27,9 @@ public class PaymentController {
 
     @RequestMapping(value = "/confirm")
     @ResponseBody
-    public ResponseEntity<Map<String ,Object>> confirmPayment(@RequestBody String jsonBody,HttpServletRequest request) {
-        Map<String ,Object> response = paymentClient.confirm(jsonBody);
+    public ResponseEntity<Map<String ,Object>> confirmPayment(@RequestBody String jsonBody,HttpServletRequest request,
+                                                              @RequestHeader(value = "X-USER-ID", required = false) String userId) {
+        Map<String ,Object> response = paymentClient.confirm(jsonBody, userId);
         int statusCode = response.containsKey("error") ? 400 : 200;
         String guestId = cartController.getGuestIdFromCookie(request);
         if(guestId == null){
