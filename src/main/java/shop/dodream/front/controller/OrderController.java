@@ -65,7 +65,7 @@ public class OrderController {
 
         //결제창 리다이렉트
         return "redirect:/payment?orderId=%s&totalPrice=%s"
-                .formatted(orderResponse.get("orderId"), orderResponse.get("totalPrice"));
+                .formatted(orderResponse.get("orderId"), orderResponse.get("paymentAmount"));
     }
 
     @GetMapping("detail/{order-id}")
