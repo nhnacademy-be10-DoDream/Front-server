@@ -17,12 +17,14 @@
 
     <form th:action="@{/admin/user-coupons/issue}" method="post">
         <div class="form-group mb-3">
-            <label for="couponId" class="form-label">쿠폰 ID</label>
-            <input type="number"
-                   id="couponId"
-                   name="couponId"
-                   class="form-control"
-                   required />
+            <label for="couponId" class="form-label">쿠폰</label>
+            <select id="couponId" name="couponId" class="form-control" required>
+                <option value="">쿠폰 선택</option>
+                <option th:each="coupon : ${coupons}" 
+                        th:value="${coupon.couponId}" 
+                        th:text="${coupon.policyName}" 
+                        th:selected="${selectedCouponId != null and selectedCouponId == coupon.couponId}"></option>
+            </select>
         </div>
         <div class="form-group mb-3">
             <label for="userIds" class="form-label">사용자 ID (콤마로 구분)</label>
@@ -33,8 +35,8 @@
         </div>
         <div class="form-group mb-3">
             <label for="grade" class="form-label">회원 등급</label>
-            <select id="grade" name="grade" class="form-control">
-                <option value="">선택 안함</option>
+            <select id="grade" name="gradeType" class="form-control">
+                <option value= "">선택 안함</option>
                 <option value="BASIC">BASIC</option>
                 <option value="ROYAL">ROYAL</option>
                 <option value="GOLD">GOLD</option>
@@ -46,7 +48,7 @@
             <label for="birthMonth" class="form-label">생월 (숫자)</label>
             <input type="number"
                    id="birthMonth"
-                   name="birthMonth"
+                   name="birth-month"
                    class="form-control" />
         </div>
         <div class="mt-4">

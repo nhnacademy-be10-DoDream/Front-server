@@ -9,6 +9,9 @@ import shop.dodream.front.dto.CreateCouponRequest;
 import shop.dodream.front.dto.CouponResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import shop.dodream.front.dto.UserCouponResponse;
+
+import java.util.List;
 
 
 @Controller
@@ -27,8 +30,13 @@ public class CouponController {
     }
 
     @GetMapping("/add")
-    public String addCouponForm(Model model) {
-        model.addAttribute("createCouponRequest", new CreateCouponRequest());
+    public String addCouponForm(@RequestParam(value = "policyId", required = false) Long policyId, Model model) {
+        CreateCouponRequest request = new CreateCouponRequest();
+        if (policyId != null) {
+            request.setPolicyId(policyId);
+        }
+        model.addAttribute("createCouponRequest", request);
+        model.addAttribute("couponPolicies", couponClient.getAllCouponPolicies());
         return "admin/coupon/add";
     }
 
@@ -38,9 +46,24 @@ public class CouponController {
         return "redirect:/admin/coupons";
     }
 
+    @GetMapping("/{couponId}")
+    public String getCouponDetail(@PathVariable("couponId") Long couponId, Model model) {
+        List<UserCouponResponse> userCoupons = couponClient.getUserCouponsByCoupon(couponId);
+        model.addAttribute("userCoupons", userCoupons);
+        model.addAttribute("couponId", couponId);
+        model.addAttribute("activeMenu", "coupons");
+        return "admin/coupon/detail";
+    }
+
     @DeleteMapping("/delete/{couponId}")
     public String deleteCoupon(@PathVariable("couponId") Long couponId) {
         couponClient.deleteCoupon(couponId);
         return "redirect:/admin/coupons";
+    }
+
+    @DeleteMapping("/{couponId}/user-coupons")
+    public String deleteUserCouponsByCoupon(@PathVariable("couponId") Long couponId) {
+        couponClient.deleteUserCouponsByCoupon(couponId);
+        return "redirect:/admin/coupons/" + couponId;
     }
 }
