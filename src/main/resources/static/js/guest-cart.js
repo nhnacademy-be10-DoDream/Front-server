@@ -49,6 +49,7 @@
     if (orderTotalInput) {
     orderTotalInput.value = orderTotal; // 값 반영
 }
+    document.querySelector("input[name='totalProductPrice']").value = totalProductPrice;
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
     document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
     document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrappingPrice)
