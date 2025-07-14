@@ -68,7 +68,7 @@ public class OrderController {
                 .formatted(orderResponse.get("orderId"), orderResponse.get("paymentAmount"));
     }
 
-    @GetMapping("detail/{order-id}")
+    @GetMapping("/detail/{order-id}")
     public String getOrderDetail(@PathVariable("order-id") String orderId, Model model) {
         // 주문 상세 조회
         OrderDetailsDto orderDetail = orderClient.getOrderDetail(orderId);
