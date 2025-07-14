@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.dto.*;
 import java.util.List;
 
-
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class CartController {
@@ -33,6 +34,7 @@ public class CartController {
 			if (guestId != null) {
 				GuestCartResponse guestCartResponse = cartClient.getGuestCart(guestId);
 				List<GuestCartItemResponse> guestCartItemResponses = guestCartResponse.getItems();
+				
 				model.addAttribute("cartItems", guestCartItemResponses);
 				
 				List<WrappingDto> wrappingOptions = orderClient.getGiftWraps();

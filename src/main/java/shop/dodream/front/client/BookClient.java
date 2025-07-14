@@ -146,6 +146,13 @@ public interface BookClient {
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 
+    @PutMapping(value = "/reviews/me/{review-id}", consumes = MULTIPART_FORM_DATA_VALUE)
+    Void updateReview(
+            @PathVariable("review-id") Long reviewId,
+            @RequestPart("review") ReviewUpdateRequest reviewUpdateRequest,
+            @RequestPart(value = "files", required = false) MultipartFile[] files
+    );
+
     @PostMapping("/admin/books/aladdin-api")
     Void aladdinRegisterBook(@RequestParam("isbn") String isbn);
 

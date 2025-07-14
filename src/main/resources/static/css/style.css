@@ -647,3 +647,40 @@ span.username:hover {
     border-color: #28a745;
     background-color: #f8fff8;
 }
+
+.error-container {
+    max-width: 600px;
+    padding: 2rem;
+}
+
+/* 별점 CSS */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    font-size: 2rem;
+    line-height: 0.2rem;
+    justify-content: space-around;
+    padding: 0 0.2em;
+    text-align: center;
+    width: 5em;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #2b2a29;
+    cursor: pointer;
+}
+
+.star-rating :checked ~ label {
+    -webkit-text-fill-color: #ffc107;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    -webkit-text-fill-color: #fff58c;
+}

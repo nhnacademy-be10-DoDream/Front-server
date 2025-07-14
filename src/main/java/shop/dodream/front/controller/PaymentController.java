@@ -35,7 +35,9 @@ public class PaymentController {
             CartResponse cart = cartClient.getCart();
             cartClient.deleteCart(cart.getCartId());
         }
-        cartClient.deleteGuestCart(guestId);
+        else {
+            cartClient.deleteGuestCart(guestId);
+        }
         return ResponseEntity.status(statusCode).body(response);
     }
 

@@ -20,7 +20,7 @@
         <div id="timer-display" class="mb-3 text-danger fw-bold">⏱ 남은 시간: 5:00</div>
 
         <!-- 인증 폼 -->
-        <form th:action="@{/dormant/verify}" method="post">
+        <form th:action="@{/auth/dormant/verify}" method="post">
             <input type="hidden" name="userId" th:value="${userId}" id="userId"/>
             <div class="mb-3">
                 <label for="code" class="form-label">인증번호</label>
@@ -39,6 +39,10 @@
         </div>
     </div>
 </main>
+
+<th:block layout:fragment="scripts">
+    <script src="/js/verify.js"></script>
+</th:block>
 </body>
 </html>
 <script th:inline="javascript">

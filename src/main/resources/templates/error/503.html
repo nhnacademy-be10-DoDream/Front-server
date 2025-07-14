@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>503 - 서비스 점검</title>
+</head>
+<body>
+<main layout:fragment="content" class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+    <div class="error-container text-center">
+        <h1 class="display-4 fw-bold text-secondary">503</h1>
+        <p class="fs-4">현재 서비스 점검 중입니다.</p>
+        <p class="text-muted">더 나은 서비스를 위해 잠시만 기다려주세요.</p>
+        <a href="/" class="btn btn-primary mt-3">홈으로 가기</a>
+    </div>
+</main>
+</body>
+</html>

@@ -1,7 +1,10 @@
 function updateTotal() {
     const MIN_PAYMENT_AMOUNT = 1000;
     let pointInput = document.getElementById("pointUsed");
-    let pointUsed = parseInt(pointInput.value) || 0;
+    let pointUsed = 0;
+    if (pointInput) {
+        pointUsed = parseInt(pointInput.value) || 0;
+    }
     let shippingFee = 0;
 
     const selectedOption = document.querySelector("#shippingPolicyId option:checked");
@@ -34,6 +37,14 @@ function useAllPoints() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("pointUsed").addEventListener("input", updateTotal);
-    document.getElementById("shippingPolicyId").addEventListener("change", updateTotal);
+    const pointInput = document.getElementById("pointUsed");
+    const shippingSelect = document.getElementById("shippingPolicyId");
+
+    if (pointInput) {
+        pointInput.addEventListener("input", updateTotal);
+    }
+
+    if (shippingSelect) {
+        shippingSelect.addEventListener("change", updateTotal);
+    }
 });
