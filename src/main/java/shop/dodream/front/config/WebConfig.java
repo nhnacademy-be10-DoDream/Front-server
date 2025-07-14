@@ -5,11 +5,16 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import shop.dodream.front.interceptor.CategoryInterceptor;
 import shop.dodream.front.interceptor.RequestInterceptor;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,5 +47,14 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .addPathPatterns("/search/**");
 
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(String.class, ZonedDateTime.class, text -> {
+            if (text == null || text.isBlank()) return null;
+            return LocalDate.parse(text)
+                    .atStartOfDay(ZoneId.systemDefault());
+        });
     }
 }

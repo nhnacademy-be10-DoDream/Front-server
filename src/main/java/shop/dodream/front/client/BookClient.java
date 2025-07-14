@@ -57,8 +57,8 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}/categories")
     List<CategoryTreeResponse> getCategoriesByBookId(@PathVariable("book-id") Long bookId);
 
-//    @GetMapping("/public/books/{book-id}/categories/flat")
-//    List<CategoryResponse> getFlatCategoriesByBookId(@PathVariable("book-id") Long bookId);
+    @GetMapping("/public/books/{book-id}/categories/flat")
+    List<CategoryResponse> getFlatCategoriesByBookId(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/public/categories/{category-id}/books")
     PageResponse<BookDto> getBooksByCategoryId(@PathVariable("category-id") Long categoryId,
@@ -143,6 +143,13 @@ public interface BookClient {
     Void createReview(
             @PathVariable("book-id") Long bookId,
             @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
+            @RequestPart(value = "files", required = false) MultipartFile[] files
+    );
+
+    @PutMapping(value = "/reviews/me/{review-id}", consumes = MULTIPART_FORM_DATA_VALUE)
+    Void updateReview(
+            @PathVariable("review-id") Long reviewId,
+            @RequestPart("review") ReviewUpdateRequest reviewUpdateRequest,
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 

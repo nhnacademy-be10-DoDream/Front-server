@@ -14,43 +14,88 @@
   </div>
 
   <div class="mb-4">
-    <h5>📘 현재 연결된 카테고리</h5>
+    <h5>📘 현재 연결된 카테고리 </h5>
     <ul class="list-group">
-      <li th:each="cat : ${bookCategories}" class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
-          <span th:text="${cat.categoryName}"></span>
-          <span th:if="${cat.children}">
-            <span th:each="child : ${cat.children}">
-              &nbsp;&gt;&nbsp;<span th:text="${child.categoryName}"></span>
-              <span th:if="${child.children}">
-                <span th:each="grandChild : ${child.children}">
-                  &nbsp;&gt;&nbsp;<span th:text="${grandChild.categoryName}"></span>
+      <li th:each="cat1 : ${bookCategories}" class="list-group-item">
+        <span th:text="${cat1.categoryName}"></span>
+
+        <span th:if="${cat1.children}">
+        <span th:each="cat2 : ${cat1.children}">
+          &nbsp;&gt;&nbsp;<span th:text="${cat2.categoryName}"></span>
+
+          <span th:if="${cat2.children}">
+            <span th:each="cat3 : ${cat2.children}">
+              &nbsp;&gt;&nbsp;<span th:text="${cat3.categoryName}"></span>
+
+              <span th:if="${cat3.children}">
+                <span th:each="cat4 : ${cat3.children}">
+                  &nbsp;&gt;&nbsp;<span th:text="${cat4.categoryName}"></span>
+
+                  <span th:if="${cat4.children}">
+                    <span th:each="cat5 : ${cat4.children}">
+                      &nbsp;&gt;&nbsp;<span th:text="${cat5.categoryName}"></span>
+                    </span>
+                  </span>
+
                 </span>
               </span>
+
             </span>
           </span>
+
         </span>
-        <form th:action="@{/admin/book/{bookId}/category/remove(bookId=${bookId})}" method="post" class="d-inline">
-          <input type="hidden" name="categoryId" th:value="${cat.categoryId}" />
-          <button type="submit" class="btn btn-sm btn-outline-danger"
-                  onclick="return confirm('이 카테고리를 제거하시겠습니까?');">제거</button>
-        </form>
+      </span>
       </li>
     </ul>
-    <p th:if="${#lists.isEmpty(bookCategory)}" class="text-muted">등록된 카테고리가 없습니다.</p>
+
+    <p th:if="${#lists.isEmpty(bookCategories)}" class="text-muted">등록된 카테고리가 없습니다.</p>
+  </div>
+
+
+  <div class="mb-4">
+    <h5>❌ 삭제 또는 수정할 카테고리</h5>
+    <ul class="list-group">
+      <li th:each="cat : ${flatBookCategory}" class="list-group-item d-flex justify-content-between align-items-center">
+        <span th:text="${cat.categoryName}" class="me-3"></span>
+
+        <div class="d-flex gap-2 align-items-center flex-grow-1">
+          <form th:action="@{/admin/book/{bookId}/category/edit(bookId=${bookId})}" method="post" class="d-flex gap-2 align-items-center flex-grow-1">
+            <input type="hidden" name="categoryId" th:value="${cat.categoryId}" />
+            <div class="category-select-wrapper d-flex gap-2 flex-wrap flex-grow-1"></div>
+            <input type="hidden" name="newCategoryId" class="newCategoryId" />
+            <button type="submit" class="btn btn-sm btn-outline-secondary">수정</button>
+          </form>
+
+          <form th:action="@{/admin/book/{bookId}/category/remove(bookId=${bookId})}" method="post" class="d-inline ms-2">
+            <input type="hidden" name="categoryId" th:value="${cat.categoryId}" />
+            <button type="submit" class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('이 카테고리를 제거하시겠습니까?');">제거</button>
+          </form>
+        </div>
+      </li>
+    </ul>
+
+
+    <p th:if="${#lists.isEmpty(flatBookCategory)}" class="text-muted">삭제 가능한 카테고리가 없습니다.</p>
   </div>
 
   <div class="mb-4">
-    <h5>➕ 카테고리 추가</h5>
-    <form th:action="@{/admin/book/{bookId}/category/register(bookId=${bookId})}" method="post" class="d-flex align-items-center gap-2">
-      <select name="categoryId" class="form-select w-auto" required>
-        <option value="">-- 카테고리 선택 --</option>
-        <option th:each="cat : ${categoryList}" th:value="${cat.categoryId}" th:text="${cat.categoryName}"></option>
-      </select>
+    <h5>➕ 카테고리 추가 (최대 5단계)</h5>
+    <form th:action="@{/admin/book/{bookId}/category/register(bookId=${bookId})}"
+          method="post"
+          id="categoryAddForm"
+          class="d-flex gap-2 align-items-center flex-nowrap">
+      <input type="hidden" id="categoryJsonData" th:value="${categoryJson}" />
+      <div id="category-select-wrapper" class="d-flex gap-2"></div>
+      <input type="hidden" name="categoryId" id="selectedCategoryId" />
       <button type="submit" class="btn btn-sm btn-outline-primary">+ 추가</button>
     </form>
+
   </div>
 
 </main>
+<th:block layout:fragment="scripts">
+  <script type="module" src="/js/category-select.js"></script>
+</th:block>
 </body>
 </html>

@@ -10,4 +10,6 @@ public class OrderItemRequest {
     private Integer price;
     private Long wrappingId;
     private WrappingDto wrappingInfo;
+    private Long couponId;
+    private Integer finalPrice;
 }

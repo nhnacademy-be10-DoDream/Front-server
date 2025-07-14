@@ -6,176 +6,147 @@
 
 <head>
     <title th:text="#{cart.title}">장바구니</title>
-    <!-- ======================= CSS 스타일 추가 시작 ======================= -->
-    <style>
-
-        .table_shop_blue tbody td {
-            vertical-align: middle;
-        }
-
-        /* 상품 정보(이미지+제목)를 담는 컨테이너 스타일 */
-        .product-cell {
-            display: flex;       /* Flexbox 레이아웃 적용 */
-            align-items: center; /* 자식 요소들을 세로 중앙에 배치 */
-            gap: 15px;           /* 이미지와 제목 사이의 간격을 15px로 설정 */
-            padding: 10px;       /* 셀 내부에 여백 추가 */
-        }
-
-        /* 상품 이미지 스타일 */
-        .product-cell img {
-            width: 80px;         /* 이미지 너비를 80px로 고정 */
-            height: auto;        /* 높이는 너비에 맞춰 자동으로 조절 */
-            object-fit: contain; /* 이미지 비율을 유지하면서 영역에 맞춤 */
-        }
-
-        /* 상품 제목 링크 스타일 */
-        .product-cell a {
-            text-decoration: none; /* 밑줄 제거 */
-            color: inherit;        /* 부모 요소의 글자색 상속 */
-        }
-        .product-cell a:hover {
-            text-decoration: underline; /* 마우스를 올리면 밑줄 표시 */
-        }
-    </style>
-    <!-- ======================= CSS 스타일 추가 끝 ========================= -->
 </head>
 
 <body>
-<div layout:fragment="content">
-    <table cellspacing="0" cellpadding="0" width="866" align="center" border="0">
-        <tr>
-            <td valign="top" bgcolor="#ffffff">
+<div layout:fragment="content" class="container-fluid my-5">
 
-                <table class="table_shop_blue" width="100%">
-                    <thead>
-                    <tr>
-                        <th style="text-align: center" th:text="#{cart.header.productName}">상품명</th>
-                        <th style="text-align: center" th:text="#{cart.header.price}">가격</th>
-                        <th style="text-align: center" th:text="#{cart.header.quantity}">수량</th>
-                        <th style="text-align: center" th:text="#{cart.header.coupon}">쿠폰</th>
-                        <th style="text-align: center" th:text="#{cart.header.wrapping}">포장여부</th>
-                        <th style="text-align: center" th:text="#{cart.header.delete}">삭제</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="item,stat : ${cartItems}"
-                        th:attr="data-sale-price=${item.salePrice}">
+    <h2 class="mb-4 text-center" th:text="#{cart.title}">회원 장바구니</h2>
 
-                        <!-- ============== HTML 구조 수정 시작 ============== -->
-                        <td>
-                            <div class="product-cell">
-                                <!-- 이미지 -->
-                                <a th:href="@{/books/{id}(id=${item.bookId})}">
-                                    <img th:src="@{|${minioPath.book}${item.bookUrl}|}" alt="책 표지">
-                                </a>
-                                <!-- 제목 -->
-                                <a th:href="@{/books/{id}(id=${item.bookId})}">
-                                    <span th:text="${item.title}"></span>
-                                </a>
-                            </div>
-                        </td>
-                        <!-- ============== HTML 구조 수정 끝 ================ -->
-
-                        <td style="text-align: center">
-                            <div>
-                                <span th:text="|#{cart.label.regularPrice}: |"></span><s th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></s><br>
-                                <span style="color: red;"><span th:text="|#{cart.label.discountPrice}: |"></span><span th:id="'priceDisplay-' + ${item.cartItemId}" th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></span></span>
-                            </div>
-                        </td>
-
-                        <td align="center">
-                            <form th:action="@{/cart/{cartItemId}(cartItemId=${item.cartItemId})}" method="post" style="display: inline;">
-                                <input type="hidden" name="_method" value="put" />
-                                <input type="number" class="quantity-input" name="quantity" th:value="${item.quantity}" min="1" style="width: 40px;">
-                                <button type="submit" th:text="#{cart.button.change}">변경</button>
-                            </form>
-                        </td>
-
-                        <td align="center">
-                            <button type="button"
-                                    th:attr="data-cart-item-id=${item.cartItemId}, data-book-id=${item.bookId}, data-sale-price=${item.salePrice}"
-                                    onclick="openCouponModal(this)"
-                                    th:text="#{cart.button.selectCoupon}">쿠폰 선택</button>
-                            <input type="hidden" th:name="'selectedCouponId_' + ${item.cartItemId}" th:id="'selectedCouponId-' + ${item.cartItemId}" />
-                        </td>
-
-                        <td align="center">
-                            <select class="wrapping-select"
-                                    th:attr="data-index=${stat.index}"
-                                    onchange="recalculateTotal()">
-                                <option data-price="0" value="" th:text="#{cart.wrapping.noSelect}">선택 안 함</option>
-                                <option th:each="wrap : ${wrappingOptions}"
-                                        th:value="${wrap.id}"
-                                        th:data-price="${wrap.price}"
-                                        th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
-                                </option>
-                            </select>
-                        </td>
-
-                        <td align="center">
-                            <form th:action="@{/cart/{id}(id=${item.bookId})}" method="post">
-                                <button type="submit" th:text="#{cart.button.delete}">삭제</button>
-                            </form>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <!-- 장바구니 요약 정보 -->
-                <form th:action="@{/order}" method="post" id="orderForm">
-                    <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px; text-align: center;">
-                        <p><strong><span th:text="#{cart.summary.totalProductPrice}"></span>:</strong> <span id="totalProductPrice">0원</span></p>
-                        <p><strong><span th:text="#{cart.summary.totalDiscount}"></span>:</strong> <span id="totalDiscount">0원</span></p>
-                        <p><strong><span th:text="#{cart.summary.rewardPoint}"></span>:</strong> <span id="rewardPoint">0원</span></p>
-                        <p><strong><span th:text="#{cart.summary.orderTotal}"></span>:</strong> <span id="orderTotal">0원</span></p>
-                        <input type="hidden" name="orderTotal" value="0" />
-                        <input type="hidden" name="userId" th:value="${user.userId}" />
-
-                        <div th:each="item, stat : ${cartItems}">
-                            <input type="hidden" th:name="|items[${stat.index}].bookId|" th:value="${item.bookId}" />
-                            <input type="hidden" th:name="|items[${stat.index}].title|" th:value="${item.title}" />
-                            <input type="hidden" th:name="|items[${stat.index}].price|" th:value="${item.salePrice}" />
-                            <input type="hidden" th:name="|items[${stat.index}].quantity|" th:value="${item.quantity}" />
-
-                            <!-- JS가 값을 채워넣을 핵심 필드들 -->
-                            <input type="hidden" th:name="|items[${stat.index}].wrappingId|" />
-                            <input type="hidden" th:id="'couponId-' + ${stat.index}" th:name="|items[${stat.index}].couponId|" />
-                            <input type="hidden" th:id="'finalPrice-' + ${stat.index}" th:name="|items[${stat.index}].finalPrice|" />
-                        </div>
-
-
-                        <button type="button" style="
-                                  display: inline-block;
-                                  margin-top: 24px;
-                                  padding: 12px 40px;
-                                  background: #007bff;
-                                  color: #fff;
-                                  font-size: 18px;
-                                  border-radius: 6px;
-                                  text-decoration: none;
-                                  font-weight: bold;
-                                  transition: background 0.2s;
-                                "
-                        onmouseover="this.style.background='#0056b3'"
-                        onmouseout="this.style.background='#007bff'"
-                        onclick="submitOrder()"
-                        th:text="#{cart.button.order}">주문하기</button>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-light">
+            <tr>
+                <th th:text="#{cart.header.productName}">상품명</th>
+                <th th:text="#{cart.header.price}">가격</th>
+                <th th:text="#{cart.header.quantity}">수량</th>
+                <th th:text="#{cart.header.coupon}">쿠폰</th>
+                <th th:text="#{cart.header.wrapping}">포장여부</th>
+                <th th:text="#{cart.header.delete}">삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, stat : ${cartItems}" th:attr="data-sale-price=${item.salePrice}">
+                <td style="max-width: 300px;">
+                    <div class="d-flex align-items-center gap-3">
+                        <a th:href="@{/books/{id}(id=${item.bookId})}">
+                            <img th:src="@{|${minioPath.book}${item.bookUrl}|}" alt="책 표지" class="img-thumbnail" style="width: 60px;">
+                        </a>
+                        <a th:href="@{/books/{id}(id=${item.bookId})}" class="text-decoration-none text-dark">
+                            <span th:text="${item.title}"></span>
+                        </a>
                     </div>
-                </form>
+                </td>
+                <td>
+                    <small th:text="|#{cart.label.regularPrice}: |"></small>
+                    <s th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></s><br>
+                    <span class="text-danger fw-bold">
+            <small th:text="|#{cart.label.discountPrice}: |"></small>
+            <span th:id="'priceDisplay-' + ${item.cartItemId}" th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></span>
+          </span>
+                </td>
+                <td>
+                    <form th:action="@{/cart/{cartItemId}(cartItemId=${item.cartItemId})}" method="post" class="d-flex align-items-center justify-content-center gap-2">
+                        <input type="hidden" name="_method" value="put" />
+                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="form-control form-control-sm quantity-input text-center" style="width: 80px;">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm" th:text="#{cart.button.change}">변경</button>
+                    </form>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-primary"
+                            th:attr="data-cart-item-id=${item.cartItemId}, data-book-id=${item.bookId}, data-sale-price=${item.salePrice}"
+                            onclick="openCouponModal(this)"
+                            th:text="#{cart.button.selectCoupon}">쿠폰 선택</button>
+                    <input type="hidden" th:name="'selectedCouponId_' + ${item.cartItemId}" th:id="'selectedCouponId-' + ${item.cartItemId}" />
+                </td>
+                <td>
+                    <select class="form-select form-select-sm wrapping-select" th:attr="data-index=${stat.index}" onchange="recalculateTotal()">
+                        <option data-price="0" value="" th:text="#{cart.wrapping.noSelect}">선택 안 함</option>
+                        <option th:each="wrap : ${wrappingOptions}"
+                                th:value="${wrap.id}"
+                                th:data-price="${wrap.price}"
+                                th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
+                        </option>
+                    </select>
+                </td>
+                <td>
+                    <form th:action="@{/cart/{id}(id=${item.bookId})}" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm" th:text="#{cart.button.delete}">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-            </td>
-        </tr>
-    </table>
+    <form th:action="@{/order}" method="post" class="mt-5" id="orderForm">
+        <div class="card shadow-sm p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <p class="fs-5 fw-semibold mb-2">
+                        <span th:text="#{cart.summary.totalProductPrice}">총 제품 금액</span>:
+                        <span id="totalProductPrice" class="ms-2">0원</span>
+                    </p>
+                    <p class="fs-5 fw-semibold mb-2">
+                        <span th:text="#{cart.summary.totalWrappingPrice}">총 포장 금액</span>:
+                        <span id="totalWrappingPrice" class="ms-2 text-warning">0원</span>
+                    </p>
+                    <p class="fs-5 fw-semibold mb-2">
+                        <span th:text="#{cart.summary.totalDiscount}">총 할인 금액</span>:
+                        <span id="totalDiscount" class="ms-2 text-primary">0원</span>
+                    </p>
+                    <p class="fs-5 fw-semibold mb-2">
+                        <span th:text="#{cart.summary.rewardPoint}">적립 예정 포인트</span>:
+                        <span id="rewardPoint" class="ms-2 text-success">0원</span>
+                    </p>
+                    <p class="fs-5 fw-bold">
+                        <span th:text="#{cart.summary.orderTotal}">총 주문 금액</span>:
+                        <span id="orderTotal" class="ms-2 text-danger">0원</span>
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end text-center mt-3 mt-md-0">
+                    <button type="button" class="btn btn-primary btn-lg px-5" onclick="submitOrder()" th:text="#{cart.button.order}">주문하기</button>
+                </div>
+            </div>
+
+            <input type="hidden" name="orderTotal" value="0"/>
+            <input type="hidden" name="userId" th:value="${user.userId}"/>
+            <input type="hidden" name="totalProductPrice" value="0" />
+            <input type="hidden" name="totalDiscount" value="0" />
+
+            <div th:each="item, stat : ${cartItems}">
+                <input type="hidden" th:name="|items[${stat.index}].bookId|" th:value="${item.bookId}"/>
+                <input type="hidden" th:name="|items[${stat.index}].title|" th:value="${item.title}"/>
+                <input type="hidden" th:name="|items[${stat.index}].price|" th:value="${item.salePrice}"/>
+                <input type="hidden" th:name="|items[${stat.index}].quantity|" th:value="${item.quantity}"/>
+                <input type="hidden" th:name="|items[${stat.index}].wrappingId|"/>
+                <input type="hidden" th:id="'couponId-' + ${stat.index}" th:name="|items[${stat.index}].couponId|"/>
+                <input type="hidden" th:id="'finalPrice-' + ${stat.index}" th:name="|items[${stat.index}].finalPrice|"/>
+            </div>
+        </div>
+    </form>
+
+    <div id="couponModal" class="modal show" tabindex="-1" style="display:none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="#{coupon.modal.title}">쿠폰 선택</h5>
+                    <button type="button" class="btn-close" onclick="closeCouponModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="couponList">쿠폰 리스트</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCouponModal()" th:text="#{cart.button.close}">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
+
 <th:block layout:fragment="scripts">
     <script src="/js/cart.js"></script>
 </th:block>
 </body>
 </html>
-
-<!-- 쿠폰 선택 모달 -->
-<div id="couponModal" style="display:none; position:fixed; top:20%; left:30%; background:white; border:1px solid #aaa; padding:20px;">
-    <h3 th:text="#{coupon.modal.title}">쿠폰 선택</h3>
-    <div id="couponList"></div>
-    <button onclick="closeCouponModal()" th:text="#{cart.button.close}">닫기</button>
-</div>

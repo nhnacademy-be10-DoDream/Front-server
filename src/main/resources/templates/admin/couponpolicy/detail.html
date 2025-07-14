@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title">쿠폰 정책 상세</title>
+</head>
+<body>
+<main layout:fragment="content" class="admin-content-area">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="admin-section-title mb-0">쿠폰 목록</h2>
+        <div>
+            <button type="button" class="btn-admin btn-primary" th:onclick="'location.href=\'/admin/coupons/add?policyId=' + ${policyId} + '\''">쿠폰 생성</button>
+            <form th:action="@{/admin/policies/{policyId}/coupons(policyId=${policyId})}" method="post" style="display:inline;">
+                <input type="hidden" name="_method" value="delete" />
+                <button type="submit" class="btn-admin btn-danger">모두 삭제</button>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-admin">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>이름</th>
+            <th>적용 책 ID</th>
+            <th>적용 카테고리 ID</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="coupon : ${coupons}">
+            <td th:text="${coupon.couponId}"></td>
+            <td th:text="${coupon.policyName}"></td>
+            <td th:text="${coupon.bookId}"></td>
+            <td th:text="${coupon.categoryId}"></td>
+            <td>
+                <button type="button" class="btn-admin btn-info btn-sm" th:onclick="'location.href=\'/admin/coupons/' + ${coupon.couponId} + '\''">상세보기</button>
+                <form th:action="@{/admin/coupons/delete/{id}(id=${coupon.couponId})}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn-admin btn-danger btn-sm">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

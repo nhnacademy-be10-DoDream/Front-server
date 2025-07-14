@@ -8,9 +8,6 @@ import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.*;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +29,8 @@ public class OrderController {
             }
         });
 
+        model.addAttribute("couponDiscount", cartOrderRequest.getTotalDiscount());
+
         try {
             model.addAttribute("addressList", userClient.getAddresses());
         } catch (Exception e) {
@@ -42,23 +41,17 @@ public class OrderController {
 
         model.addAttribute("orderItems", cartItems);
 
-        model.addAttribute("totalAmount", cartOrderRequest.getOrderTotal());
-            if (cartOrderRequest.getUserId() != null) {
-            model.addAttribute("availablePoint", userClient.getAvailablePoint(cartOrderRequest.getUserId()));
+        model.addAttribute("totalAmount", cartOrderRequest.getTotalProductPrice());
+        if (cartOrderRequest.getUserId() != null) {
+                model.addAttribute("availablePoint", userClient.getAvailablePoint(cartOrderRequest.getUserId()));
         }
-
 
         return "order/order-sheet"; // 주문서 페이지로 이동
     }
 
     @PostMapping("/payment")
     public String pay(@ModelAttribute OrderRequest orderRequest,
-                      @RequestParam("wantedDateRaw") String wantedDateRaw,
                       @RequestParam(value = "userId", required = false) String userId) {
-        ZonedDateTime zoned = LocalDate.parse(wantedDateRaw)
-                .atStartOfDay(ZoneId.of("Asia/Seoul"));
-        orderRequest.setWantedDate(zoned);
-
 
         Map<String, Object> orderResponse;
         if (userId == null || userId.isEmpty()) {
@@ -72,7 +65,7 @@ public class OrderController {
 
         //결제창 리다이렉트
         return "redirect:/payment?orderId=%s&totalPrice=%s"
-                .formatted(orderResponse.get("orderId"), orderResponse.get("totalPrice"));
+                .formatted(orderResponse.get("orderId"), orderResponse.get("paymentAmount"));
     }
 
     @GetMapping("detail/{order-id}")

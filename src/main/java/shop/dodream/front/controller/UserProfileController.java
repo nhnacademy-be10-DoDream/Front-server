@@ -6,14 +6,12 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.client.CouponClient;
 import shop.dodream.front.client.OrderClient;
 import shop.dodream.front.client.UserClient;
-import shop.dodream.front.dto.AvailableCouponResponse;
-import shop.dodream.front.dto.UserAddressDto;
-import shop.dodream.front.dto.UserPasswordUpdateDto;
-import shop.dodream.front.dto.UserUpdateDto;
+import shop.dodream.front.dto.*;
 
 import java.util.List;
 
@@ -120,6 +118,21 @@ public class UserProfileController {
 		model.addAttribute("reviews", bookClient.getReviews(pageable));
 		model.addAttribute(LAYOUT_NAME, "reviews");
 		return "mypage/reviews";
+	}
+
+	@PutMapping("/reviews/{review-id}")
+	public String updateReview(@PathVariable("review-id") Long reviewId,
+							 @ModelAttribute ReviewUpdateRequest reviewUpdateRequest,
+							 @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages) {
+
+		MultipartFile[] nonEmptyFiles = newImages.stream()
+				.filter(file -> !file.isEmpty())
+				.toList().toArray(MultipartFile[]::new);
+
+		bookClient.updateReview(reviewId, reviewUpdateRequest.computeImages(), nonEmptyFiles);
+
+
+		return "redirect:/mypage/reviews";
 	}
 
 	@GetMapping("/liked-books")
