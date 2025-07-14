@@ -37,6 +37,7 @@
     document.querySelector("input[name='orderTotal']").value = orderTotal;
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
     document.getElementById("totalDiscount").innerText = formatPrice(totalDiscount);
+    document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrapping);
     document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
     document.getElementById("rewardPoint").innerText = formatPrice(rewardPoint);
 }
@@ -75,7 +76,9 @@
                             <strong>${coupon.discountValue <= 100 ? '할인율' : '할인금액'}:</strong> ${discountText}<br>
                             <strong>최소 구매 금액:</strong> ${coupon.minPurchaseAmount.toLocaleString()}원<br>
                             <strong>최대 할인 금액:</strong> ${coupon.maxDiscountAmount.toLocaleString()}원<br>
-                            <button onclick="selectCoupon(${cartItemId}, ${coupon.couponId}, ${coupon.finalPrice})">적용</button>
+                            <button class="btn btn-sm btn-outline-success mt-2" onclick="selectCoupon(${cartItemId}, ${coupon.couponId}, ${coupon.finalPrice})">
+                            <i class="bi bi-tag"></i> 쿠폰 적용
+                            </button>
                         `;
     couponListDiv.appendChild(couponDiv);
 });

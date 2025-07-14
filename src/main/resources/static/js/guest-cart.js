@@ -51,6 +51,7 @@
 }
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
     document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
+    document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrappingPrice)
 }
 
 
