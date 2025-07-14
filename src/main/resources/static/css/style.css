@@ -278,8 +278,8 @@ header, footer {
 }
 
 .book-card p {
-    font-size: 0.9rem;
-    margin: 0 0 0.3rem 0;
+    font-size: 0.98rem;
+    margin: 0 0 1rem 0;
     color: #555;
     line-height: 1.2;
     min-height: 1.5em;
@@ -404,20 +404,6 @@ header, footer {
     font-size: 1.1rem;
     margin: 0.5rem 0 0.2rem 0;
 }
-.book-card h3 {
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 0.5rem 0;
-    min-height: 2.5em; /* 제목이 2줄까지는 허용 */
-    overflow: hidden;
-}
-
-.book-card p {
-    color: var(--accent-color);
-    font-size: 0.98rem;
-    margin: 0 0 1rem 0;
-}
-
 
 .btn:hover {
     background: var(--black-color);
