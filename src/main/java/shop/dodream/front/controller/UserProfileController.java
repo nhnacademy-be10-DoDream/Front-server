@@ -121,7 +121,7 @@ public class UserProfileController {
 	}
 
 	@PutMapping("/reviews/{review-id}")
-	public String postReview(@PathVariable("review-id") Long reviewId,
+	public String updateReview(@PathVariable("review-id") Long reviewId,
 							 @ModelAttribute ReviewUpdateRequest reviewUpdateRequest,
 							 @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages) {
 
