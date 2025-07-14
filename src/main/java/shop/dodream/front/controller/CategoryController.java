@@ -107,8 +107,6 @@ public class CategoryController {
 
         List<CategoryResponse> categories = bookClient.getAllCategories();
         BookDetailDto book = bookClient.getBookDetail(bookId);
-        ObjectMapper mapper = new ObjectMapper();
-        String categoryJson = mapper.writeValueAsString(categories);
 
         model.addAttribute("book", book);
         model.addAttribute("bookId", bookId);
@@ -116,7 +114,6 @@ public class CategoryController {
         model.addAttribute("flatCategoryIds", flatCategoryIds);
         model.addAttribute("bookCategories", bookCategory);
         model.addAttribute("categoryList", categories);
-        model.addAttribute("categoryJson", categoryJson);
         return "admin/book/book-categoryList";
     }
 
