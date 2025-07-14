@@ -151,9 +151,34 @@ public class BookController {
 
     }
 
+    @GetMapping("/admin/books/aladdin-search")
+    public String AladdinSearchList(@RequestParam("query") String query,
+                                    @RequestParam(defaultValue = "25") int size,
+                                    @RequestParam(defaultValue = "1") int page,
+                                    Model model){
+
+        AladdinBookSearchResult aladdinBookSearchResult = bookClient.getAladdinBookList(query, size, page);
+        int totalPages = (int) Math.ceil((double) aladdinBookSearchResult.getTotalResults() / size);
+
+        int groupSize = 8;
+        int startPage = ((page - 1) / groupSize) * groupSize + 1;
+        int endPage = Math.min(startPage + groupSize - 1, totalPages);
+
+
+        model.addAttribute("aladdin", aladdinBookSearchResult);
+        model.addAttribute("query", query);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "admin/book/book-api-register";
+    }
+
     @PostMapping("/admin/books/register-api")
-    public String registerBookFromAladdin(@RequestParam("isbn") String isbn) {
-        bookClient.aladdinRegisterBook(isbn);
+    public String registerBookFromAladdin(@ModelAttribute BookRegisterRequest request) {
+        bookClient.registerFromAladdin(request);
         return "redirect:/admin/books";
     }
 

@@ -30,7 +30,7 @@ public class OrderController {
         });
 
         model.addAttribute("couponDiscount", cartOrderRequest.getTotalDiscount());
-
+        model.addAttribute("totalWrappingPrice", cartOrderRequest.getTotalWrappingPrice());
         try {
             model.addAttribute("addressList", userClient.getAddresses());
         } catch (Exception e) {

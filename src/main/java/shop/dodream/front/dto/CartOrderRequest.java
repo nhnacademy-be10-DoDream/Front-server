@@ -10,6 +10,7 @@ import java.util.List;
 public class CartOrderRequest {
     private Integer totalProductPrice;
     private Integer totalDiscount = 0;
+    private Integer totalWrappingPrice = 0;
     private String userId;
     private List<OrderItemRequest> items;
 }
