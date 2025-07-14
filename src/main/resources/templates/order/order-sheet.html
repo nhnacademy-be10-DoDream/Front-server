@@ -175,7 +175,7 @@
                     <span class="me-2" th:text="#{order.minimum.price}">최소 주문 금액</span>
                     <strong class="me-2 fs-5 fw-bold text-dark" th:text="#{order.total.price}">총 결제 금액:</strong>
                     <span id="finalTotal" class="fs-5 fw-bold"
-                          th:text="|${#numbers.formatInteger(totalAmount - couponDiscount, 0, 'COMMA')} #{order.currency.unit}|">
+                          th:text="|${#numbers.formatInteger(totalAmount + totalWrappingPrice - couponDiscount, 0, 'COMMA')} #{order.currency.unit}|">
                         0원
                     </span>
                 </div>
@@ -191,7 +191,7 @@
 </div>
 <th:block layout:fragment="scripts">
     <script th:inline="javascript">
-        window.baseAmount = [[${totalAmount}]];
+        window.baseAmount = [[${totalAmount + totalWrappingPrice}]];
         window.maxPoint = [[${availablePoint}]];
         window.couponDiscount = [[${couponDiscount}]];
     </script>

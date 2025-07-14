@@ -113,6 +113,7 @@
             <input type="hidden" name="userId" th:value="${user.userId}"/>
             <input type="hidden" name="totalProductPrice" value="0" />
             <input type="hidden" name="totalDiscount" value="0" />
+            <input type="hidden" name="totalWrappingPrice" value="0" />
 
             <div th:each="item, stat : ${cartItems}">
                 <input type="hidden" th:name="|items[${stat.index}].bookId|" th:value="${item.bookId}"/>

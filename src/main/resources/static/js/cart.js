@@ -37,6 +37,7 @@
     document.querySelector("input[name='orderTotal']").value = orderTotal;
     document.querySelector("input[name='totalProductPrice']").value = totalProductPrice;
     document.querySelector("input[name='totalDiscount']").value = totalDiscount;
+    document.querySelector("input[name='totalWrappingPrice']").value = totalWrapping;
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
     document.getElementById("totalDiscount").innerText = formatPrice(-totalDiscount);
     document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrapping);
