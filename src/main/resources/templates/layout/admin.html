@@ -27,17 +27,9 @@
                     <i class="bi bi-speedometer2 me-2"></i>
                     <span th:text="#{admin.menu.dashboard}"></span>
                 </a>
-                <a th:href="@{/admin/coupons}" class="admin-nav-link" th:classappend="${activeMenu=='coupons'}?'active':''">
+                <a th:href="@{/admin/policies}" class="admin-nav-link" th:classappend="${activeMenu=='coupons' or activeMenu=='policies' or activeMenu=='issue-coupon'}?'active':''">
                     <i class="bi bi-ticket-perforated me-2"></i>
-                    <span th:text="#{admin.menu.coupons}"></span>
-                </a>
-                <a th:href="@{/admin/policies}" class="admin-nav-link" th:classappend="${activeMenu=='policies'}?'active':''">
-                    <i class="bi bi-journal-text me-2"></i>
-                    <span th:text="#{admin.menu.policies}"></span>
-                </a>
-                <a th:href="@{/admin/user-coupons/issue}" class="admin-nav-link" th:classappend="${activeMenu=='issue-coupon'}?'active':''">
-                    <i class="bi bi-gift me-2"></i>
-                    <span th:text="#{admin.menu.issueCoupon}"></span>
+                    <span th:text="#{admin.menu.couponManagement}"></span>
                 </a>
                 <a th:href="@{/admin/categories}" class="admin-nav-link" th:classappend="${activeMenu=='categories'}?'active':''">
                     <i class="bi bi-folder"></i>

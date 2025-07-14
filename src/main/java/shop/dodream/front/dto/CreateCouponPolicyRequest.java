@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 import java.time.ZonedDateTime;
@@ -19,6 +20,7 @@ public class CreateCouponPolicyRequest {
     private Long minPurchaseAmount;
     private Long maxDiscountAmount;
     private String expiredStrategy;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private ZonedDateTime fixedDate;
     private Long plusDay;
 }

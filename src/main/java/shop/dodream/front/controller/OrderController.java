@@ -53,12 +53,7 @@ public class OrderController {
 
     @PostMapping("/payment")
     public String pay(@ModelAttribute OrderRequest orderRequest,
-                      @RequestParam("wantedDateRaw") String wantedDateRaw,
                       @RequestParam(value = "userId", required = false) String userId) {
-        ZonedDateTime zoned = LocalDate.parse(wantedDateRaw)
-                .atStartOfDay(ZoneId.of("Asia/Seoul"));
-        orderRequest.setWantedDate(zoned);
-
 
         Map<String, Object> orderResponse;
         if (userId == null || userId.isEmpty()) {

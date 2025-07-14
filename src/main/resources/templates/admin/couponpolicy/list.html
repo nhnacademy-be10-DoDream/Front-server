@@ -10,9 +10,11 @@
     <!-- 상단: 섹션 제목과 정책 추가 버튼 -->
     <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="admin-section-title mb-0">쿠폰 정책 관리</h2>
-        <form th:action="@{/admin/policies/add}" method="get" style="display: inline;">
-            <button type="submit" class="btn-admin btn-primary">쿠폰 정책 추가</button>
-        </form>
+        <div>
+            <button type="button" class="btn-admin btn-primary" onclick="location.href='/admin/policies/add'">쿠폰 정책 생성</button>
+            <button type="button" class="btn-admin btn-secondary" onclick="location.href='/admin/coupons'">전체 쿠폰 목록</button>
+            <button type="button" class="btn-admin btn-info" onclick="location.href='/admin/user-coupons/issue'">유저 쿠폰 발급</button>
+        </div>
     </div>
 
     <table class="table table-admin">
@@ -37,12 +39,11 @@
             <td th:text="${policy.discountValue}"></td>
             <td th:text="${policy.minPurchaseAmount}"></td>
             <td th:text="${policy.maxDiscountAmount}"></td>
-            <td th:text="${policy.fixedDate}"></td>
-            <td th:text="${policy.plusDay}"></td>
+            <td th:text="${policy.fixedDate != null ? #temporals.format(policy.fixedDate, 'yyyy-MM-dd') : '없음'}"></td>
+            <td th:text="${policy.plusDay != null ? policy.plusDay + '일' : '없음'}"></td>
             <td>
-                <form th:action="@{/admin/policies/edit/{id}(id=${policy.id})}" method="get" style="display: inline;">
-                    <button type="submit"  class="btn-admin btn-primary btn-sm">수정</button>
-                </form>
+                <button type="button" class="btn-admin btn-info btn-sm" th:onclick="'location.href=\'/admin/policies/' + ${policy.id} + '\''">상세</button>
+                <button type="button" class="btn-admin btn-primary btn-sm" th:onclick="'location.href=\'/admin/policies/edit/' + ${policy.id} + '\''">수정</button>
                 <form th:action="@{/admin/policies/delete/{id}(id=${policy.id})}" method="post" style="display:inline;">
                     <input type="hidden" name="_method" value="delete" />
                     <button type="submit" class="btn-admin btn-danger btn-sm">삭제</button>

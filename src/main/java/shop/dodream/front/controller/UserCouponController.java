@@ -20,18 +20,21 @@ public class UserCouponController {
     private final CouponClient couponClient;
 
     @GetMapping("/issue")
-    public String issueCouponForm(Model model, Pageable pageable) {
+    public String issueCouponForm(@RequestParam(value = "couponId", required = false) Long couponId, Model model, Pageable pageable) {
         model.addAttribute("activeMenu", "issue-coupon");
         List<CouponResponse> coupons = couponClient.getAllCoupons(pageable).getContent();
         model.addAttribute("coupons", coupons);
+        if (couponId != null) {
+            model.addAttribute("selectedCouponId", couponId);
+        }
         return "admin/usercoupon/issue";
     }
 
     @PostMapping("/issue")
     public String issueCoupon(@RequestParam("couponId") Long couponId,
                               @RequestParam(value = "userIds", required = false) String userIds,
-                              @RequestParam(value = "grade", required = false) String grade,
-                              @RequestParam(value = "birthMonth", required = false) Integer birthMonth) {
+                              @RequestParam(value = "gradeType", required = false) String grade,
+                              @RequestParam(value = "birth-month", required = false) Integer birthMonth) {
 
         List<String> userIdList = null;
         if (userIds != null && !userIds.trim().isEmpty()) {

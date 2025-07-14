@@ -6,9 +6,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.client.CouponClient;
 import shop.dodream.front.dto.CouponPolicyResponse;
+import shop.dodream.front.dto.CouponResponse;
 import shop.dodream.front.dto.CreateCouponPolicyRequest;
 import shop.dodream.front.dto.UpdateCouponPolicyRequest;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -23,13 +25,22 @@ public class CouponPolicyController {
         List<CouponPolicyResponse> policies = couponClient.getAllCouponPolicies();
         model.addAttribute("policies", policies);
         model.addAttribute("activeMenu", "policies");
-        return "admin/policy/list";
+        return "admin/couponpolicy/list";
+    }
+
+    @GetMapping("/{policyId}")
+    public String getPolicyDetail(@PathVariable("policyId") Long policyId, Model model) {
+        List<CouponResponse> coupons = couponClient.getCouponsByPolicy(policyId);
+        model.addAttribute("coupons", coupons);
+        model.addAttribute("policyId", policyId);
+        model.addAttribute("activeMenu", "policies");
+        return "admin/couponpolicy/detail";
     }
 
     @GetMapping("/add")
     public String addPolicyForm(Model model) {
         model.addAttribute("createCouponPolicyRequest", new CreateCouponPolicyRequest());
-        return "admin/policy/add";
+        return "admin/couponpolicy/add";
     }
 
     @PostMapping("/add")
@@ -43,7 +54,7 @@ public class CouponPolicyController {
         CouponPolicyResponse policy = couponClient.getCouponPolicy(policyId);
         model.addAttribute("policy", policy);
         model.addAttribute("updateCouponPolicyRequest", new UpdateCouponPolicyRequest());
-        return "admin/policy/edit";
+        return "admin/couponpolicy/edit";
     }
 
     @PutMapping("/edit/{policyId}")
