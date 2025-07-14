@@ -234,11 +234,9 @@
 
             const reviewId = btn.getAttribute('data-review-id') || '';
 
-            // URL 매핑 수정! (컨트롤러와 일치시키기)
             const form = modal.querySelector('form');
-            form.action = `/mypage/reviews/${reviewId}`;  // 또는 /reviews/${reviewId}
+            form.action = `/mypage/reviews/${reviewId}`;
 
-            // 기존 데이터 삽입
             modal.querySelector('[name="reviewId"]').value = reviewId;
             modal.querySelector('[name="content"]').value = btn.getAttribute('data-content') || '';
             modal.querySelector(`#stars-${btn.getAttribute('data-rating')}`).checked = true;
@@ -247,39 +245,41 @@
             const container = modal.querySelector('#modal-image-preview');
             const basePath = btn.getAttribute('data-base-path') || '';
 
-            // 이미지 설정
             modal.querySelector('#originalImages').value = images;
             modal.querySelector('#deletedImages').value = '';
 
             container.innerHTML = images ?
                 images.split(',').map(img => `
-                <div class="image-item-wrapper">
-                    <img src="${basePath}${img.trim()}" class="review-thumbnail">
-                    <button type="button" class="btn-mypage-delete-overlay" 
-                            onclick="deleteImage('${img.trim()}', this)">
-                        <i class="bi bi-x"></i>
-                    </button>
-                </div>
-           `).join('') : '';
+            <div class="image-item-wrapper">
+                <img src="${basePath}${img.trim()}" class="review-thumbnail">
+                <button type="button" class="btn-mypage-delete-overlay">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+       `).join('') : '';
         });
 
-        // 누락된 deleteImage 함수 추가!
-        window.deleteImage = function(imageName, button) {
-            const modal = document.querySelector('#reviewUpdateModal');
+        modal.querySelector('#modal-image-preview').addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.btn-mypage-delete-overlay');
+            if (!deleteBtn) return;
+
+            const imageItem = deleteBtn.closest('.image-item-wrapper');
+            if (!imageItem) return;
+
+            const imageName = imageItem.querySelector('img').src.split('/').pop();
             const deletedInput = modal.querySelector('#deletedImages');
             const current = deletedInput.value ? deletedInput.value.split(',') : [];
 
             current.push(imageName);
             deletedInput.value = current.join(',');
 
-            button.closest('.image-item-wrapper').remove();
+            imageItem.remove();
 
-            // 이미지가 모두 없어지면 컨테이너 비우기
             const container = modal.querySelector('#modal-image-preview');
             if (!container.querySelector('.image-item-wrapper')) {
                 container.innerHTML = '';
             }
-        };
+        });
     }
 
     // =====================================
