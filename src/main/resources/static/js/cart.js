@@ -19,12 +19,12 @@
     const finalPrice = parseInt(priceSpan?.innerText.replace(/[^0-9]/g, '') || 0);
 
     totalProductPrice += salePrice * quantity;
-    totalDiscount += (salePrice - finalPrice) * quantity;
+    totalDiscount += (salePrice - finalPrice);
 
     const wrappingSelect = row.querySelector('.wrapping-select');
     const selectedOption = wrappingSelect?.selectedOptions[0];
     const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
-    totalWrapping += wrappingPrice * quantity;
+    totalWrapping += wrappingPrice;
 
     const index = wrappingSelect.getAttribute("data-index");
     document.querySelector(`input[name='items[${index}].wrappingId']`).value = selectedOption?.value || "";
