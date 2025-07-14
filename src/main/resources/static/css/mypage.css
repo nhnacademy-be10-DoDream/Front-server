@@ -353,6 +353,34 @@
     border-color: #dc3545;
 }
 
+.btn-mypage-delete-overlay {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(2px);
+}
+
+.btn-mypage-delete-overlay:hover {
+    background: rgba(220, 53, 69, 1);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+}
+
+.btn-mypage-delete-overlay i {
+    font-size: 14px;
+    font-weight: bold;
+}
+
 /* ========== 페이지네이션 ========== */
 .pagination-container {
     display: flex;
@@ -527,6 +555,16 @@
     flex: 1;
 }
 
+#modal-image-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 15px;
+    border: 1px dashed #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
 /* ========== 폼 스타일 ========== */
 .mypage-form-group {
     margin-bottom: 1rem;
@@ -595,6 +633,20 @@
     color: #28a745;
     font-weight: 700;
     font-size: 1.2rem;
+}
+
+/* ========== 이미지 래퍼 ========== */
+.image-item-wrapper {
+    position: relative;
+    display: inline-block;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.image-item-wrapper:hover {
+    transform: scale(1.02);
 }
 
 /* ========== 회원 주소 ========== */

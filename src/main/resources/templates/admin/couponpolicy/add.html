@@ -9,7 +9,6 @@
 </head>
 <body>
 <main layout:fragment="content" class="admin-content-area">
-    <!-- 상단: 제목 및 취소 버튼 -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="admin-section-title mb-0">새 쿠폰 정책 추가</h2>
         <form th:action="@{/admin/policies}" method="get" style="display: inline;">
@@ -55,7 +54,7 @@
         </div>
         <div class="form-group mb-3">
             <label for="fixedDate" class="form-label">고정 만료일 (선택 사항)</label>
-            <input type="datetime-local" id="fixedDate" th:field="*{fixedDate}" class="form-control">
+            <input type="date" id="fixedDate" th:field="*{fixedDate}" class="form-control"/>
         </div>
         <div class="form-group mb-4">
             <label for="plusDay" class="form-label">추가 일수 (선택 사항)</label>

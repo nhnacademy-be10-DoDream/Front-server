@@ -6,147 +6,121 @@
 
 <head>
   <title th:text="#{guestCart.title}">비회원 장바구니</title>
-  <!-- ======================= CSS 스타일 추가 시작 ======================= -->
-  <style>
-    /* 모든 테이블 셀의 내용을 세로 중앙으로 정렬합니다. */
-    .table_shop_blue tbody td {
-      vertical-align: middle;
-    }
-
-    /* 상품 정보(이미지+제목)를 담는 컨테이너 스타일 */
-    .product-cell {
-      display: flex;       /* Flexbox 레이아웃 적용 */
-      align-items: center; /* 자식 요소들을 세로 중앙에 배치 */
-      gap: 15px;           /* 이미지와 제목 사이의 간격을 15px로 설정 */
-      padding: 10px;       /* 셀 내부에 여백 추가 */
-    }
-
-    /* 상품 이미지 스타일 */
-    .product-cell img {
-      width: 80px;         /* 이미지 너비를 80px로 고정 */
-      height: auto;        /* 높이는 너비에 맞춰 자동으로 조절 */
-      object-fit: contain; /* 이미지 비율을 유지하면서 영역에 맞춤 */
-    }
-
-    /* 상품 제목 링크 스타일 */
-    .product-cell a {
-      text-decoration: none; /* 밑줄 제거 */
-      color: inherit;        /* 부모 요소의 글자색 상속 */
-    }
-    .product-cell a:hover {
-      text-decoration: underline; /* 마우스를 올리면 밑줄 표시 */
-    }
-  </style>
-  <!-- ======================= CSS 스타일 추가 끝 ========================= -->
 </head>
 
 <body>
-<div layout:fragment="content">
+<div layout:fragment="content" class="container-fluid my-5">
 
-  <table cellspacing="0" cellpadding="0" width="866" align="center" border="0">
-    <tr>
-      <td valign="top" bgcolor="#ffffff">
-        <table class="table_shop_blue" width="100%">
-          <thead>
-          <tr>
-            <th style="text-align: center" th:text="#{cart.header.productName}">상품명</th>
-            <th style="text-align: center" th:text="#{cart.header.salePrice}">판매가</th>
-            <th style="text-align: center" th:text="#{cart.header.quantity}">수량</th>
-            <th style="text-align: center" th:text="#{cart.header.wrapping}">포장여부</th>
-            <th style="text-align: center" th:text="#{cart.header.delete}">삭제</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="item, stat : ${cartItems}">
-            <!-- ============== HTML 구조 수정 시작 ============== -->
-            <td>
-              <div class="product-cell">
-                <!-- 이미지 -->
-                <a th:href="@{/books/{id}(id=${item.bookId})}">
-                  <img th:src="@{|${minioPath.book}${item.bookUrl}|}" alt="책 표지">
-                </a>
-                <!-- 제목 -->
-                <a th:href="@{/books/{id}(id=${item.bookId})}">
-                  <span th:text="${item.title}"></span>
-                </a>
-              </div>
-            </td>
-            <!-- ============== HTML 구조 수정 끝 ================ -->
+  <!-- 페이지 제목 -->
+  <h2 class="mb-4 text-center" th:text="#{guestCart.title}">비회원 장바구니</h2>
 
-            <!-- 판매가 -->
-            <td style="text-align: center">
-              <span th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></span>
-            </td>
+  <!-- 🛒 장바구니 테이블 -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-light">
+      <tr>
+        <th th:text="#{cart.header.productName}">상품명</th>
+        <th th:text="#{cart.header.salePrice}">판매가</th>
+        <th th:text="#{cart.header.quantity}">수량</th>
+        <th th:text="#{cart.header.wrapping}">포장여부</th>
+        <th th:text="#{cart.header.delete}">삭제</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="item, stat : ${cartItems}">
+        <!-- 상품명 + 이미지 -->
+        <td style="max-width: 300px;">
+          <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/books/{id}(id=${item.bookId})}">
+              <img th:src="@{|${minioPath.book}${item.bookUrl}|}" alt="책 표지" class="img-thumbnail" style="width: 60px;">
+            </a>
+            <a th:href="@{/books/{id}(id=${item.bookId})}" class="text-decoration-none text-dark">
+              <span th:text="${item.title}"></span>
+            </a>
+          </div>
+        </td>
 
-            <!-- 수량 변경 -->
-            <td align="center">
-              <form th:action="@{/guest-cart/update/{id}(id=${item.bookId})}" method="post">
-                <input type="hidden" name="_method" value="put"/>
-                <input type="number" name="quantity" th:value="${item.quantity}" min="1" style="width: 40px;">
-                <button type="submit" th:text="#{cart.button.change}">변경</button>
-              </form>
-            </td>
+        <!-- 판매가 -->
+        <td>
+          <span th:text="${#numbers.formatInteger(item.salePrice, 0, 'COMMA')} + '원'"></span>
+        </td>
 
-            <td align="center">
-              <select class="wrapping-select"
-                      th:attr="data-index=${stat.index}">
-                <option data-price="0" value="" th:text="#{cart.wrapping.noSelect}">선택 안 함</option>
-                <option th:each="wrap : ${wrappingOptions}"
-                        th:value="${wrap.id}"
-                        th:data-price="${wrap.price}"
-                        th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
-                </option>
-              </select>
-            </td>
+        <!-- 수량 변경 -->
+        <td>
+          <form th:action="@{/guest-cart/update/{id}(id=${item.bookId})}" method="post"
+                class="d-flex align-items-center justify-content-center gap-2">
+            <input type="hidden" name="_method" value="put"/>
+            <input type="number" name="quantity" th:value="${item.quantity}" min="1"
+                   class="form-control form-control-sm text-center" style="width: 80px;">
+            <button type="submit" class="btn btn-outline-secondary btn-sm" th:text="#{cart.button.change}">변경</button>
+          </form>
+        </td>
 
-            <!-- 삭제 버튼 -->
-            <td align="center">
-              <form th:action="@{/guest-cart/delete/{id}(id=${item.bookId})}" method="post">
-                <button type="submit" th:text="#{cart.button.delete}">삭제</button>
-              </form>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  </table>
+        <!-- 포장 여부 -->
+        <td>
+          <select class="form-select form-select-sm wrapping-select" th:attr="data-index=${stat.index}">
+            <option data-price="0" value="" th:text="#{cart.wrapping.noSelect}">선택 안 함</option>
+            <option th:each="wrap : ${wrappingOptions}"
+                    th:value="${wrap.id}"
+                    th:data-price="${wrap.price}"
+                    th:text="${wrap.name + ' (' + #numbers.formatInteger(wrap.price, 0, 'COMMA') + '원)'}">
+            </option>
+          </select>
+        </td>
 
-  <!-- 장바구니 요약 정보 -->
-  <form th:action="@{/order}" method="post">
-    <div style="width: 866px; margin: 20px auto; border-top: 1px solid #ccc; padding-top: 20px; text-align: center;">
-      <p><strong><span th:text="#{cart.summary.totalProductPrice}"></span>:</strong> <span id="totalProductPrice">0원</span></p>
-      <p><strong><span th:text="#{cart.summary.orderTotal}"></span>:</strong> <span id="orderTotal">0원</span></p>
-      <input type="hidden" name="orderTotal" value="0" />
+        <!-- 삭제 버튼 -->
+        <td>
+          <form th:action="@{/guest-cart/delete/{id}(id=${item.bookId})}" method="post">
+            <button type="submit" class="btn btn-danger btn-sm" th:text="#{cart.button.delete}">삭제</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 
-      <!-- 장바구니 DTO용 hidden 필드들 -->
-      <div th:each="item, stat : ${cartItems}">
-        <input type="hidden" th:name="|items[${stat.index}].bookId|" th:value="${item.bookId}" />
-        <input type="hidden" th:name="|items[${stat.index}].title|" th:value="${item.title}" />
-        <input type="hidden" th:name="|items[${stat.index}].price|" th:value="${item.salePrice}" />
-        <input type="hidden" th:name="|items[${stat.index}].quantity|" th:value="${item.quantity}" />
-        <input type="hidden" th:name="|items[${stat.index}].wrappingId|" />
+  <!-- 🧾 주문 요약 및 주문하기 버튼 -->
+  <form th:action="@{/order}" method="post" class="mt-5">
+    <div class="card shadow-sm p-4">
+      <div class="row align-items-center">
+
+        <!-- 가격 요약 영역 -->
+        <div class="col-md-8">
+          <p class="fs-5 fw-semibold mb-2">
+            <span th:text="#{cart.summary.totalProductPrice}">총 제품 금액</span>:
+            <span id="totalProductPrice" class="ms-2">0원</span>
+              <input type="hidden" name="totalProductPrice" value="0" />
+
+          </p>
+          <p class="fs-5 fw-semibold mb-2">
+            <span th:text="#{cart.summary.totalWrappingPrice}">총 포장 금액</span>:
+            <span id="totalWrappingPrice" class="ms-2 text-warning">0원</span>
+          </p>
+          <p class="fs-5 fw-semibold">
+            <span th:text="#{cart.summary.orderTotal}">총 주문 금액</span>:
+            <span id="orderTotal" class="ms-2 fw-bold text-danger">0원</span>
+          </p>
+        </div>
+
+        <!-- 주문 버튼 -->
+        <div class="col-md-4 text-md-end text-center mt-3 mt-md-0">
+          <button type="submit" class="btn btn-primary btn-lg px-5" th:text="#{cart.button.order}">주문하기</button>
+        </div>
       </div>
 
-      <button type="submit" style="
-      display: inline-block;
-      margin-top: 24px;
-      padding: 12px 40px;
-      background: #007bff;
-      color: #fff;
-      font-size: 18px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.2s;
-    "
-              onmouseover="this.style.background='#0056b3'"
-              onmouseout="this.style.background='#007bff'"
-              th:text="#{cart.button.order}">주문하기</button>
+      <!-- hidden DTO 필드 -->
+      <div th:each="item, stat : ${cartItems}">
+        <input type="hidden" th:name="|items[${stat.index}].bookId|" th:value="${item.bookId}"/>
+        <input type="hidden" th:name="|items[${stat.index}].title|" th:value="${item.title}"/>
+        <input type="hidden" th:name="|items[${stat.index}].price|" th:value="${item.salePrice}"/>
+        <input type="hidden" th:name="|items[${stat.index}].quantity|" th:value="${item.quantity}"/>
+        <input type="hidden" th:name="|items[${stat.index}].wrappingId|"/>
+      </div>
     </div>
   </form>
 </div>
-<!-- 여기에 외부 스크립트 파일을 연결합니다. -->
+
+<!-- 외부 스크립트 -->
 <th:block layout:fragment="scripts">
   <script src="/js/guest-cart.js"></script>
 </th:block>

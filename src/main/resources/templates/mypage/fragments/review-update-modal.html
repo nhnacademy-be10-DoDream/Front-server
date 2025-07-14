@@ -1,0 +1,55 @@
+<!-- 리뷰 수정 모달 -->
+<div class="modal fade" id="reviewUpdateModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="mypage-modal-content modal-content">
+            <div class="mypage-modal-header">
+                <h5 class="mypage-modal-title" th:text="#{mypage.reviews.editTitle}"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form th:action="@{/reviews/update}" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="_method" name="_method" value="put"/>
+
+                <div class="mypage-modal-body">
+                    <input type="hidden" name="reviewId" id="reviewId">
+                    <input type="hidden" name="originalImages" id="originalImages">
+                    <input type="hidden" name="deletedImages" id="deletedImages">
+
+                    <div class="mypage-form-group" style="margin-top: 20px">
+                        <div class="star-rating space-x-4 mx-auto">
+                            <input type="radio" id="stars-5" name="rating" value="5"/>
+                            <label for="stars-5" class="star pr-4">★</label>
+                            <input type="radio" id="stars-4" name="rating" value="4"/>
+                            <label for="stars-4" class="star">★</label>
+                            <input type="radio" id="stars-3" name="rating" value="3"/>
+                            <label for="stars-3" class="star">★</label>
+                            <input type="radio" id="stars-2" name="rating" value="2"/>
+                            <label for="stars-2" class="star">★</label>
+                            <input type="radio" id="stars-1" name="rating" value="1"/>
+                            <label for="stars-1" class="star">★</label>
+                        </div>
+                    </div>
+                    <div class="mypage-form-group">
+                        <label for="content" class="mypage-form-label" th:text="#{mypage.review.content}"></label>
+                        <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+                    </div>
+
+                    <div class="mypage-form-group">
+                        <label class="mypage-form-label" th:text="#{mypage.review.image.oldTitle}"></label>
+                        <div id="modal-image-preview" class="existing-images-container">
+                        </div>
+                    </div>
+
+                    <div class="mypage-form-group">
+                        <label for="newImages" class="mypage-form-label" th:text="#{mypage.review.image.newTitle}"></label>
+                        <input class="form-control" type="file" name="newImages" multiple accept="image/*">
+                    </div>
+                </div>
+                <div class="mypage-modal-footer">
+                    <button type="button" class="btn-mypage btn-outline-danger" data-bs-dismiss="modal" th:text="#{modal.cancel}"></button>
+                    <button type="submit" class="btn-mypage btn-outline-gray" th:text="#{modal.save}"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

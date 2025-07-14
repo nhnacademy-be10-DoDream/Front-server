@@ -19,12 +19,12 @@
     const finalPrice = parseInt(priceSpan?.innerText.replace(/[^0-9]/g, '') || 0);
 
     totalProductPrice += salePrice * quantity;
-    totalDiscount += (salePrice - finalPrice) * quantity;
+    totalDiscount += (salePrice - finalPrice);
 
     const wrappingSelect = row.querySelector('.wrapping-select');
     const selectedOption = wrappingSelect?.selectedOptions[0];
     const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
-    totalWrapping += wrappingPrice * quantity;
+    totalWrapping += wrappingPrice;
 
     const index = wrappingSelect.getAttribute("data-index");
     document.querySelector(`input[name='items[${index}].wrappingId']`).value = selectedOption?.value || "";
@@ -35,8 +35,11 @@
     const rewardPoint = Math.floor(orderTotal * 0.1);
 
     document.querySelector("input[name='orderTotal']").value = orderTotal;
+    document.querySelector("input[name='totalProductPrice']").value = totalProductPrice;
+    document.querySelector("input[name='totalDiscount']").value = totalDiscount;
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
-    document.getElementById("totalDiscount").innerText = formatPrice(totalDiscount);
+    document.getElementById("totalDiscount").innerText = formatPrice(-totalDiscount);
+    document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrapping);
     document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
     document.getElementById("rewardPoint").innerText = formatPrice(rewardPoint);
 }
@@ -75,7 +78,9 @@
                             <strong>${coupon.discountValue <= 100 ? '할인율' : '할인금액'}:</strong> ${discountText}<br>
                             <strong>최소 구매 금액:</strong> ${coupon.minPurchaseAmount.toLocaleString()}원<br>
                             <strong>최대 할인 금액:</strong> ${coupon.maxDiscountAmount.toLocaleString()}원<br>
-                            <button onclick="selectCoupon(${cartItemId}, ${coupon.couponId}, ${coupon.finalPrice})">적용</button>
+                            <button class="btn btn-sm btn-outline-success mt-2" onclick="selectCoupon(${cartItemId}, ${coupon.couponId}, ${coupon.finalPrice})">
+                            <i class="bi bi-tag"></i> 쿠폰 적용
+                            </button>
                         `;
     couponListDiv.appendChild(couponDiv);
 });

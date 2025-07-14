@@ -12,8 +12,13 @@
         <h2>새 쿠폰 추가</h2>
         <form th:action="@{/admin/coupons/add}" th:object="${createCouponRequest}" method="post">
             <div class="form-group">
-                <label for="policyId">정책 ID:</label>
-                <input type="number" id="policyId" th:field="*{policyId}" class="form-control" required>
+                <label for="policyId">쿠폰 정책:</label>
+                <select id="policyId" th:field="*{policyId}" class="form-control" required>
+                    <option value="">-- 정책 선택 --</option>
+                    <option th:each="policy : ${couponPolicies}"
+                            th:value="${policy.id}"
+                            th:text="${policy.name}">정책 이름</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="bookId">도서 ID (선택 사항):</label>

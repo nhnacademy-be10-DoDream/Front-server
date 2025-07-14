@@ -1,6 +1,8 @@
 package shop.dodream.front.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -82,7 +84,7 @@ public class CategoryController {
 
 
     @PostMapping("/admin/category/edit/{category-id}")
-    public String EditCategory(@PathVariable("category-id") Long categoryId, @ModelAttribute CategoryRequest request) {
+    public String editCategory(@PathVariable("category-id") Long categoryId, @ModelAttribute CategoryRequest request) {
         bookClient.updateCategory(categoryId, request);
         return "redirect:/admin/categories";
     }
@@ -95,17 +97,26 @@ public class CategoryController {
     }
 
     @GetMapping("/admin/book/{book-id}/categories")
-    public String getBookCategories(@PathVariable("book-id") Long bookId, Model model) {
+    public String getBookCategories(@PathVariable("book-id") Long bookId, Model model) throws JsonProcessingException {
         List<CategoryTreeResponse> bookCategory = bookClient.getCategoriesByBookId(bookId);
-        //List<CategoryResponse> flatBookCategory = bookClient.getFlatCategoriesByBookId(bookId);
+
+        List<CategoryResponse> flatBookCategory = bookClient.getFlatCategoriesByBookId(bookId);
+        List<Long> flatCategoryIds = flatBookCategory.stream()
+                .map(CategoryResponse::getCategoryId)
+                .toList();
+
         List<CategoryResponse> categories = bookClient.getAllCategories();
         BookDetailDto book = bookClient.getBookDetail(bookId);
+        ObjectMapper mapper = new ObjectMapper();
+        String categoryJson = mapper.writeValueAsString(categories);
 
         model.addAttribute("book", book);
         model.addAttribute("bookId", bookId);
-        //model.addAttribute("flatBookCategory", flatBookCategory);
+        model.addAttribute("flatBookCategory", flatBookCategory);
+        model.addAttribute("flatCategoryIds", flatCategoryIds);
         model.addAttribute("bookCategories", bookCategory);
         model.addAttribute("categoryList", categories);
+        model.addAttribute("categoryJson", categoryJson);
         return "admin/book/book-categoryList";
     }
 

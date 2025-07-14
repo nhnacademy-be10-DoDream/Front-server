@@ -26,7 +26,7 @@ public interface OrderClient {
     List<OrderResponse> getOrders(); // 주문 목록 조회
 
 
-    @GetMapping("/orders/{order-id}")
+    @GetMapping("/public/orders/{order-id}")
     OrderDetailsDto getOrderDetail(@PathVariable("order-id") String orderId); // 주문 상세 조회
 
     @PostMapping("/public/orders/{order-id}/cancel")

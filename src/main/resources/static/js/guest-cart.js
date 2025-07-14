@@ -37,7 +37,7 @@
     const wrappingSelect = row.querySelector('.wrapping-select');
     const selectedOption = wrappingSelect?.selectedOptions[0];
     const wrappingPrice = selectedOption ? Number(selectedOption.dataset.price || 0) : 0;
-    totalWrappingPrice += wrappingPrice * quantity;
+    totalWrappingPrice += wrappingPrice;
 
     const index = wrappingSelect.getAttribute("data-index");
     document.querySelector(`input[name='items[${index}].wrappingId']`).value = selectedOption?.value || "";
@@ -49,8 +49,10 @@
     if (orderTotalInput) {
     orderTotalInput.value = orderTotal; // 값 반영
 }
+    document.querySelector("input[name='totalProductPrice']").value = totalProductPrice;
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
     document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
+    document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrappingPrice)
 }
 
 

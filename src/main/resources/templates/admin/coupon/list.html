@@ -11,9 +11,10 @@
     <!-- 상단: 섹션 제목과 쿠폰 생성 버튼 -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="admin-section-title mb-0">등록된 쿠폰 목록</h2>
-        <form th:action="@{/admin/coupons/add}" method="get" style="display:inline;">
-            <button type="submit" class="btn-admin btn-primary">쿠폰 생성</button>
-        </form>
+        <div>
+            <button type="button" class="btn-admin btn-secondary" onclick="location.href='/admin/policies'">쿠폰 정책 목록</button>
+            <button type="button" class="btn-admin btn-primary" onclick="location.href='/admin/coupons/add'">쿠폰 생성</button>
+        </div>
     </div>
 
     <table class="table table-admin">
@@ -46,7 +47,9 @@
             <td th:text="${coupon.bookId != null ? coupon.bookId : '없음'}"></td>
             <td th:text="${coupon.categoryId != null ? coupon.categoryId : '없음'}"></td>
             <td>
+                <button type="button" class="btn-admin btn-info btn-sm" th:onclick="'location.href=\'/admin/coupons/' + ${coupon.couponId} + '\''">상세보기</button>
                 <form th:action="@{/admin/coupons/delete/{couponId}(couponId=${coupon.couponId})}" method="post" style="display:inline;">
+                    <input type="hidden" name="_method" value="delete" />
                     <button type="submit" class="btn-admin btn-danger btn-sm">삭제</button>
                 </form>
             </td>
@@ -61,14 +64,14 @@
     <div class="pagination-container mt-4">
         <ul class="custom-pagination">
             <li th:classappend="${coupons.first} ? 'disabled' : ''">
-                <a class="pagination-link" th:href="@{/admin/coupons(page=${coupons.number - 1})}">이전</a>
+                <button type="button" class="pagination-link" th:onclick="'location.href=\'/admin/coupons?page=' + ${coupons.number - 1} + '\''">이전</button>
             </li>
             <li th:each="pageNumber : ${#numbers.sequence(0, coupons.totalPages - 1)}"
                 th:classappend="${pageNumber == coupons.number} ? 'active' : ''">
-                <a class="pagination-link" th:href="@{/admin/coupons(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
+                <button type="button" class="pagination-link" th:onclick="'location.href=\'/admin/coupons?page=' + ${pageNumber} + '\''" th:text="${pageNumber + 1}"></button>
             </li>
             <li th:classappend="${coupons.last} ? 'disabled' : ''">
-                <a class="pagination-link" th:href="@{/admin/coupons(page=${coupons.number + 1})}">다음</a>
+                <button type="button" class="pagination-link" th:onclick="'location.href=\'/admin/coupons?page=' + ${coupons.number + 1} + '\''">다음</button>
             </li>
         </ul>
     </div>

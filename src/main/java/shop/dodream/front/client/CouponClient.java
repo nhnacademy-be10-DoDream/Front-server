@@ -43,6 +43,9 @@ public interface CouponClient {
     @GetMapping("/admin/coupon-policies/{policyId}/coupons")
     List<CouponResponse> getCouponsByPolicy(@PathVariable("policyId") Long policyId);
 
+    @DeleteMapping("/admin/coupon-policies/{policyId}/coupons")
+    void deleteCouponsByPolicy(@PathVariable("policyId") Long policyId);
+
     // User Coupon APIs
     @PostMapping("/admin/user-coupons")
     void issueCoupon(@RequestBody IssueCouponRequest request);
@@ -64,5 +67,11 @@ public interface CouponClient {
 
     @GetMapping("/coupons/book/{book-id}")
     List<BookAvailableCouponResponse> getAvailableCouponsforBook(@PathVariable("book-id") Long bookId);
+
+    @GetMapping("/admin/user-coupons/{coupon-id}")
+    List<UserCouponResponse> getUserCouponsByCoupon(@PathVariable("coupon-id") Long couponId);
+
+    @DeleteMapping("/admin/user-coupons/{coupon-id}")
+    void deleteUserCouponsByCoupon(@PathVariable("coupon-id") Long couponId);
 
 }
