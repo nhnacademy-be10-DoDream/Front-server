@@ -21,6 +21,7 @@
             USER_UPDATE_PASSWORD_MODAL: '#userPasswordUpdateModal',
             ADDRESS_MODAL: '#addressModal',
             ADDRESS_FORM: '#addressForm',
+            REVIEW_EDIT_MODAL: '#editReviewModal'
         },
         // 접근성 관리 설정 추가
         ACCESSIBILITY: {
@@ -220,6 +221,66 @@
         });
     }
 
+    // =====================================
+    // 리뷰 수정 모달 (Action URL 동적 설정)
+    // =====================================
+    function initReviewEditModal() {
+        const modal = document.querySelector('#reviewUpdateModal');
+        if (!modal) return;
+
+        modal.addEventListener('show.bs.modal', (e) => {
+            const btn = e.relatedTarget;
+            if (!btn?.classList.contains('review-update-modal')) return;
+
+            const reviewId = btn.getAttribute('data-review-id') || '';
+
+            // URL 매핑 수정! (컨트롤러와 일치시키기)
+            const form = modal.querySelector('form');
+            form.action = `/mypage/reviews/${reviewId}`;  // 또는 /reviews/${reviewId}
+
+            // 기존 데이터 삽입
+            modal.querySelector('[name="reviewId"]').value = reviewId;
+            modal.querySelector('[name="content"]').value = btn.getAttribute('data-content') || '';
+            modal.querySelector(`#stars-${btn.getAttribute('data-rating')}`).checked = true;
+
+            const images = btn.getAttribute('data-images') || '';
+            const container = modal.querySelector('#modal-image-preview');
+            const basePath = btn.getAttribute('data-base-path') || '';
+
+            // 이미지 설정
+            modal.querySelector('#originalImages').value = images;
+            modal.querySelector('#deletedImages').value = '';
+
+            container.innerHTML = images ?
+                images.split(',').map(img => `
+                <div class="image-item-wrapper">
+                    <img src="${basePath}${img.trim()}" class="review-thumbnail">
+                    <button type="button" class="btn-mypage-delete-overlay" 
+                            onclick="deleteImage('${img.trim()}', this)">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+           `).join('') : '';
+        });
+
+        // 누락된 deleteImage 함수 추가!
+        window.deleteImage = function(imageName, button) {
+            const modal = document.querySelector('#reviewUpdateModal');
+            const deletedInput = modal.querySelector('#deletedImages');
+            const current = deletedInput.value ? deletedInput.value.split(',') : [];
+
+            current.push(imageName);
+            deletedInput.value = current.join(',');
+
+            button.closest('.image-item-wrapper').remove();
+
+            // 이미지가 모두 없어지면 컨테이너 비우기
+            const container = modal.querySelector('#modal-image-preview');
+            if (!container.querySelector('.image-item-wrapper')) {
+                container.innerHTML = '';
+            }
+        };
+    }
 
     // =====================================
     // 페이지별 초기화 함수들
@@ -250,14 +311,13 @@
                     handleModalShow(modal.id).catch(err => {
                         console.error('Modal show handling failed:', err);
                     });
-                }, { once: true });
+                }, {once: true});
             }
         });
 
         initUserEditModal();
         initModalAccessibility();
     }
-
 
 
     function initAddressPage() {
@@ -269,6 +329,12 @@
 
     function initOrdersPage() {
     }
+
+    function initReviewsPage() {
+        initReviewEditModal();
+        initModalAccessibility();
+    }
+
 
     // =====================================
     // activeMenu 기반 스마트 초기화 (성능 최적화)
@@ -291,7 +357,7 @@
                 initModalAccessibility();
                 break;
             case 'reviews':
-                initModalAccessibility();
+                initReviewsPage();
                 break;
             default:
                 console.log('activeMenu가 설정되지 않음');

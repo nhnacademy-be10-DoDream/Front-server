@@ -87,8 +87,14 @@
                     <i class="bi bi-book btn-icon"></i><span th:text="#{mypage.button.viewBook}"></span>
                 </a>
 
-                <button type="button" class="btn-mypage btn-outline-gray"
-                        th:onclick="'editReview(' + ${review.reviewId} + ')'">
+                <button type="button" class="btn-mypage btn-outline-gray review-update-modal"
+                        th:data-review-id="${review.reviewId}"
+                        th:data-content="${review.content}"
+                        th:data-rating="${review.rating}"
+                        th:data-images="${#strings.listJoin(review.images, ',')}"
+                        th:data-base-path="@{${minioPath.review}}"
+                        data-bs-toggle="modal"
+                        data-bs-target="#reviewUpdateModal">
                     <i class="bi bi-pencil btn-icon"></i><span th:text="#{button.edit}"></span>
                 </button>
             </div>
@@ -129,6 +135,7 @@
         </ul>
     </div>
 
+    <div th:replace="~{mypage/fragments/review-update-modal :: #reviewUpdateModal}"></div>
 </div>
 </body>
 </html>
