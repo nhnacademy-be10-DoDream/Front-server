@@ -1,9 +1,11 @@
 package shop.dodream.front.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@NoArgsConstructor
 public class CategoryResponse {
     private Long categoryId;
     @Setter
