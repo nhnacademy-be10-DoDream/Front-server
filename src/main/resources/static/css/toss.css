@@ -566,3 +566,23 @@ textarea {
   flex: 0 0 41.66667%;
   max-width: 41.66667%;
 }
+
+.order-item-list {
+  list-style-position: inside;
+  padding-left: 0;
+}
+
+.order-item-list li {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;         /* 최대 두 줄까지 보여줌 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+
+  max-width: 100%;         /* 부모 박스 넘지 않도록 */
+  white-space: normal;     /* 줄바꿈 허용 */
+  line-height: 1.5;        /* 가독성 */
+  margin-bottom: 4px;      /* 항목 간 간격 */
+
+}
