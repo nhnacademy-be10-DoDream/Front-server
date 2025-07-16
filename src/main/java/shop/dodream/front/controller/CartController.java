@@ -93,6 +93,7 @@ public class CartController {
 	                             @RequestParam Long quantity) {
 		CartResponse cart = cartClient.getCart();
 		CartItemRequest request = new CartItemRequest();
+		request.setCartId(cart.getCartId());
 		request.setQuantity(quantity);
 		cartClient.updateCartItemQuantity(request, cartItemId, cart.getCartId());
 		return "redirect:/cart";
