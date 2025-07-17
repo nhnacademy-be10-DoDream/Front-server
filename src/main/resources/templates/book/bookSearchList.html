@@ -101,7 +101,10 @@
                 </form>
             </div>
         </div>
-
+        <div>
+            totalPages: <span th:text="${totalPages}"></span>,
+            currentPage: <span th:text="${currentPage}"></span>
+        </div>
         <!-- 페이지네이션 -->
         <ul class="pagination" th:if="${totalPages > 1}">
             <!-- 이전 버튼 -->
@@ -127,6 +130,7 @@
                 <span th:if="${currentPage + 1 >= totalPages}" class="page-link disabled">»</span>
             </li>
         </ul>
+
     </div>
     <script>
         function toggleSubcategories(categoryId) {

@@ -30,7 +30,6 @@ public class BookController {
     private final BookClient bookClient;
     private final CartClient cartClient;
     private final CartController cartController;
-    private HttpServletRequest request;
 
 
     // Controller
@@ -239,7 +238,7 @@ public class BookController {
     public String searchBooks(@RequestParam String keyword,
                               @RequestParam(defaultValue = "NONE") BookSortType sort,
                               @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "8") int size,
+                              @RequestParam(defaultValue = "100") int size,
                               @RequestParam(required = false) Long categoryId,
                               @RequestParam(required = false) Integer minPrice,
                               @RequestParam(required = false) Integer maxPrice,
@@ -260,6 +259,8 @@ public class BookController {
             model.addAttribute("currentPage", 0);
             return "book/bookSearchList";
         }
+
+        model.addAttribute("totalPages", books.getTotalPages());
 
         List<BookItemResponse> filteredBooks = books.getContent().stream()
                 .filter(book -> {
@@ -289,11 +290,21 @@ public class BookController {
             model.addAttribute("breadcrumb", breadcrumb);
         }
 
+        int pageSize = 20;
+        int fromIndex = page * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, filteredBooks.size());
+        if (fromIndex >= filteredBooks.size()) {
+            fromIndex = 0;
+            toIndex = Math.min(pageSize, filteredBooks.size());
+        }
+        List<BookItemResponse> pagedBooks = filteredBooks.subList(fromIndex, toIndex);
+        int totalPages = (int) Math.ceil((double) filteredBooks.size() / pageSize);
+
         model.addAttribute("selectedCategoryTree", categoryTree);
-        model.addAttribute("books", filteredBooks);
+        model.addAttribute("books", pagedBooks);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("totalPages", (int) Math.ceil((double) filteredBooks.size() / size));
-        model.addAttribute("currentPage", books.getNumber());
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
         model.addAttribute("sort", sort);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
@@ -311,13 +322,13 @@ public class BookController {
     private void buildCategoryCountMap(List<BookItemResponse> books, BookClient bookClient,
                                        Map<Long, Integer> categoryCountMap) {
         for (BookItemResponse book : books) {
-            Set<Long> countedCategoryIds = new HashSet<>(); // 중복 방지용
+            Set<Long> countedCategoryIds = new HashSet<>();
 
             List<CategoryResponse> categories = bookClient.getFlatCategoriesByBookId(book.getBookId());
             for (CategoryResponse category : categories) {
                 List<CategoryResponse> path = bookClient.getCategoriesPath(category.getCategoryId());
                 for (CategoryResponse c : path) {
-                    if (countedCategoryIds.add(c.getCategoryId())) { // 처음 나오는 ID만 처리
+                    if (countedCategoryIds.add(c.getCategoryId())) {
                         categoryCountMap.put(
                                 c.getCategoryId(),
                                 categoryCountMap.getOrDefault(c.getCategoryId(), 0) + 1
@@ -327,7 +338,4 @@ public class BookController {
             }
         }
     }
-
-
-
 }
