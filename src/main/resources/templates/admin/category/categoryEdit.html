@@ -9,42 +9,51 @@
 
 <body>
 <main layout:fragment="content" class="admin-content-area">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="admin-section-title mb-0">카테고리 수정</h2>
-        <form th:action="@{/admin/categories}" method="get" style="display: inline;">
-            <button type="submit" class="btn-admin btn-secondary">목록으로 돌아가기</button>
-        </form>
+    <div class="admin-main-header">
+        <h2>카테고리 수정</h2>
+        <p>등록된 카테고리를 수정하는 페이지</p>
     </div>
+    <div class="admin-main-body">
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <div class="right-group">
+                    <form th:action="@{/admin/categories}" method="get" style="display: inline;">
+                        <button type="submit" class="btn-admin btn-secondary">목록으로 돌아가기</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-section-body">
+                <form th:action="@{'/admin/category/edit/' + ${category.categoryId}}"
+                      method="post">
+                    <div class="form-group mb-3">
+                        <label for="categoryName" class="form-label">카테고리 이름</label>
+                        <input type="text" class="form-control" id="categoryName" name="categoryName"
+                               th:value="${category.categoryName}" required>
+                    </div>
 
-    <form th:action="@{'/admin/category/edit/' + ${category.categoryId}}"
-          method="post">
-        <div class="form-group mb-3">
-            <label for="categoryName" class="form-label">카테고리 이름</label>
-            <input type="text" class="form-control" id="categoryName" name="categoryName"
-                   th:value="${category.categoryName}" required>
+                    <div class="form-group mb-3">
+                        <label for="depth" class="form-label">깊이 (Depth)</label>
+                        <select class="form-select" id="depth" name="depth" required>
+                            <option th:value="1" th:selected="${category.depth == 1}">1차</option>
+                            <option th:value="2" th:selected="${category.depth == 2}">2차</option>
+                            <option th:value="3" th:selected="${category.depth == 3}">3차</option>
+                            <option th:value="4" th:selected="${category.depth == 4}">4차</option>
+                            <option th:value="5" th:selected="${category.depth == 5}">5차</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="parentId" class="form-label">부모 카테고리 ID</label>
+                        <input type="number" class="form-control" id="parentId" name="parentId"
+                               th:value="${category.parentId}">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">수정</button>
+                    <a th:href="@{/admin/categories}" class="btn btn-secondary">취소</a>
+                </form>
+            </div>
         </div>
-
-        <div class="form-group mb-3">
-            <label for="depth" class="form-label">깊이 (Depth)</label>
-            <select class="form-select" id="depth" name="depth" required>
-                <option th:value="1" th:selected="${category.depth == 1}">1차</option>
-                <option th:value="2" th:selected="${category.depth == 2}">2차</option>
-                <option th:value="3" th:selected="${category.depth == 3}">3차</option>
-                <option th:value="4" th:selected="${category.depth == 4}">4차</option>
-                <option th:value="5" th:selected="${category.depth == 5}">5차</option>
-            </select>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="parentId" class="form-label">부모 카테고리 ID</label>
-            <input type="number" class="form-control" id="parentId" name="parentId"
-                   th:value="${category.parentId}">
-        </div>
-
-        <button type="submit" class="btn btn-primary">수정</button>
-        <a th:href="@{/admin/categories}" class="btn btn-secondary">취소</a>
-    </form>
-
+    </div>
 </main>
 </body>
 </html>

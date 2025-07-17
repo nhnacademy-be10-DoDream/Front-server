@@ -37,7 +37,7 @@ public class RequestInterceptor implements HandlerInterceptor {
             accessToken = tokenResponse.getAccessToken();
             AccessTokenHolder.set(accessToken);
             try {
-                UserDto user = userClient.getUser();
+                UserDto user = userClient.getMe();
                 redisUserSessionService.saveUser(accessToken, user);
             } finally {
                 AccessTokenHolder.clear();
