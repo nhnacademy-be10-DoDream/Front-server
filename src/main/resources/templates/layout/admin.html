@@ -51,6 +51,10 @@
                     <i class="bi bi-coin me-2"></i>
                     <span th:text="#{admin.menu.pointPolicies}"></span>
                 </a>
+                <a th:href="@{/admin/users}" class="admin-nav-link" th:classappend="${activeMenu=='users'}?'active':''">
+                    <i class="bi bi-person me-2"></i>
+                    <span th:text="#{admin.menu.users}"></span>
+                </a>
             </nav>
         </aside>
         <section class="col-md-9">

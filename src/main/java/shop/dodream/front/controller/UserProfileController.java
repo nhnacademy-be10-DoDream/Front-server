@@ -28,7 +28,7 @@ public class UserProfileController {
 
 	@GetMapping(path = {"/profile", ""})
 	public String getProfile(Model model) {
-		model.addAttribute("currentUser",userClient.getUser());
+		model.addAttribute("currentUser",userClient.getMe());
 		model.addAttribute(LAYOUT_NAME, "profile");
 		return "mypage/profile";
 	}

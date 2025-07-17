@@ -5,115 +5,122 @@
       layout:decorate="~{layout/admin}">
 
 <head>
-  <meta charset="UTF-8">
-  <title layout:fragment="title">도서 등록 (Open API)</title>
-  <style>
-    .book-item {
-      border: 1px solid #dee2e6;
-      border-radius: 0.25rem;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-    }
-    .book-item img {
-      width: 80px;
-      height: auto;
-      margin-right: 1rem;
-    }
-    .book-info {
-      flex-grow: 1;
-    }
-    .book-actions {
-      text-align: right;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title layout:fragment="title">도서 등록 (Open API)</title>
+    <style>
+        .book-item {
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .book-item img {
+            width: 80px;
+            height: auto;
+            margin-right: 1rem;
+        }
+
+        .book-info {
+            flex-grow: 1;
+        }
+
+        .book-actions {
+            text-align: right;
+        }
+    </style>
 </head>
 
 <body>
 <div layout:fragment="content" class="admin-content-area">
-
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="admin-section-title mb-0">도서 등록 (Open API)</h2>
-  </div>
-
-  <!-- 검색 폼 -->
-  <form th:action="@{/admin/books/aladdin-search}" method="get" class="needs-validation mb-4" novalidate>
-    <div class="input-group">
-      <input type="text" name="query" class="form-control" placeholder="도서명 or 저자를 입력하세요"/>
-      <button type="submit" class="btn btn-primary">검색</button>
+    <div class="admin-main-header">
+        <h2>도서 등록 (Open API)</h2>
+        <p>도서를 검색하여 등록하는 페이지</p>
     </div>
-  </form>
+    <div class="admin-main-body">
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <form th:action="@{/admin/books/aladdin-search}" method="get" class="needs-validation mb-4" novalidate>
+                    <div class="admin-search-container">
+                        <input type="text" name="query" class="admin-search-input" placeholder="도서명 or 저자를 입력하세요"/>
+                        <button type="submit" class="btn-admin btn-primary">검색</button>
+                    </div>
+                </form>
+            </div>
+            <div class="right-group">
+                <a th:href="@{/admin/books}" class="btn btn-secondary mt-4">목록으로</a>
+            </div>
+            <div class="admin-section-body">
+                <div th:if="${aladdin != null}">
+                    <p th:text="'검색 결과: ' + ${aladdin.totalResults} + '건'"></p>
 
-  <!-- 검색 결과 -->
-  <div th:if="${aladdin != null}">
-    <p th:text="'검색 결과: ' + ${aladdin.totalResults} + '건'"></p>
+                    <div th:each="item : ${aladdin.items}" class="book-item">
+                        <img th:src="${item.imageUrl}" alt="이미지"/>
+                        <div class="book-info">
+                            <h5 th:text="${item.title}">책 제목</h5>
+                            <p>
+                                <strong>설명:</strong> <span th:text="${item.description}">설명</span><br/>
+                                <strong>저자:</strong> <span th:text="${item.author}">저자</span><br/>
+                                <strong>출판사:</strong> <span th:text="${item.publisher}">출판사</span><br/>
+                                <strong>isbn:</strong> <span th:text="${item.isbn}">isbn</span><br/>
+                                <strong>출판일:</strong> <span th:text="${item.publishedAt}">출판일</span><br/>
+                                <strong>정가:</strong> <span th:text="${item.regularPrice}">정가</span>원
+                                <strong>판매가:</strong> <span th:text="${item.salePrice}">정가</span>원
+                                <strong></strong>
+                            </p>
+                        </div>
+                        <div class="book-actions">
+                            <form th:action="@{/admin/books/register-api}" method="post">
+                                <!-- hidden input으로 BookRegisterRequest의 모든 필드 전달 -->
+                                <input type="hidden" name="title" th:value="${item.title}"/>
+                                <input type="hidden" name="description" th:value="${item.description}"/>
+                                <input type="hidden" name="author" th:value="${item.author}"/>
+                                <input type="hidden" name="publisher" th:value="${item.publisher}"/>
+                                <input type="hidden" name="isbn" th:value="${item.isbn}"/>
+                                <input type="hidden" name="publishedAt" th:value="${item.publishedAt}"/>
+                                <input type="hidden" name="regularPrice" th:value="${item.regularPrice}"/>
+                                <input type="hidden" name="salePrice" th:value="${item.salePrice}"/>
+                                <input type="hidden" name="imageUrl" th:value="${item.imageUrl}">
+                                <!-- 정책 상 고정값들도 hidden으로 넘기기 -->
+                                <input type="hidden" name="isGiftable" value="true"/>
+                                <input type="hidden" name="bookCount" value="50"/>
+                                <button type="submit" class="btn btn-sm btn-success">등록</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav th:if="${totalPages > 1}">
+                <ul class="pagination justify-content-center">
 
-    <div th:each="item : ${aladdin.items}" class="book-item">
-      <img th:src="${item.imageUrl}" alt="이미지" />
-      <div class="book-info">
-        <h5 th:text="${item.title}">책 제목</h5>
-        <p>
-          <strong>설명:</strong> <span th:text="${item.description}">설명</span><br/>
-          <strong>저자:</strong> <span th:text="${item.author}">저자</span><br/>
-          <strong>출판사:</strong> <span th:text="${item.publisher}">출판사</span><br/>
-          <strong>isbn:</strong> <span th:text="${item.isbn}">isbn</span><br/>
-          <strong>출판일:</strong> <span th:text="${item.publishedAt}">출판일</span><br/>
-          <strong>정가:</strong> <span th:text="${item.regularPrice}">정가</span>원
-          <strong>판매가:</strong> <span th:text="${item.salePrice}">정가</span>원
-          <strong></strong>
-        </p>
-      </div>
-      <div class="book-actions">
-        <form th:action="@{/admin/books/register-api}" method="post">
-          <!-- hidden input으로 BookRegisterRequest의 모든 필드 전달 -->
-          <input type="hidden" name="title" th:value="${item.title}" />
-          <input type="hidden" name="description" th:value="${item.description}" />
-          <input type="hidden" name="author" th:value="${item.author}" />
-          <input type="hidden" name="publisher" th:value="${item.publisher}" />
-          <input type="hidden" name="isbn" th:value="${item.isbn}" />
-          <input type="hidden" name="publishedAt" th:value="${item.publishedAt}" />
-          <input type="hidden" name="regularPrice" th:value="${item.regularPrice}" />
-          <input type="hidden" name="salePrice" th:value="${item.salePrice}" />
-          <input type="hidden" name="imageUrl" th:value="${item.imageUrl}">
-          <!-- 정책 상 고정값들도 hidden으로 넘기기 -->
-          <input type="hidden" name="isGiftable" value="true" />
-          <input type="hidden" name="bookCount" value="50" />
-          <button type="submit" class="btn btn-sm btn-success">등록</button>
-        </form>
-      </div>
+                    <!-- 이전 -->
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/books/aladdin-search(query=${query}, page=${currentPage - 1}, size=${pageSize})}">이전</a>
+                    </li>
+
+                    <!-- 페이지 번호 -->
+                    <li class="page-item"
+                        th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                        th:classappend="${pageNum == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/admin/books/aladdin-search(query=${query}, page=${pageNum}, size=${pageSize})}"
+                           th:text="${pageNum}">1</a>
+                    </li>
+
+                    <!-- 다음 -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/books/aladdin-search(query=${query}, page=${currentPage + 1}, size=${pageSize})}">다음</a>
+                    </li>
+
+                </ul>
+            </nav>
+
+        </div>
     </div>
-  </div>
-
-  <a th:href="@{/admin/books}" class="btn btn-secondary mt-4">목록으로</a>
-
-  <nav th:if="${totalPages > 1}">
-    <ul class="pagination justify-content-center">
-
-      <!-- 이전 -->
-      <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-        <a class="page-link"
-           th:href="@{/admin/books/aladdin-search(query=${query}, page=${currentPage - 1}, size=${pageSize})}">이전</a>
-      </li>
-
-      <!-- 페이지 번호 -->
-      <li class="page-item"
-          th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
-          th:classappend="${pageNum == currentPage} ? 'active'">
-        <a class="page-link"
-           th:href="@{/admin/books/aladdin-search(query=${query}, page=${pageNum}, size=${pageSize})}"
-           th:text="${pageNum}">1</a>
-      </li>
-
-      <!-- 다음 -->
-      <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-        <a class="page-link"
-           th:href="@{/admin/books/aladdin-search(query=${query}, page=${currentPage + 1}, size=${pageSize})}">다음</a>
-      </li>
-
-    </ul>
-  </nav>
-
 </div>
 
 </body>

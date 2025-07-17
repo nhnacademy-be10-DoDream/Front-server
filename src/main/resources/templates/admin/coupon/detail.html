@@ -7,41 +7,49 @@
 </head>
 <body>
 <main layout:fragment="content" class="admin-content-area">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="admin-section-title mb-0">유저 쿠폰 목록</h2>
-        <div>
-            <button type="button" class="btn-admin btn-primary" th:onclick="'location.href=\'/admin/user-coupons/issue?couponId=' + ${couponId} + '\''">유저 쿠폰 발급</button>
-            <form th:action="@{/admin/coupons/{couponId}/user-coupons(couponId=${couponId})}" method="post" style="display:inline;">
-                <input type="hidden" name="_method" value="delete" />
-                <button type="submit" class="btn-admin btn-danger">모두 삭제</button>
-            </form>
+    <div class="admin-main-header">
+        <h2>유저 쿠폰 목록</h2>
+        <p>쿠폰이 발급된 유저의 목록을 조회하는 페이지</p>
+    </div>
+    <div class="admin-main-body">
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <div class="right-group">
+                    <button type="button" class="btn-admin btn-primary" th:onclick="'location.href=\'/admin/user-coupons/issue?couponId=' + ${couponId} + '\''">유저 쿠폰 발급</button>
+                    <form th:action="@{/admin/coupons/{couponId}/user-coupons(couponId=${couponId})}" method="post" style="display:inline;">
+                        <input type="hidden" name="_method" value="delete" />
+                        <button type="submit" class="btn-admin btn-danger">모두 삭제</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-section-body">
+                <table class="table table-admin">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>유저 ID</th>
+                        <th>상태</th>
+                        <th>사용일</th>
+                        <th>만료일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="userCoupon : ${userCoupons}">
+                        <td th:text="${userCoupon.id}"></td>
+                        <td th:text="${userCoupon.userId}"></td>
+                        <td>
+                            <span th:if="${userCoupon.usedAt != null}">사용됨</span>
+                            <span th:if="${userCoupon.usedAt == null and #temporals.createNow().isAfter(userCoupon.expiredAt.toLocalDateTime())}">만료됨</span>
+                            <span th:if="${userCoupon.usedAt == null and !#temporals.createNow().isAfter(userCoupon.expiredAt.toLocalDateTime())}">발급됨</span>
+                        </td>
+                        <td th:text="${userCoupon.usedAt != null ? #temporals.format(userCoupon.usedAt, 'yyyy-MM-dd HH:mm:ss') : '미사용'}"></td>
+                        <td th:text="${userCoupon.expiredAt != null ? #temporals.format(userCoupon.expiredAt, 'yyyy-MM-dd HH:mm:ss') : '만료일 없음'}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
-    <table class="table table-admin">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>유저 ID</th>
-            <th>상태</th>
-            <th>사용일</th>
-            <th>만료일</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="userCoupon : ${userCoupons}">
-            <td th:text="${userCoupon.id}"></td>
-            <td th:text="${userCoupon.userId}"></td>
-            <td>
-                <span th:if="${userCoupon.usedAt != null}">사용됨</span>
-                <span th:if="${userCoupon.usedAt == null and #temporals.createNow().isAfter(userCoupon.expiredAt.toLocalDateTime())}">만료됨</span>
-                <span th:if="${userCoupon.usedAt == null and !#temporals.createNow().isAfter(userCoupon.expiredAt.toLocalDateTime())}">발급됨</span>
-            </td>
-            <td th:text="${userCoupon.usedAt != null ? #temporals.format(userCoupon.usedAt, 'yyyy-MM-dd HH:mm:ss') : '미사용'}"></td>
-            <td th:text="${userCoupon.expiredAt != null ? #temporals.format(userCoupon.expiredAt, 'yyyy-MM-dd HH:mm:ss') : '만료일 없음'}"></td>
-        </tr>
-        </tbody>
-    </table>
 </main>
 </body>
 </html>
