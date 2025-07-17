@@ -108,28 +108,24 @@
             <!-- 회원 리스트 영역 -->
             <div class="admin-member-list">
                 <div class="admin-member-list-inner">
-                    <div class="admin-member-list">
-                        <div class="admin-member-list-inner">
-                            <table class="admin-member-table">
-                                <thead>
-                                <tr>
-                                    <th th:text="#{admin.users.userId}"></th>
-                                    <th th:text="#{admin.users.grade}"></th>
-                                    <th th:text="#{admin.users.status}"></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="userSimple : ${userSimples}"
-                                    th:onclick="|window.location.href='@{/admin/users/{userId}(userId=${userSimple.userId})}'|"
-                                    style="cursor: pointer; transition: background-color 0.2s;">
-                                    <td th:text="${userSimple.userId}"></td>
-                                    <td th:text="${userSimple.grade}"></td>
-                                    <td th:text="${userSimple.status}"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <table class="admin-member-table">
+                        <thead>
+                        <tr>
+                            <th th:text="#{admin.users.userId}"></th>
+                            <th th:text="#{admin.users.grade}"></th>
+                            <th th:text="#{admin.users.status}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="userSimple : ${userSimples}"
+                            th:onclick="|window.location.href='@{/admin/users/{userId}(userId=${userSimple.userId})}'|"
+                            style="cursor: pointer; transition: background-color 0.2s;">
+                            <td th:text="${userSimple.userId}"></td>
+                            <td th:text="${userSimple.grade}"></td>
+                            <td th:text="${userSimple.status}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
 
                 </div>
             </div>
