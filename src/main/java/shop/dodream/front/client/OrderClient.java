@@ -22,9 +22,18 @@ public interface OrderClient {
     @GetMapping("/public/orders/shipping")
     List<ShippingPolicyDto> getShippingPolicies();
 
+    @PostMapping("/admin/orders/shipping-policy")
+    ShippingPolicyDto createShippingPolicy(@RequestBody ShippingPolicyDto shippingPolicyDto);
+
+    @PutMapping("/admin/orders/shipping-policy/{shipping-policy-id}")
+    void updateShippingPolicy(@PathVariable("shipping-policy-id") Long shippingPolicyId,
+                              @RequestBody ShippingPolicyDto shippingPolicyDto);
+
+    @DeleteMapping("/admin/orders/shipping-policy/{shipping-policy-id}")
+    void deleteShippingPolicy(@PathVariable("shipping-policy-id") Long shippingPolicyId);
+
     @GetMapping("/orders")
     List<OrderResponse> getOrders(); // 주문 목록 조회
-
 
     @GetMapping("/public/orders/{order-id}")
     OrderDetailsDto getOrderDetail(@PathVariable("order-id") String orderId); // 주문 상세 조회
@@ -46,4 +55,6 @@ public interface OrderClient {
 
     @PostMapping("/admin/orders/{order-id}/delivery")
     void processOrderWaiting(@PathVariable("order-id") String orderId);
+
+
 }
