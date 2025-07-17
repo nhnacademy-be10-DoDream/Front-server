@@ -9,8 +9,9 @@
 
 <body>
 <main layout:fragment="content" class="admin-content-area">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="admin-section-title mb-0" th:text="#{admin.menu.shippingPolicies}"></h2>
+    <div class="admin-main-header">
+        <h2 th:text="#{admin.menu.shippingPolicies}"></h2>
+        <p>배송 정책을 추가 및 수정 삭제를 관리</p>
     </div>
 
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
