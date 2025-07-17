@@ -55,4 +55,8 @@ public interface UserClient {
 
     @GetMapping("/users/{user-id}/points")
     Integer getAvailablePoint(@PathVariable("user-id") String userId);
+    
+    @GetMapping("/users/me/point-policy")
+    PointPolicy getPointPolicy();
+    
 }
