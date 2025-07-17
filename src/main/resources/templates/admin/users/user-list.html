@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title" th:text="#{admin.menu.users}"></title>
+</head>
+
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+    <div class="admin-main-header">
+        <h2 th:text="#{admin.menu.users}"></h2>
+        <p th:text="#{admin.users.subTitle}"></p>
+    </div>
+
+    <div class="admin-main-body">
+        <div th:if="${error} or ${success}" class="admin-section-header">
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <h3 th:text="#{admin.users.grade.sectionTitle}"></h3>
+                <p th:text="#{admin.users.grade.sectionSubTitle}"></p>
+            </div>
+
+            <div class="admin-section-body">
+                <div th:each="grade : ${grades}" class="grade-card">
+                    <!-- 등급 배지 -->
+                    <div class="grade-badge-wrapper">
+                            <span class="grade-badge"
+                                  th:classappend="'grade-' + ${#strings.toLowerCase(grade.gradeTypeId)}"
+                                  th:text="${grade.gradeTypeId}">
+                            </span>
+                    </div>
+
+                    <!-- 수정 폼 -->
+                    <form th:action="@{'/admin/grades/' + ${grade.gradeTypeId.name}}" method="post" class="grade-form">
+                        <input type="hidden" name="_method" value="put"/>
+
+                        <div>
+                            <label th:text="#{admin.pointPolicy.basePoint}" class="grade-label"></label>
+                            <input type="number" name="min-amount" th:value="${grade.minAmount}" class="grade-input"/>
+                        </div>
+
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">
+                            <span th:text="#{admin.update}"></span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 회원 목록 섹션 -->
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <h3>회원 목록</h3>
+                <p>회원 정보를 검색하고 관리하세요</p>
+            </div>
+
+            <form action="/admin/users" method="get">
+                <div class="admin-search-filter-area">
+                    <div class="admin-search-container">
+                        <select name="searchType" class="admin-select">
+                            <option value="all" th:selected="${filter.searchType == 'all' or filter.searchType == null}"
+                                    th:text="#{admin.all}"></option>
+                            <option value="userId" th:selected="${filter.searchType == 'userId'}"
+                                    th:text="#{admin.users.userId}"></option>
+                            <option value="name" th:selected="${filter.searchType == 'name'}"
+                                    th:text="#{admin.users.name}"></option>
+                            <option value="email" th:selected="${filter.searchType == 'email'}"
+                                    th:text="#{admin.users.email}"></option>
+                        </select>
+                        <input type="text"
+                               name="searchValue"
+                               th:value="${filter.searchValue}"
+                               placeholder="검색어 입력..."
+                               class="admin-search-input"/>
+                        <button class="btn-admin btn-primary" th:text="#{admin.search}"></button>
+                    </div>
+
+                    <div class="admin-filter-container">
+                        <span class="admin-filter-label">필터:</span>
+                        <select name="gradeType" class="admin-select">
+                            <option value="" th:selected="${filter.gradeType == null}" th:text="#{admin.all}"></option>
+                            <option value="BASIC" th:selected="${filter.gradeType?.name() == 'BASIC'}">BASIC</option>
+                            <option value="ROYAL" th:selected="${filter.gradeType?.name() == 'ROYAL'}">ROYAL</option>
+                            <option value="GOLD" th:selected="${filter.gradeType?.name() == 'GOLD'}">GOLD</option>
+                            <option value="PLATINUM" th:selected="${filter.gradeType?.name() == 'PLATINUM'}">PLATINUM
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+
+            <!-- 회원 리스트 영역 -->
+            <div class="admin-member-list">
+                <div class="admin-member-list-inner">
+                    <table class="admin-member-table">
+                        <thead>
+                        <tr>
+                            <th th:text="#{admin.users.userId}"></th>
+                            <th th:text="#{admin.users.grade}"></th>
+                            <th th:text="#{admin.users.status}"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="userSimple : ${userSimples}"
+                            th:onclick="|window.location.href='@{/admin/users/{userId}(userId=${userSimple.userId})}'|"
+                            style="cursor: pointer; transition: background-color 0.2s;">
+                            <td th:text="${userSimple.userId}"></td>
+                            <td th:text="${userSimple.grade}"></td>
+                            <td th:text="${userSimple.status}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div th:if="${userSimples.totalPages > 1}" class="admin-pagination" style="margin-top: 20px">
+                <ul class="custom-pagination">
+                    <!-- 처음 페이지 -->
+                    <li th:classappend="${userSimples.first} ? 'disabled'">
+                        <a class="pagination-link"
+                           th:href="@{/admin/users(page=1, size=${userSimples.size}, filter=${filter})}"
+                           th:text="#{pagination.first}"></a>
+                    </li>
+
+                    <!-- 이전 페이지 -->
+                    <li th:classappend="${userSimples.first} ? 'disabled'">
+                        <a class="pagination-link"
+                           th:href="@{/admin/users(page=${userSimples.number}, size=${userSimples.size}, filter=${filter})}"
+                           th:text="#{pagination.previous}"></a>
+                    </li>
+
+                    <!-- 페이지 번호 -->
+                    <li th:each="pageNum : ${#numbers.sequence(1, userSimples.totalPages)}"
+                        th:classappend="${pageNum == userSimples.number + 1} ? 'active'">
+                        <a class="pagination-link"
+                           th:href="@{/admin/users(page=${pageNum}, size=${userSimples.size}, filter=${filter})}"
+                           th:text="${pageNum}"></a>
+                    </li>
+
+                    <!-- 다음 페이지 -->
+                    <li th:classappend="${userSimples.last} ? 'disabled'">
+                        <a class="pagination-link"
+                           th:href="@{/admin/users(page=${userSimples.number + 2}, size=${userSimples.size}, filter=${filter})}"
+                           th:text="#{pagination.next}"></a>
+                    </li>
+
+                    <!-- 마지막 페이지 -->
+                    <li th:classappend="${userSimples.last} ? 'disabled'">
+                        <a class="pagination-link"
+                           th:href="@{/admin/users(page=${userSimples.totalPages}, size=${userSimples.size}, filter=${filter})}"
+                           th:text="#{pagination.last}"></a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+
+</main>
+</body>
+</html>

@@ -1,7 +1,9 @@
 package shop.dodream.front.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.dodream.front.dto.*;
@@ -14,7 +16,7 @@ public interface UserClient {
     void createUserAccount(SignupRequest signupRequest);
 
     @GetMapping("/users/me")
-    UserDto getUser();
+    UserDto getMe();
 
     @GetMapping("/public/users/email-check")
     boolean checkEmail(@RequestParam("email") String email);
@@ -55,4 +57,18 @@ public interface UserClient {
 
     @GetMapping("/users/{user-id}/points")
     Integer getAvailablePoint(@PathVariable("user-id") String userId);
+
+    @GetMapping("/public/user-grades")
+    List<Grade> getGrade();
+
+    @PutMapping("/admin/user-grades/{grade}")
+    void updateGrade(@PathVariable("grade") GradeType gradeType,
+                     @RequestParam("min-amount") Long minAmount);
+
+    @GetMapping("/admin/users")
+    Page<UserSimpleResponseRecord> getUsers(@SpringQueryMap UserSearchFilter filter,
+                                            Pageable pageable);
+
+    @GetMapping("/admin/users/{user-id}")
+    UserDto getUser(@PathVariable("user-id") String userId);
 }

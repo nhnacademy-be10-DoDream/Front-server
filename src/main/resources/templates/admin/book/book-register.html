@@ -12,94 +12,103 @@
 
 <body>
 <div layout:fragment="content" class="admin-content-area">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="admin-section-title mb-0">도서 직접 등록</h2>
+    <div class="admin-main-header">
+        <h2>도서 직접 등록</h2>
+        <p>관리자가 직접 도서를 등록하는 페이지</p>
+    </div>
+    <div class="admin-main-body">
+        <div class="admin-section-container">
+            <div class="admin-section-body">
+                <form th:action="@{/admin/books/register}" method="post" enctype="multipart/form-data"
+                      class="needs-validation" novalidate id="bookForm">
+                    <!-- 제목 -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                        <div class="invalid-feedback">제목을 입력해주세요.</div>
+                    </div>
+
+                    <!-- 설명 -->
+                    <div class="mb-3">
+                        <label class="form-label">설명</label>
+                        <div id="editor"></div>
+                    </div>
+
+                    <!-- 저자 -->
+                    <div class="mb-3">
+                        <label for="author" class="form-label">저자</label>
+                        <input type="text" class="form-control" id="author" name="author" required>
+                        <div class="invalid-feedback">저자를 입력해주세요.</div>
+                    </div>
+
+                    <!-- 출판사 -->
+                    <div class="mb-3">
+                        <label for="publisher" class="form-label">출판사</label>
+                        <input type="text" class="form-control" id="publisher" name="publisher" required>
+                        <div class="invalid-feedback">출판사를 입력해주세요.</div>
+                    </div>
+
+                    <!-- 출판일 -->
+                    <div class="mb-3">
+                        <label for="publishedAt" class="form-label">출판일</label>
+                        <input type="date" class="form-control" id="publishedAt" name="publishedAt" required>
+                        <div id="publishedAtFeedback" class="invalid-feedback">출판일을 선택해주세요.</div>
+                    </div>
+
+                    <!-- ISBN (13자리 고정) -->
+                    <div class="mb-3">
+                        <label for="isbn" class="form-label">ISBN</label>
+                        <input type="text" class="form-control" id="isbn" name="isbn" pattern="^\d{13}$" maxlength="13" required>
+                        <div class="invalid-feedback">13자리 숫자 형식의 ISBN을 입력해주세요.</div>
+                    </div>
+
+                    <!-- 정가 -->
+                    <div class="mb-3">
+                        <label for="regularPrice" class="form-label">정가</label>
+                        <input type="number" class="form-control" id="regularPrice" name="regularPrice" required min="1">
+                        <div class="invalid-feedback">정가는 1원 이상이어야 합니다.</div>
+                    </div>
+
+                    <!-- 판매가 -->
+                    <div class="mb-3">
+                        <label for="salePrice" class="form-label">판매가</label>
+                        <input type="number" class="form-control" id="salePrice" name="salePrice" required min="1">
+                        <div class="invalid-feedback">판매가는 1원 이상이어야 하며, 정가보다 낮아야 합니다.</div>
+                    </div>
+
+                    <!-- 선물 가능 여부 -->
+                    <div class="mb-3">
+                        <label for="isGiftable" class="form-label">선물 가능 여부</label>
+                        <select class="form-select" id="isGiftable" name="isGiftable" required>
+                            <option value="">선택</option>
+                            <option value="true">가능</option>
+                            <option value="false">불가능</option>
+                        </select>
+                        <div class="invalid-feedback">선물 가능 여부를 선택해주세요.</div>
+                    </div>
+
+                    <!-- 재고 수량 (5~200) -->
+                    <div class="mb-3">
+                        <label for="bookCount" class="form-label">재고 수량</label>
+                        <input type="number" class="form-control" id="bookCount" name="bookCount" required min="5" max="500" value="50">
+                        <div class="invalid-feedback">재고 수량은 50 이상 500 이하이어야 합니다.</div>
+                    </div>
+
+                    <!-- 이미지 업로드 -->
+                    <div class="mb-3">
+                        <label for="files" class="form-label">도서 이미지 (여러 개 가능)</label>
+                        <input type="file" class="form-control" id="files" name="files" multiple accept=".png, .jpeg, .jpg,">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">등록</button>
+                    <a th:href="@{/admin/books}" class="btn btn-secondary">목록으로</a>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <form th:action="@{/admin/books/register}" method="post" enctype="multipart/form-data"
-          class="needs-validation" novalidate id="bookForm">
-        <!-- 제목 -->
-        <div class="mb-3">
-            <label for="title" class="form-label">제목</label>
-            <input type="text" class="form-control" id="title" name="title" required>
-            <div class="invalid-feedback">제목을 입력해주세요.</div>
-        </div>
 
-        <!-- 설명 -->
-        <div class="mb-3">
-            <label class="form-label">설명</label>
-            <div id="editor"></div>
-        </div>
 
-        <!-- 저자 -->
-        <div class="mb-3">
-            <label for="author" class="form-label">저자</label>
-            <input type="text" class="form-control" id="author" name="author" required>
-            <div class="invalid-feedback">저자를 입력해주세요.</div>
-        </div>
-
-        <!-- 출판사 -->
-        <div class="mb-3">
-            <label for="publisher" class="form-label">출판사</label>
-            <input type="text" class="form-control" id="publisher" name="publisher" required>
-            <div class="invalid-feedback">출판사를 입력해주세요.</div>
-        </div>
-
-        <!-- 출판일 -->
-        <div class="mb-3">
-            <label for="publishedAt" class="form-label">출판일</label>
-            <input type="date" class="form-control" id="publishedAt" name="publishedAt" required>
-            <div id="publishedAtFeedback" class="invalid-feedback">출판일을 선택해주세요.</div>
-        </div>
-
-        <!-- ISBN (13자리 고정) -->
-        <div class="mb-3">
-            <label for="isbn" class="form-label">ISBN</label>
-            <input type="text" class="form-control" id="isbn" name="isbn" pattern="^\d{13}$" maxlength="13" required>
-            <div class="invalid-feedback">13자리 숫자 형식의 ISBN을 입력해주세요.</div>
-        </div>
-
-        <!-- 정가 -->
-        <div class="mb-3">
-            <label for="regularPrice" class="form-label">정가</label>
-            <input type="number" class="form-control" id="regularPrice" name="regularPrice" required min="1">
-            <div class="invalid-feedback">정가는 1원 이상이어야 합니다.</div>
-        </div>
-
-        <!-- 판매가 -->
-        <div class="mb-3">
-            <label for="salePrice" class="form-label">판매가</label>
-            <input type="number" class="form-control" id="salePrice" name="salePrice" required min="1">
-            <div class="invalid-feedback">판매가는 1원 이상이어야 하며, 정가보다 낮아야 합니다.</div>
-        </div>
-
-        <!-- 선물 가능 여부 -->
-        <div class="mb-3">
-            <label for="isGiftable" class="form-label">선물 가능 여부</label>
-            <select class="form-select" id="isGiftable" name="isGiftable" required>
-                <option value="">선택</option>
-                <option value="true">가능</option>
-                <option value="false">불가능</option>
-            </select>
-            <div class="invalid-feedback">선물 가능 여부를 선택해주세요.</div>
-        </div>
-
-        <!-- 재고 수량 (5~200) -->
-        <div class="mb-3">
-            <label for="bookCount" class="form-label">재고 수량</label>
-            <input type="number" class="form-control" id="bookCount" name="bookCount" required min="5" max="500" value="50">
-            <div class="invalid-feedback">재고 수량은 50 이상 500 이하이어야 합니다.</div>
-        </div>
-
-        <!-- 이미지 업로드 -->
-        <div class="mb-3">
-            <label for="files" class="form-label">도서 이미지 (여러 개 가능)</label>
-            <input type="file" class="form-control" id="files" name="files" multiple accept=".png, .jpeg, .jpg,">
-        </div>
-
-        <button type="submit" class="btn btn-primary">등록</button>
-        <a th:href="@{/admin/books}" class="btn btn-secondary">목록으로</a>
-    </form>
 
 </div>
 </body>

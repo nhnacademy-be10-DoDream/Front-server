@@ -26,7 +26,7 @@ public class AuthService {
         CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 86400, true);
         AccessTokenHolder.set(tokenResponse.getAccessToken());
         try {
-            UserDto user = userClient.getUser();
+            UserDto user = userClient.getMe();
             redisUserSessionService.saveUser(tokenResponse.getAccessToken(), user);
         } finally {
             AccessTokenHolder.clear();
@@ -45,7 +45,7 @@ public class AuthService {
         CookieUtils.setCookie(response, "refreshToken", tokenResponse.getRefreshToken(), 86400, true);
         AccessTokenHolder.set(tokenResponse.getAccessToken());
         try {
-            UserDto user = userClient.getUser();
+            UserDto user = userClient.getMe();
             redisUserSessionService.saveUser(tokenResponse.getAccessToken(), user);
         } finally {
             AccessTokenHolder.clear();

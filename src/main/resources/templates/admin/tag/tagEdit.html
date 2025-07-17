@@ -4,27 +4,37 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin}">
 <head>
-  <title layout:fragment="title">태그 수정</title>
+    <title layout:fragment="title">태그 수정</title>
 </head>
 
 <body>
 <main layout:fragment="content" class="admin-content-area">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="admin-section-title mb-0">태그 수정</h2>
-    <form th:action="@{/admin/tags}" method="get" style="display: inline;">
-      <button type="submit"  class="btn-admin btn-secondary">목록으로 돌아가기</button>
-    </form>
-  </div>
-
-      <form th:action="@{'/admin/tag/edit/' + ${tag.tagId}}" method="post">
-        <div class="form-group mb-3">
-          <label for="tagName" class="form-label">태그 이름</label>
-          <input type="text" class="form-control" id="tagName" name="tagName"
-                 th:value="${tag.tagName}" required>
+    <div class="admin-main-header">
+        <h2>태그 수정</h2>
+        <p>등록한 태그를 수정하는 페이지</p>
+    </div>
+    <div class="admin-main-body">
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <div class="right-group">
+                    <form th:action="@{/admin/tags}" method="get" style="display: inline;">
+                        <button type="submit" class="btn-admin btn-secondary">목록으로 돌아가기</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-section-body">
+                <form th:action="@{'/admin/tag/edit/' + ${tag.tagId}}" method="post">
+                    <div class="form-group mb-3">
+                        <label for="tagName" class="form-label">태그 이름</label>
+                        <input type="text" class="form-control" id="tagName" name="tagName"
+                               th:value="${tag.tagName}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">수정</button>
+                    <a th:href="@{/admin/tags}" class="btn btn-secondary">취소</a>
+                </form>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">수정</button>
-        <a th:href="@{/admin/tags}" class="btn btn-secondary">취소</a>
-      </form>
+    </div>
 </main>
 </body>
 </html>
