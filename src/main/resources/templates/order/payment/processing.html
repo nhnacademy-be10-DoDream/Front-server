@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>결제 처리 중...</title>
+    <link rel="stylesheet" href="/css/toss.css" />
+    <style>
+        body { text-align: center; padding: 100px; font-family: 'Spoqa Han Sans', sans-serif; }
+        .spinner { width: 80px; height: 80px; margin: 20px auto; border: 8px solid #e3e3e3; border-top: 8px solid #1b64da; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div class="spinner"></div>
+<h2>결제를 확인 중입니다...</h2>
+
+<script src="/js/paymentProcessing.js"></script>
+</body>
+</html>

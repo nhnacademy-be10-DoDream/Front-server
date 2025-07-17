@@ -82,6 +82,9 @@ public class BookController {
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
+        List<CategoryTreeResponse> bookCategories = bookClient.getCategoriesByBookId(bookId);
+        BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
+
 
 
         // 컨트롤러에서 로그인 여부 조회 검증하는게 되면 가능
@@ -92,6 +95,10 @@ public class BookController {
         model.addAttribute("reviews", reviewResponse);
         model.addAttribute("reviewCount", reviewResponse.getTotalElements());
         model.addAttribute("reviewSummary", reviewSummaryResponse);
+        model.addAttribute("bookCategories", bookCategories);
+        model.addAttribute("bookTags", bookTag);
+
+
 //        model.addAttribute("isLiked", isLiked);
         return "book/detail";
     }

@@ -11,5 +11,6 @@ import java.util.Map;
 public interface PaymentClient {
     @PostMapping("/public/orders/confirm/payment")
     Map<String ,Object> confirm(@RequestBody String payment,
-                                @RequestHeader(name = "X-USER-ID", required = false) String userId);
+                                @RequestHeader(name = "X-USER-ID", required = false) String userId,
+                                @RequestHeader(name = "X-PAYMENT-PROVIDER") String paymentProvider);
 }

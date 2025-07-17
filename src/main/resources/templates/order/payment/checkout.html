@@ -31,137 +31,18 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const amount = {
-        currency: "KRW",
-        value: Number([[${param.totalPrice}]]) // 총 결제 금액
+    const checkoutData = {
+        amount: {
+            currency: "KRW",
+            value: Number([[${param.totalPrice}]]) // 총 결제 금액
+        },
+        orderId: [[${param.orderId}]].toString(),
+        orderName: 'test',
+        customerName: 'test',
+        customerEmail: 'test@gmail.com'
     };
-
-    let selectedPaymentMethod = null;
-
-    function selectPaymentMethod(method) {
-        if (selectedPaymentMethod != null) {
-            document.getElementById(selectedPaymentMethod).style.backgroundColor = "#ffffff";
-        }
-
-        selectedPaymentMethod = method;
-        document.getElementById(selectedPaymentMethod).style.backgroundColor = "rgb(229 239 255)";
-    }
-
-    const clientKey = "test_ck_kYG57Eba3G9ZZWLJKO1zrpWDOxmA";
-    const customerKey = generateRandomString();
-    const tossPayments = TossPayments(clientKey);
-    const payment = tossPayments.payment({ customerKey });
-
-    async function requestPayment() {
-        const orderId = [[${param.orderId}]].toString();
-        const orderName = 'test';
-        const customerName ='test';
-        const customerEmail = 'test@gmail.com';
-
-        switch (selectedPaymentMethod) {
-            case "CARD":
-                await payment.requestPayment({
-                    method: "CARD",
-                    amount,
-                    orderId,
-                    orderName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName,
-                    card: {
-                        useEscrow: false,
-                        flowMode: "DEFAULT",
-                        useCardPoint: false,
-                        useAppCardOnly: false,
-                    },
-                });
-                break;
-
-            case "TRANSFER":
-                await payment.requestPayment({
-                    method: "TRANSFER",
-                    amount,
-                    orderId,
-                    orderName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName,
-                    transfer: {
-                        cashReceipt: { type: "소득공제" },
-                        useEscrow: false,
-                    },
-                });
-                break;
-
-            case "VIRTUAL_ACCOUNT":
-                await payment.requestPayment({
-                    method: "VIRTUAL_ACCOUNT",
-                    amount,
-                    orderId,
-                    orderName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName,
-                    virtualAccount: {
-                        cashReceipt: { type: "소득공제" },
-                        useEscrow: false,
-                        validHours: 24,
-                    },
-                });
-                break;
-
-            case "MOBILE_PHONE":
-                await payment.requestPayment({
-                    method: "MOBILE_PHONE",
-                    amount,
-                    orderId,
-                    orderName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName,
-                });
-                break;
-
-            case "CULTURE_GIFT_CERTIFICATE":
-                await payment.requestPayment({
-                    method: "CULTURE_GIFT_CERTIFICATE",
-                    amount,
-                    orderId,
-                    orderName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName,
-                });
-                break;
-
-            case "FOREIGN_EASY_PAY":
-                await payment.requestPayment({
-                    method: "FOREIGN_EASY_PAY",
-                    amount: { value: 100, currency: "USD" },
-                    orderId,
-                    orderName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName,
-                    foreignEasyPay: {
-                        provider: "PAYPAL",
-                        country: "KR",
-                    },
-                });
-                break;
-        }
-    }
-
-
-    function generateRandomString() {
-      return window.btoa(Math.random()).slice(0, 20);
-    }
+    /*]]>*/
 </script>
+<script src="/js/tossCheckout.js"></script>
 </body>
 </html>
