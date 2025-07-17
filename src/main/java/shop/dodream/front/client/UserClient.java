@@ -58,6 +58,11 @@ public interface UserClient {
     @GetMapping("/users/{user-id}/points")
     Integer getAvailablePoint(@PathVariable("user-id") String userId);
 
+    
+    @GetMapping("/users/me/point-policy")
+    PointPolicy getPointPolicy();
+    
+
     @GetMapping("/public/user-grades")
     List<Grade> getGrade();
 
@@ -71,4 +76,5 @@ public interface UserClient {
 
     @GetMapping("/admin/users/{user-id}")
     UserDto getUser(@PathVariable("user-id") String userId);
+
 }
