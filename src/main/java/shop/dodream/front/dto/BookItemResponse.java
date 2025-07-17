@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,4 +21,5 @@ public class BookItemResponse {
     private Long salePrice;
     private String publishedAt;
     private String imageUrl;
+    private List<Long> categoryIds;
 }

@@ -76,23 +76,46 @@
             <td>
                 <span th:if="${#lists.isEmpty(bookCategories)}">카테고리가 존재하지 않습니다.</span>
                 <span th:if="${!#lists.isEmpty(bookCategories)}">
-                    <span th:each="cat, iterStat : ${bookCategories}">
-                        <span th:text="${cat.categoryName}"></span>
-                            <span th:if="${cat.children}">
-                                <span th:each="child, childStat : ${cat.children}">
-                                    &nbsp;>&nbsp;<span th:text="${child.categoryName}"></span>
-                                    <span th:if="${child.children}">
-                                        <span th:each="grandChild, grandStat : ${child.children}">
-                                            &nbsp;>&nbsp;<span th:text="${grandChild.categoryName}"></span>
+            <span th:each="cat, iterStat : ${bookCategories}">
+                <span th:text="${cat.categoryName}"></span>
+
+                <!-- 2단계 -->
+                <span th:if="${cat.children}">
+                    <span th:each="child, childStat : ${cat.children}">
+                        &nbsp;>&nbsp;<span th:text="${child.categoryName}"></span>
+
+                        <!-- 3단계 -->
+                        <span th:if="${child.children}">
+                            <span th:each="grandChild, grandStat : ${child.children}">
+                                &nbsp;>&nbsp;<span th:text="${grandChild.categoryName}"></span>
+
+                                <!-- 4단계 -->
+                                <span th:if="${grandChild.children}">
+                                    <span th:each="greatGrandChild, greatGrandStat : ${grandChild.children}">
+                                        &nbsp;>&nbsp;<span th:text="${greatGrandChild.categoryName}"></span>
+
+                                        <!-- 5단계 -->
+                                        <span th:if="${greatGrandChild.children}">
+                                            <span th:each="greatGreatGrandChild, gggStat : ${greatGrandChild.children}">
+                                                &nbsp;>&nbsp;<span th:text="${greatGreatGrandChild.categoryName}"></span>
+                                            </span>
                                         </span>
+
                                     </span>
                                 </span>
+
                             </span>
-                        <span th:if="${!iterStat.last}">, </span> <!-- 여러 카테고리 구분 쉼표 -->
+                        </span>
+
                     </span>
                 </span>
+
+                <span th:if="${!iterStat.last}">, </span> <!-- 여러 카테고리 구분 쉼표 -->
+            </span>
+        </span>
             </td>
         </tr>
+
 
 
         <tr>

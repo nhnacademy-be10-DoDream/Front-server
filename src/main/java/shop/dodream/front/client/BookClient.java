@@ -39,6 +39,9 @@ public interface BookClient {
     @GetMapping("/public/categories/{category-id}/children")
     List<CategoryTreeResponse> getCategoriesChildren(@PathVariable("category-id") Long categoryId);
 
+    @GetMapping("/public/categories/{category-id}/path")
+    List<CategoryResponse> getCategoriesPath(@PathVariable("category-id") Long categoryId);
+
     @GetMapping("/public/categories/{category-id}")
     CategoryResponse getCategory(@PathVariable("category-id") Long categoryId);
 
@@ -136,8 +139,7 @@ public interface BookClient {
     PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
                                                @RequestParam("page") int page,
-                                               @RequestParam("size") int size,
-                                               @RequestParam(required = false) Long categoryId);
+                                               @RequestParam("size") int size);
 
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
     Void createReview(
@@ -174,20 +176,11 @@ public interface BookClient {
                     @RequestPart(value = "book") BookUpdateRequest bookUpdateRequest,
                     @RequestPart(value = "files", required = false) MultipartFile[] files);
 
-
-
-
-
     @PostMapping("/books/{book-id}/likes")
     Void registerBookLike(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/books/{book-id}/me")
     Boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
-
-
-
-
-
 
 
     @GetMapping("/reviews/me")

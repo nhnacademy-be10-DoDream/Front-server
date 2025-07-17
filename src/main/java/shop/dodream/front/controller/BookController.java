@@ -30,6 +30,7 @@ public class BookController {
     private final BookClient bookClient;
     private final CartClient cartClient;
     private final CartController cartController;
+    private HttpServletRequest request;
 
 
     // Controller
@@ -213,8 +214,14 @@ public class BookController {
                               Model model) {
 
         PageResponse<BookItemResponse> books;
+        final Set<Long> categoryIds = new HashSet<>();
+        List<CategoryTreeResponse> categoryTree = null;
         try {
-            books = bookClient.searchBooks(keyword, sort, page, size, categoryId);
+            if(categoryId != null) {
+                categoryTree = bookClient.getCategoriesChildren(categoryId);
+                collectCategoryIds(categoryTree, categoryIds);
+            }
+            books = bookClient.searchBooks(keyword, sort, page, size);
         } catch (Exception e) {
             model.addAttribute("books", Collections.emptyList());
             model.addAttribute("totalPages", 0);
@@ -226,18 +233,69 @@ public class BookController {
                 .filter(book -> {
                     if (minPrice != null && book.getSalePrice() < minPrice) return false;
                     if (maxPrice != null && book.getSalePrice() > maxPrice) return false;
+                    if (categoryId != null && book.getCategoryIds() != null) {
+                        return book.getCategoryIds().stream().anyMatch(categoryIds::contains);
+                    }
                     return true;
                 })
                 .toList();
 
+        Map<Long, Integer> categoryCountMap = new HashMap<>();
+        buildCategoryCountMap(filteredBooks, bookClient, categoryCountMap);
+
+        if (categoryTree == null) {
+            List<CategoryResponse> depth1Categories = bookClient.getCategoriesByDepth(1L);
+            categoryTree = new ArrayList<>();
+            for (CategoryResponse parent : depth1Categories) {
+                List<CategoryTreeResponse> children = bookClient.getCategoriesChildren(parent.getCategoryId());
+                categoryTree.addAll(children);
+            }
+        }
+
+        if (categoryId != null) {
+            List<CategoryResponse> breadcrumb = bookClient.getCategoriesPath(categoryId);
+            model.addAttribute("breadcrumb", breadcrumb);
+        }
+
+        model.addAttribute("selectedCategoryTree", categoryTree);
         model.addAttribute("books", filteredBooks);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("totalPages", books.getTotalPages());
+        model.addAttribute("totalPages", (int) Math.ceil((double) filteredBooks.size() / size));
         model.addAttribute("currentPage", books.getNumber());
         model.addAttribute("sort", sort);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("categoryCountMap", categoryCountMap);
         return "book/bookSearchList";
     }
+    private void collectCategoryIds(List<CategoryTreeResponse> nodes, Set<Long> idSet) {
+        if (nodes == null) return;
+        for (CategoryTreeResponse node : nodes) {
+            idSet.add(node.getCategoryId());
+            collectCategoryIds(node.getChildren(), idSet);
+        }
+    }
+    private void buildCategoryCountMap(List<BookItemResponse> books, BookClient bookClient,
+                                       Map<Long, Integer> categoryCountMap) {
+        for (BookItemResponse book : books) {
+            Set<Long> countedCategoryIds = new HashSet<>(); // 중복 방지용
+
+            List<CategoryResponse> categories = bookClient.getFlatCategoriesByBookId(book.getBookId());
+            for (CategoryResponse category : categories) {
+                List<CategoryResponse> path = bookClient.getCategoriesPath(category.getCategoryId());
+                for (CategoryResponse c : path) {
+                    if (countedCategoryIds.add(c.getCategoryId())) { // 처음 나오는 ID만 처리
+                        categoryCountMap.put(
+                                c.getCategoryId(),
+                                categoryCountMap.getOrDefault(c.getCategoryId(), 0) + 1
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+
 
 }
