@@ -143,8 +143,10 @@ public interface BookClient {
     @GetMapping("/public/books/search")
     PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
-                                               @RequestParam("page") int page,
-                                               @RequestParam("size") int size);
+                                               Pageable pageable,
+                                               @RequestParam(value = "categoryIds", required = false) List<Long> categoryIds,
+                                               @RequestParam(value = "minPrice", required = false) Integer minPrice,
+                                               @RequestParam(value = "maxPrice", required = false) Integer maxPrice);
 
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
     void createReview(

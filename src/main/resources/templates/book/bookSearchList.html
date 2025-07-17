@@ -110,14 +110,14 @@
             <!-- 이전 버튼 -->
             <li>
                 <a th:if="${currentPage > 0}"
-                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage - 1}|}"
+                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage - 1}${categoryId != null ? '&categoryId=' + categoryId : ''}${minPrice != null ? '&minPrice=' + minPrice : ''}${maxPrice != null ? '&maxPrice=' + maxPrice : ''}|}"
                    class="page-link">«</a>
                 <span th:if="${currentPage == 0}" class="page-link disabled">«</span>
             </li>
 
             <!-- 페이지 번호 목록 -->
             <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
-                <a th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${pageNum}|}"
+                <a th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${pageNum}${categoryId != null ? '&categoryId=' + categoryId : ''}${minPrice != null ? '&minPrice=' + minPrice : ''}${maxPrice != null ? '&maxPrice=' + maxPrice : ''}|}"
                    th:text="${pageNum + 1}"
                    th:class="'page-link ' + (${pageNum} == ${currentPage} ? 'active' : '')"></a>
             </li>
@@ -125,7 +125,7 @@
             <!-- 다음 버튼 -->
             <li>
                 <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage + 1}|}"
+                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage + 1}${categoryId != null ? '&categoryId=' + categoryId : ''}${minPrice != null ? '&minPrice=' + minPrice : ''}${maxPrice != null ? '&maxPrice=' + maxPrice : ''}|}"
                    class="page-link">»</a>
                 <span th:if="${currentPage + 1 >= totalPages}" class="page-link disabled">»</span>
             </li>
