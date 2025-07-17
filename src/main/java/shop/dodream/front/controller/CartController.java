@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import shop.dodream.front.client.CartClient;
 import shop.dodream.front.client.CouponClient;
 import shop.dodream.front.client.OrderClient;
+import shop.dodream.front.client.UserClient;
 import shop.dodream.front.dto.*;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class CartController {
 	private final CouponClient couponClient;
 	private final CartClient cartClient;
 	private final OrderClient orderClient;
+	private final UserClient userClient;
 	
 	@GetMapping("/cart")
 	public String showCart(HttpServletRequest request, Model model) {
@@ -137,6 +139,13 @@ public class CartController {
 	public ResponseEntity<Void> multipleCoupons(@RequestBody ApplyCouponsRequest request) {
 		couponClient.applyCoupon(request);
 		return ResponseEntity.ok().build();
+	}
+	
+	@ResponseBody
+	@GetMapping("/cart/point-rate")
+	public ResponseEntity<PointPolicy> getPointRate() {
+		PointPolicy userPoint = userClient.getPointPolicy();
+		return ResponseEntity.ok(userPoint);
 	}
 	
 	// === 쿠키에서 accessToken 추출 ===
