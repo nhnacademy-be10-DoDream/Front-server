@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/admin}">
+<head>
+    <title layout:fragment="title" th:text="#{admin.menu.users}"></title>
+</head>
+
+<body>
+<main layout:fragment="content" class="admin-content-area">
+
+    <div class="admin-main-header">
+        <h2 th:text="#{admin.menu.users}"></h2>
+        <p th:text="#{admin.users.sectionTitle}"></p>
+    </div>
+
+    <div class="admin-main-body">
+
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <h3 th:text="#{admin.users.sectionTitle}"></h3>
+                <p th:text="#{admin.users.sectionSubTitle}"></p>
+            </div>
+            <div class="right-group">
+                <div class="grade-badge-wrapper">
+                        <span th:switch="${userDetail.status}">
+                            <span th:case="'ACTIVE'" class="user-status-badge user-status-active" th:text="${userDetail.status}"></span>
+                            <span th:case="'DORMANT'" class="user-status-badge user-status-dormant" th:text="${userDetail.status}"></span>
+                            <span th:case="'WITHDRAWN'" class="user-status-badge user-status-withdrawn" th:text="${userDetail.status}"></span>
+                        </span>
+                    <span class="grade-badge"
+                          th:classappend="'grade-' + ${#strings.toLowerCase(userDetail.grade)}"
+                          th:text="${userDetail.grade}">
+                        </span>
+                </div>
+            </div>
+            <div class="admin-section-body">
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.userId}"></label>
+                    <div class="user-detail-value readonly">
+                        <span th:text="${userDetail.userId}"></span>
+                    </div>
+                </div>
+
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.name}"></label>
+                    <div class="user-detail-value">
+                        <span th:text="${userDetail.name}"></span>
+                    </div>
+                </div>
+
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.email}"></label>
+                    <div class="user-detail-value">
+                        <span th:text="${userDetail.email}"></span>
+                    </div>
+                </div>
+
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.phone}"></label>
+                    <div class="user-detail-value">
+                        <span th:text="${userDetail.phone}"></span>
+                    </div>
+                </div>
+
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.birth}"></label>
+                    <div class="user-detail-value">
+                        <span th:text="${#dates.format(userDetail.birthDate, 'yyyy-MM-dd')}"></span>
+                    </div>
+                </div>
+
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.point}"></label>
+                    <div class="user-detail-value readonly">
+                        <span th:text="${#numbers.formatInteger(userDetail.point, 0, 'COMMA')} + ' P'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 활동 정보 섹션 -->
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <h3 th:text="#{admin.usersActive.sectionTitle}"></h3>
+                <p th:text="#{admin.usersActive.sectionSubTitle}"></p>
+            </div>
+            <div class="admin-section-body">
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.createdAt}"></label>
+                    <div class="user-detail-value readonly">
+                        <span th:text="${#temporals.format(userDetail.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    </div>
+                </div>
+
+                <div class="user-detail-field">
+                    <label class="user-detail-label" th:text="#{admin.users.lastLoginAt}"></label>
+                    <div class="user-detail-value readonly">
+                        <span th:if="${userDetail.lastLoginAt != null}" th:text="${#temporals.format(userDetail.lastLoginAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                        <span th:unless="${userDetail.lastLoginAt != null}" th:text="#{admin.users.lastLoginAt.empty}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

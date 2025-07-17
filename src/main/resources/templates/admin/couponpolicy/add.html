@@ -9,65 +9,77 @@
 </head>
 <body>
 <main layout:fragment="content" class="admin-content-area">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="admin-section-title mb-0">새 쿠폰 정책 추가</h2>
-        <form th:action="@{/admin/policies}" method="get" style="display: inline;">
-            <button type="submit"  class="btn-admin btn-secondary">목록으로 돌아가기</button>
-        </form>
+    <div class="admin-main-header">
+        <h2>새 쿠폰 정책 추가</h2>
+        <p>새로운 쿠폰 정책을 추가하는 페이지</p>
+    </div>
+    <div class="admin-main-body">
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <div class="right-group">
+                    <form th:action="@{/admin/policies}" method="get" style="display: inline;">
+                        <button type="submit"  class="btn-admin btn-secondary">목록으로 돌아가기</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-section-body">
+                <form th:action="@{/admin/policies/add}"
+                      th:object="${createCouponPolicyRequest}"
+                      method="post">
+                    <div class="form-group mb-3">
+                        <label for="name" class="form-label">정책 이름</label>
+                        <input type="text" id="name" th:field="*{name}" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="discountType" class="form-label">할인 유형</label>
+                        <select id="discountType" th:field="*{discountType}" class="form-control" required>
+                            <option value="">선택하세요</option>
+                            <option value="PERCENTAGE">PERCENTAGE</option>
+                            <option value="FLAT">FLAT</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="discountValue" class="form-label">할인 값</label>
+                        <input type="number" id="discountValue" th:field="*{discountValue}" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="minPurchaseAmount" class="form-label">최소 구매 금액</label>
+                        <input type="number" id="minPurchaseAmount" th:field="*{minPurchaseAmount}" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="maxDiscountAmount" class="form-label">최대 할인 금액</label>
+                        <input type="number" id="maxDiscountAmount" th:field="*{maxDiscountAmount}" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="expiredStrategy" class="form-label">만료 전략</label>
+                        <select id="expiredStrategy" th:field="*{expiredStrategy}" class="form-control" required>
+                            <option value="">선택하세요</option>
+                            <option value="FIXED">FIXED</option>
+                            <option value="PLUS">PLUS</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="fixedDate" class="form-label">고정 만료일 (선택 사항)</label>
+                        <input type="date" id="fixedDate" th:field="*{fixedDate}" class="form-control"/>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="plusDay" class="form-label">추가 일수 (선택 사항)</label>
+                        <input type="number" id="plusDay" th:field="*{plusDay}" class="form-control">
+                    </div>
 
+                    <div class="mt-4">
+                        <button type="submit" class="btn-admin btn-success">정책 추가</button>
+                        <form th:action="@{/admin/policies}" method="get" style="display: inline;">
+                            <button type="submit" class="btn-admin btn-secondary">취소</button>
+                        </form>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <form th:action="@{/admin/policies/add}"
-          th:object="${createCouponPolicyRequest}"
-          method="post">
-        <div class="form-group mb-3">
-            <label for="name" class="form-label">정책 이름</label>
-            <input type="text" id="name" th:field="*{name}" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="discountType" class="form-label">할인 유형</label>
-            <select id="discountType" th:field="*{discountType}" class="form-control" required>
-                <option value="">선택하세요</option>
-                <option value="PERCENTAGE">PERCENTAGE</option>
-                <option value="FLAT">FLAT</option>
-            </select>
-        </div>
-        <div class="form-group mb-3">
-            <label for="discountValue" class="form-label">할인 값</label>
-            <input type="number" id="discountValue" th:field="*{discountValue}" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="minPurchaseAmount" class="form-label">최소 구매 금액</label>
-            <input type="number" id="minPurchaseAmount" th:field="*{minPurchaseAmount}" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="maxDiscountAmount" class="form-label">최대 할인 금액</label>
-            <input type="number" id="maxDiscountAmount" th:field="*{maxDiscountAmount}" class="form-control" required>
-        </div>
-        <div class="form-group mb-3">
-            <label for="expiredStrategy" class="form-label">만료 전략</label>
-            <select id="expiredStrategy" th:field="*{expiredStrategy}" class="form-control" required>
-                <option value="">선택하세요</option>
-                <option value="FIXED">FIXED</option>
-                <option value="PLUS">PLUS</option>
-            </select>
-        </div>
-        <div class="form-group mb-3">
-            <label for="fixedDate" class="form-label">고정 만료일 (선택 사항)</label>
-            <input type="date" id="fixedDate" th:field="*{fixedDate}" class="form-control"/>
-        </div>
-        <div class="form-group mb-4">
-            <label for="plusDay" class="form-label">추가 일수 (선택 사항)</label>
-            <input type="number" id="plusDay" th:field="*{plusDay}" class="form-control">
-        </div>
 
-        <div class="mt-4">
-            <button type="submit" class="btn-admin btn-success">정책 추가</button>
-            <form th:action="@{/admin/policies}" method="get" style="display: inline;">
-                <button type="submit" class="btn-admin btn-secondary">취소</button>
-            </form>
-        </div>
-    </form>
+
 </main>
 </body>
 </html>

@@ -16,7 +16,6 @@ import java.util.List;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @FeignClient(name = "bookClient", url = "${gateway.url}", configuration = FeignMultipartSupportConfig.class)
-//@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
 
     @GetMapping("/admin/books")
@@ -159,8 +158,6 @@ public interface BookClient {
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 
-//    @PostMapping("/admin/books/aladdin-api")
-//    void aladdinRegisterBook(@RequestParam("isbn") String isbn);
 
     @PostMapping(value = "/admin/books", consumes = MULTIPART_FORM_DATA_VALUE)
     void registerBook(@RequestPart(value = "book") BookRegisterRequest bookRegisterRequest,
@@ -184,10 +181,10 @@ public interface BookClient {
 
 
 
-    @PostMapping("/books/{book-id}/likes")
+    @PostMapping("/likes/me/books/{book-id}")
     void registerBookLike(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/books/{book-id}/me")
+    @GetMapping("/likes/me/books/{book-id}")
     Boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
 
 
@@ -199,6 +196,6 @@ public interface BookClient {
     @GetMapping("/reviews/me")
     Page<ReviewResponse> getReviews(Pageable pageable);
 
-    @GetMapping("/likes/me")
+    @GetMapping("/likes/me/books")
     Page<BookListResponse> getLikedBooks(Pageable pageable);
 }

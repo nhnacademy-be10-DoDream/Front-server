@@ -11,86 +11,101 @@
 <body>
 <div layout:fragment="content" class="admin-content-area">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="admin-section-title mb-0">책 관리</h2>
+    <div class="admin-main-header">
+        <h2>책 관리</h2>
+        <p>도서 등록, 수정, 삭제와 도서에 카테고리 태그를 추가하는 기능을 제공하는 페이지입니다.</p>
+    </div>
 
-        <!-- 버튼 그룹 -->
-        <div class="btn-group" role="group">
-            <form th:action="@{/admin/books/api-register-form}" method="get">
-                <button type="submit" class="btn-admin btn-primary me-2">책 openAPI 등록</button>
-            </form>
-            <form th:action="@{/admin/books/register-form}" method="get">
-                <button type="submit" class="btn-admin btn-primary">책 직접 등록</button>
-            </form>
+    <div class="admin-main-body">
+        <div class="admin-section-container">
+            <div class="admin-section-header">
+                <div class="right-group">
+                    <form th:action="@{/admin/books/api-register-form}" method="get">
+                        <button type="submit" class="btn-admin btn-primary me-2">책 openAPI 등록</button>
+                    </form>
+                    <form th:action="@{/admin/books/register-form}" method="get">
+                        <button type="submit" class="btn-admin btn-primary">책 직접 등록</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-section-body">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>제목</th>
+                        <th>저자</th>
+                        <th>정가</th>
+                        <th>판매가</th>
+                        <th>등록일</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="book, i : ${books.content}">
+                        <td th:text="${i.index + 1 + (books.number * books.size)}">1</td>
+                        <td th:text="${book.title}">제목</td>
+                        <td th:text="${book.author}">저자</td>
+                        <td th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">0원</td>
+                        <td th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">0원</td>
+                        <td th:text="${#temporals.format(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">등록일</td>
+                        <td th:text="${book.status}">상태</td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                <a th:href="@{'/admin/books/detail/' + ${book.bookId}}"
+                                   class="btn btn-sm btn-outline-primary">도서조회</a>
+                                <a th:href="@{'/admin/book/' + ${book.bookId} + '/categories'}"
+                                   class="btn btn-sm btn-outline-secondary">카테고리</a>
+                                <a th:href="@{'/admin/book/' + ${book.bookId} + '/tags'}"
+                                   class="btn btn-sm btn-outline-secondary">태그관리</a>
+                                <form th:action="@{'/admin/books/delete/' + ${book.bookId}}" method="post"
+                                      style="display:inline;">
+                                    <input type="hidden" name="_method" value="delete"/>
+                                    <input type="hidden" name="bookId" th:value="${book.bookId}"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('정말 삭제하시겠습니까?');">도서삭제
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>제목</th>
-            <th>저자</th>
-            <th>정가</th>
-            <th>판매가</th>
-            <th>등록일</th>
-            <th>상태</th>
-            <th>관리</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="book, i : ${books.content}">
-            <td th:text="${i.index + 1 + (books.number * books.size)}">1</td>
-            <td th:text="${book.title}">제목</td>
-            <td th:text="${book.author}">저자</td>
-            <td th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">0원</td>
-            <td th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">0원</td>
-            <td th:text="${#temporals.format(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">등록일</td>
-            <td th:text="${book.status}">상태</td>
-            <td>
-                <div class="d-flex flex-wrap gap-1">
-                    <a th:href="@{'/admin/books/detail/' + ${book.bookId}}" class="btn btn-sm btn-outline-primary">도서조회</a>
-                    <a th:href="@{'/admin/book/' + ${book.bookId} + '/categories'}" class="btn btn-sm btn-outline-secondary">카테고리</a>
-                    <a th:href="@{'/admin/book/' + ${book.bookId} + '/tags'}" class="btn btn-sm btn-outline-secondary">태그관리</a>
-                    <form th:action="@{'/admin/books/delete/' + ${book.bookId}}" method="post" style="display:inline;">
-                        <input type="hidden" name="_method" value="delete"/>
-                        <input type="hidden" name="bookId" th:value="${book.bookId}" />
-                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                onclick="return confirm('정말 삭제하시겠습니까?');">도서삭제</button>
-                    </form>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="admin-pagination">
+        <!-- 페이징 영역 -->
+        <nav th:if="${books.totalPages > 1}">
+            <ul class="pagination justify-content-center">
 
-    <!-- 페이징 영역 -->
-    <nav th:if="${books.totalPages > 1}">
-        <ul class="pagination justify-content-center">
+                <!-- 이전 -->
+                <li class="page-item" th:classappend="${books.first} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/admin/books(page=${books.number - 1}, size=${books.size})}">이전</a>
+                </li>
 
-            <!-- 이전 -->
-            <li class="page-item" th:classappend="${books.first} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/admin/books(page=${books.number - 1}, size=${books.size})}">이전</a>
-            </li>
+                <!-- 번호 -->
+                <li class="page-item"
+                    th:each="pageNum : ${#numbers.sequence(0, books.totalPages - 1)}"
+                    th:classappend="${pageNum == books.number} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/admin/books(page=${pageNum}, size=${books.size})}"
+                       th:text="${pageNum + 1}">1</a>
+                </li>
 
-            <!-- 번호 -->
-            <li class="page-item"
-                th:each="pageNum : ${#numbers.sequence(0, books.totalPages - 1)}"
-                th:classappend="${pageNum == books.number} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/admin/books(page=${pageNum}, size=${books.size})}"
-                   th:text="${pageNum + 1}">1</a>
-            </li>
+                <!-- 다음 -->
+                <li class="page-item" th:classappend="${books.last} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/admin/books(page=${books.number + 1}, size=${books.size})}">다음</a>
+                </li>
 
-            <!-- 다음 -->
-            <li class="page-item" th:classappend="${books.last} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/admin/books(page=${books.number + 1}, size=${books.size})}">다음</a>
-            </li>
+            </ul>
+        </nav>
 
-        </ul>
-    </nav>
+    </div>
 
 </div>
 </body>
