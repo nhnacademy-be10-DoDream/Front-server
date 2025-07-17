@@ -8,7 +8,9 @@ import java.util.List;
 @Getter
 @Setter
 public class CartOrderRequest {
-    private Integer orderTotal;
+    private Integer totalProductPrice;
+    private Integer totalDiscount = 0;
+    private Integer totalWrappingPrice = 0;
     private String userId;
     private List<OrderItemRequest> items;
 }

@@ -89,10 +89,13 @@
           <p class="fs-5 fw-semibold mb-2">
             <span th:text="#{cart.summary.totalProductPrice}">총 제품 금액</span>:
             <span id="totalProductPrice" class="ms-2">0원</span>
+              <input type="hidden" name="totalProductPrice" value="0" />
+
           </p>
           <p class="fs-5 fw-semibold mb-2">
             <span th:text="#{cart.summary.totalWrappingPrice}">총 포장 금액</span>:
             <span id="totalWrappingPrice" class="ms-2 text-warning">0원</span>
+            <input type="hidden" name="totalWrappingPrice" value="0" />
           </p>
           <p class="fs-5 fw-semibold">
             <span th:text="#{cart.summary.orderTotal}">총 주문 금액</span>:
@@ -116,8 +119,6 @@
       </div>
     </div>
   </form>
-
-
 </div>
 
 <!-- 외부 스크립트 -->

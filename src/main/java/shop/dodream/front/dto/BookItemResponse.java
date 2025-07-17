@@ -18,8 +18,10 @@ public class BookItemResponse {
     private String description;
     private String author;
     private String publisher;
-    private Long salePrice;
+    private String isbn;
     private String publishedAt;
+    private Long regularPrice;
+    private Long salePrice;
     private String imageUrl;
     private List<Long> categoryIds;
 }

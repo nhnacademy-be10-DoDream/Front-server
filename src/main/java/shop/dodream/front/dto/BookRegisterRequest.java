@@ -25,4 +25,6 @@ public class BookRegisterRequest {
     private Boolean isGiftable;
 
     private Long bookCount;
+
+    private String imageUrl;
 }

@@ -83,6 +83,9 @@ public class BookController {
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
+        List<CategoryTreeResponse> bookCategories = bookClient.getCategoriesByBookId(bookId);
+        BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
+
 
 
         // 컨트롤러에서 로그인 여부 조회 검증하는게 되면 가능
@@ -93,6 +96,10 @@ public class BookController {
         model.addAttribute("reviews", reviewResponse);
         model.addAttribute("reviewCount", reviewResponse.getTotalElements());
         model.addAttribute("reviewSummary", reviewSummaryResponse);
+        model.addAttribute("bookCategories", bookCategories);
+        model.addAttribute("bookTags", bookTag);
+
+
 //        model.addAttribute("isLiked", isLiked);
         return "book/detail";
     }
@@ -152,9 +159,34 @@ public class BookController {
 
     }
 
+    @GetMapping("/admin/books/aladdin-search")
+    public String AladdinSearchList(@RequestParam("query") String query,
+                                    @RequestParam(defaultValue = "25") int size,
+                                    @RequestParam(defaultValue = "1") int page,
+                                    Model model){
+
+        AladdinBookSearchResult aladdinBookSearchResult = bookClient.getAladdinBookList(query, size, page);
+        int totalPages = (int) Math.ceil((double) aladdinBookSearchResult.getTotalResults() / size);
+
+        int groupSize = 8;
+        int startPage = ((page - 1) / groupSize) * groupSize + 1;
+        int endPage = Math.min(startPage + groupSize - 1, totalPages);
+
+
+        model.addAttribute("aladdin", aladdinBookSearchResult);
+        model.addAttribute("query", query);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "admin/book/book-api-register";
+    }
+
     @PostMapping("/admin/books/register-api")
-    public String registerBookFromAladdin(@RequestParam("isbn") String isbn) {
-        bookClient.aladdinRegisterBook(isbn);
+    public String registerBookFromAladdin(@ModelAttribute BookRegisterRequest request) {
+        bookClient.registerFromAladdin(request);
         return "redirect:/admin/books";
     }
 

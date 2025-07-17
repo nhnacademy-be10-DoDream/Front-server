@@ -16,7 +16,6 @@ import java.util.List;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @FeignClient(name = "bookClient", url = "${gateway.url}", configuration = FeignMultipartSupportConfig.class)
-//@FeignClient(name = "bookClient", url = "http://localhost:8090", configuration = FeignMultipartSupportConfig.class)
 public interface BookClient {
 
     @GetMapping("/admin/books")
@@ -24,6 +23,15 @@ public interface BookClient {
 
     @GetMapping("/public/books/all")
     List<BookDto> getAllBooks();
+
+    // aladdin api 도서 조회
+    @GetMapping("/admin/books/aladdin-search")
+    AladdinBookSearchResult getAladdinBookList(@RequestParam("query") String query,
+                                                      @RequestParam(value = "size") int size,
+                                                      @RequestParam(value = "page") int page);
+
+    @PostMapping("/admin/books/aladdin-api")
+    void registerFromAladdin(@RequestBody BookRegisterRequest bookRegisterRequest);
 
     // 카테고리 영역
     @PostMapping("/admin/categories")
@@ -124,9 +132,6 @@ public interface BookClient {
     @GetMapping("/public/books/{book-id}")
     BookDetailDto getBookDetail(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/public/books/{book-id}")
-    BookDto getBook(@PathVariable("book-id") Long bookId);
-
     @GetMapping("/public/books/{book-id}/reviews")
     Page<ReviewResponse> getBooksReview(@PathVariable("book-id") Long bookId,
                                         @RequestParam("page") int page,
@@ -135,57 +140,59 @@ public interface BookClient {
     @GetMapping("/public/reviews/{book-id}/review-summary")
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("public/books/search")
+    @GetMapping("/public/books/search")
     PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
                                                @RequestParam("page") int page,
                                                @RequestParam("size") int size);
 
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
-    Void createReview(
+    void createReview(
             @PathVariable("book-id") Long bookId,
             @RequestPart(value = "review") ReviewCreateRequest reviewCreateRequest,
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 
     @PutMapping(value = "/reviews/me/{review-id}", consumes = MULTIPART_FORM_DATA_VALUE)
-    Void updateReview(
+    void updateReview(
             @PathVariable("review-id") Long reviewId,
             @RequestPart("review") ReviewUpdateRequest reviewUpdateRequest,
             @RequestPart(value = "files", required = false) MultipartFile[] files
     );
 
-    @PostMapping("/admin/books/aladdin-api")
-    Void aladdinRegisterBook(@RequestParam("isbn") String isbn);
 
     @PostMapping(value = "/admin/books", consumes = MULTIPART_FORM_DATA_VALUE)
-    Void registerBook(@RequestPart(value = "book") BookRegisterRequest bookRegisterRequest,
+    void registerBook(@RequestPart(value = "book") BookRegisterRequest bookRegisterRequest,
                       @RequestPart(value = "files", required = false) MultipartFile[] files);
 
 
 
     @DeleteMapping("/admin/books/{book-id}")
-    Void deleteBook(@PathVariable("book-id") Long bookId);
+    void deleteBook(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/admin/books/{book-id}")
     BookDetailDto getAdminBookDetail(@PathVariable("book-id") Long bookId);
 
 
     @PutMapping(value = "/admin/books/{book-id}", consumes = MULTIPART_FORM_DATA_VALUE)
-    Void updateBook(@PathVariable("book-id") Long bookId,
+    void updateBook(@PathVariable("book-id") Long bookId,
                     @RequestPart(value = "book") BookUpdateRequest bookUpdateRequest,
                     @RequestPart(value = "files", required = false) MultipartFile[] files);
 
-    @PostMapping("/books/{book-id}/likes")
-    Void registerBookLike(@PathVariable("book-id") Long bookId);
 
-    @GetMapping("/books/{book-id}/me")
+
+
+
+    @PostMapping("/likes/me/books/{book-id}")
+    void registerBookLike(@PathVariable("book-id") Long bookId);
+
+    @GetMapping("/likes/me/books/{book-id}")
     Boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
 
 
     @GetMapping("/reviews/me")
     Page<ReviewResponse> getReviews(Pageable pageable);
 
-    @GetMapping("/likes/me")
+    @GetMapping("/likes/me/books")
     Page<BookListResponse> getLikedBooks(Pageable pageable);
 }
