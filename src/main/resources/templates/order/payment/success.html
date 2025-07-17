@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
-    <link rel="stylesheet" type="text/css" href="/css/toss.css" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>결제 성공</title>
+    <link rel="stylesheet" href="/css/toss.css" />
 </head>
-
 <body>
 <div class="box_section" style="width: 600px">
     <img width="100px" src="https://static.toss.im/illusts/check-blue-spot-ending-frame.png" />
@@ -16,94 +13,33 @@
 
     <div class="p-grid typography--p" style="margin-top: 50px">
         <div class="p-grid-col text--left"><b>결제금액</b></div>
-        <div class="p-grid-col text--right" id="amount"></div>
+        <div class="p-grid-col text--right" th:text="${amount} + '원'">0원</div>
     </div>
     <div class="p-grid typography--p" style="margin-top: 10px">
         <div class="p-grid-col text--left"><b>주문번호</b></div>
-        <div class="p-grid-col text--right" id="orderId"></div>
+        <div class="p-grid-col text--right" th:text="${orderId}">-</div>
     </div>
-    <!--    <div class="p-grid typography&#45;&#45;p" style="margin-top: 10px">-->
-    <!--        <div class="p-grid-col text&#45;&#45;left"><b>paymentKey</b></div>-->
-    <!--        <div class="p-grid-col text&#45;&#45;right" id="paymentKey" style="white-space: initial; width: 250px"></div>-->
-    <!--    </div>-->
     <div class="p-grid typography--p" style="margin-top: 10px">
         <div class="p-grid-col text--left"><b>결제수단</b></div>
-        <div class="p-grid-col text--right" id="method"></div>
+        <div class="p-grid-col text--right" th:text="${method}">-</div>
     </div>
-
     <div class="p-grid typography--p" style="margin-top: 10px">
         <div class="p-grid-col text--left"><b>배송지</b></div>
-        <div class="p-grid-col text--right" id="address"></div>
+        <div class="p-grid-col text--right" th:text="${address}">-</div>
     </div>
-
     <div class="p-grid typography--p" style="margin-top: 10px">
         <div class="p-grid-col text--left"><b>주문상품</b></div>
-        <div class="p-grid-col text--right" id="items" style="white-space: pre-wrap"></div>
+        <div class="p-grid-col text--left">
+            <ul class="order-item-list">
+                <li th:each="item : ${items}" th:text="${item}">샘플상품</li>
+            </ul>
+        </div>
     </div>
+
     <div class="p-grid" style="margin-top: 30px">
-        <button class="button p-grid-col5" onclick="location.href='/order/detail/' + urlParams.get('orderId')">주문 상세</button>
+        <button class="button p-grid-col5" th:attr="onclick=|location.href='/order/detail/${orderId}'|">주문 상세</button>
         <button class="button p-grid-col5" onclick="location.href='/'" style="background-color: #e8f3ff; color: #1b64da">홈으로 돌아가기</button>
     </div>
 </div>
-
-
-
-<script th:inline="javascript">
-    // 쿼리 파라미터 값을 서버로 전달해 결제 요청할 때 보낸 데이터와 동일한지 반드시 확인하세요.
-    // 클라이언트에서 결제 금액을 조작하는 행위를 방지할 수 있습니다.
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = /*[[${user?.userId}]]*/ null;
-    // 서버로 결제 승인에 필요한 결제 정보를 보내세요.
-    async function confirm() {
-        var requestData = {
-            paymentKey: urlParams.get("paymentKey"),
-            orderId: urlParams.get("orderId"),
-            amount: urlParams.get("amount"),
-        };
-
-        const headers = {
-            "Content-Type": "application/json",
-        };
-
-        if (userId) {
-            headers["X-USER-ID"] = userId;
-        }
-
-        const response = await fetch("/payment/confirm", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(requestData),
-        });
-
-        const json = await response.json();
-
-        if (!response.ok) {
-            throw { message: json.message, code: json.code };
-        }
-
-        return json;
-    }
-
-    confirm()
-        .then(function (data) {
-            document.getElementById("method").textContent = data.method || data.easyPay?.provider || "N/A";
-            document.getElementById("address").textContent = data.shippingAddress || "배송지 정보 없음";
-            const items = data.items || [];
-            const itemList = items.map(item => `- ${item.title} (${item.quantity}개)`).join("\n");
-            document.getElementById("items").textContent = itemList || "상품 정보 없음";
-
-        })
-        .catch((err) => {
-            window.location.href = `/payment/fail?errorCode=${err.code}&errorMessage=${encodeURIComponent(err.message)}`;
-        });
-
-    const paymentKeyElement = document.getElementById("paymentKey");
-    const orderIdElement = document.getElementById("orderId");
-    const amountElement = document.getElementById("amount");
-
-    orderIdElement.textContent = urlParams.get("orderId");
-    amountElement.textContent = urlParams.get("amount") + "원";
-    paymentKeyElement.textContent = urlParams.get("paymentKey");
-</script>
 </body>
 </html>
