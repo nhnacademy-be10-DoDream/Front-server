@@ -307,17 +307,24 @@ public class BookController {
             collectCategoryIds(node.getChildren(), idSet);
         }
     }
-
+    //Map<Long, List<Long>> getFlatCategoryIdsByBookIds(List<Long> bookIds);
+    //Map<Long, List<Long>> getCategoryPathBatch(Set<Long> categoryIds);
+    // 2개의 API 만들어서 N+1 문제 해결
     private void buildCategoryCountMap(List<BookItemResponse> books, BookClient bookClient,
                                        Map<Long, Integer> categoryCountMap) {
+        Map<Long, List<CategoryResponse>> categoryPathCache = new HashMap<>();
         for (BookItemResponse book : books) {
-            Set<Long> countedCategoryIds = new HashSet<>();
-
+            Set<Long> visitedThisBook = new HashSet<>();
             List<CategoryResponse> categories = bookClient.getFlatCategoriesByBookId(book.getBookId());
+
             for (CategoryResponse category : categories) {
-                List<CategoryResponse> path = bookClient.getCategoriesPath(category.getCategoryId());
+                List<CategoryResponse> path = categoryPathCache.computeIfAbsent(
+                        category.getCategoryId(),
+                        bookClient::getCategoriesPath
+                );
+
                 for (CategoryResponse c : path) {
-                    if (countedCategoryIds.add(c.getCategoryId())) {
+                    if (visitedThisBook.add(c.getCategoryId())) {
                         categoryCountMap.put(
                                 c.getCategoryId(),
                                 categoryCountMap.getOrDefault(c.getCategoryId(), 0) + 1
