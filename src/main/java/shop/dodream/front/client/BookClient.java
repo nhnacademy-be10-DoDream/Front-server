@@ -141,7 +141,7 @@ public interface BookClient {
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/public/books/search")
-    PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
+    SearchBookResponse searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
                                                Pageable pageable,
                                                @RequestParam(value = "categoryIds", required = false) List<Long> categoryIds,
