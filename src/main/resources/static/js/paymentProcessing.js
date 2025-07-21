@@ -12,6 +12,10 @@ async function confirm() {
         "X-PAYMENT-PROVIDER": urlParams.get("provider") || "TOSS"
     };
 
+    if (userId) {
+        headers["X-USER-ID"] = userId;
+    }
+
     const response = await fetch("/payment/confirm", {
         method: "POST",
         headers,
