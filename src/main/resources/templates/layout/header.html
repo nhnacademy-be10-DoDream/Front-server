@@ -12,9 +12,7 @@
         </div>
 
         <nav class="menu d-flex align-items-center gap-4">
-            <a th:href="@{/category/all}" class="nav-item">전체 도서</a>
             <a th:href="@{/auth/guest}" class="nav-item" sec:authorize="isAnonymous()">비회원 주문 목록</a>
-            <a th:href="@{/contact}" class="nav-item">쿠폰</a>
             <a th:href="@{/mypage}" class="nav-item" sec:authorize="isAuthenticated()">마이페이지</a>
             <a th:href="@{/admin}" class="nav-item" sec:authorize="hasRole('ADMIN')">관리자</a>
             <th:block sec:authorize="isAuthenticated()">
@@ -26,7 +24,7 @@
             </th:block>
             <a th:href="@{/auth/signup-form}" class="nav-item" sec:authorize="isAnonymous()">회원가입</a>
             <a th:href="@{/auth/login-form}" class="nav-item" sec:authorize="isAnonymous()">로그인</a>
-            <a th:href="@{/cart}" class="nav-item">장바구니🛒</a>
+            <a th:href="@{/cart}" class="nav-item">장바구니</a>
         </nav>
     </header>
     <nav class="navbar navbar-expand-lg " style="background-color: #ffffff;" data-bs-theme="light">
