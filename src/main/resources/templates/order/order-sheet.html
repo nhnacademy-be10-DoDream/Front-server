@@ -151,7 +151,7 @@
                 <select name="shippingPolicyId" class="form-select" id="shippingPolicyId" required>
                     <option value="" disabled selected th:text="#{order.shipping.policy}">배송 정책 선택</option>
                     <option th:each="policy : ${shippingPolicies}"
-                            th:value="${policy.id}"
+                            th:value="${policy.shippingId}"
                             th:data-fee="${policy.fee}"
                             th:text="|${policy.name} (+${#numbers.formatInteger(policy.fee, 0, 'COMMA')} #{order.currency.unit})|"
                             th:disabled="${!policy.active}">
