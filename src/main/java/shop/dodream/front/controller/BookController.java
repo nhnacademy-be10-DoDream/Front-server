@@ -15,10 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.client.CartClient;
-import shop.dodream.front.dto.BookDto;
-import shop.dodream.front.dto.BookTagInfo;
-import shop.dodream.front.dto.PageResponse;
-import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
 
 import java.util.*;
@@ -78,7 +74,7 @@ public class BookController {
     public String bookDetail(@PathVariable("book-id") Long bookId,
                              @RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "5") int size,
-                             Model model) {
+                             Model model, HttpServletRequest request) {
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
@@ -87,10 +83,12 @@ public class BookController {
         BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
 
 
+        boolean isLiked = false;
 
-        // 컨트롤러에서 로그인 여부 조회 검증하는게 되면 가능
-//        boolean isLiked = bookClient.bookLikeFindMe(bookId);
-
+        String accessToken = cartController.getAccessTokenFromCookies(request.getCookies());
+        if (accessToken != null) {
+            isLiked = bookClient.bookLikeFindMe(bookId);
+        }
 
         model.addAttribute("book", bookDetailDto);
         model.addAttribute("reviews", reviewResponse);
@@ -98,20 +96,13 @@ public class BookController {
         model.addAttribute("reviewSummary", reviewSummaryResponse);
         model.addAttribute("bookCategories", bookCategories);
         model.addAttribute("bookTags", bookTag);
-
-
-//        model.addAttribute("isLiked", isLiked);
+        model.addAttribute("isLiked", isLiked);
         return "book/detail";
     }
 
     @PostMapping("/books/{bookId}/like")
-    public String likeBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes) {
-        try {
+    public String likeBook(@PathVariable Long bookId) {
             bookClient.registerBookLike(bookId);
-            redirectAttributes.addFlashAttribute("likeMsg", "book.like.success");
-        } catch (FeignException.Conflict e) {
-            redirectAttributes.addFlashAttribute("likeMsg", "book.like.already");
-        }
         return "redirect:/books/" + bookId;
 
     }
@@ -120,15 +111,19 @@ public class BookController {
     @PostMapping("/books/{book-id}/reviews")
     public String postReview(@PathVariable("book-id") Long bookId,
                              @ModelAttribute ReviewCreateRequest reviewCreateRequest,
-                             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                             RedirectAttributes redirectAttributes) {
 
 
         MultipartFile[] nonEmptyFiles = files.stream()
                 .filter(file -> !file.isEmpty())
                 .toList().toArray(MultipartFile[]::new);
 
-
-        bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
+        try {
+            bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
+        }catch (FeignException.Forbidden e) {
+            redirectAttributes.addFlashAttribute("error", "구매한 도서만 리뷰를 작성 가능합니다.");
+        }
 
 
         return "redirect:/books/" + bookId;

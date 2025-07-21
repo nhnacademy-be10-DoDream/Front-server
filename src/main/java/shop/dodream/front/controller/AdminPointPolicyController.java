@@ -1,6 +1,7 @@
 package shop.dodream.front.controller;
 
 import feign.FeignException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,7 @@ public class AdminPointPolicyController {
     }
 
     @PostMapping
-    public String createPointPolicy(@ModelAttribute PointPolicy request,
+    public String createPointPolicy(@Valid @ModelAttribute PointPolicy request,
                                     RedirectAttributes redirectAttributes) {
         try {
 
@@ -45,7 +46,7 @@ public class AdminPointPolicyController {
 
     @PutMapping("/{point-policy-id}")
     public String updatePointPolicy(@PathVariable("point-policy-id") Long pointPolicyId,
-                                    @ModelAttribute PointPolicy request,
+                                    @Valid @ModelAttribute PointPolicy request,
                                     RedirectAttributes redirectAttributes) {
         try {
             pointPolicyClient.updatePointPolicy(pointPolicyId, request.withRateFromPercentage());

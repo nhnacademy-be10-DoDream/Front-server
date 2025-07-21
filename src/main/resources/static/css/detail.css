@@ -69,7 +69,7 @@ body {
     background-color: #fff3f5;
     border: 1px solid #ffccd5;
     font-size: 1.1rem;
-    color: #d6336c; /* 핑크 계열 */
+    color: #d6336c;
     padding: 8px 16px;
     border-radius: 20px;
     cursor: pointer;
@@ -77,26 +77,24 @@ body {
     font-weight: 600;
 }
 
-/* 호버 시 스타일 */
-.like-button:hover {
+/* 호버 시 */
+.like-button:hover:not(:disabled) {
     background-color: #ffe0e9;
     transform: scale(1.05);
     box-shadow: 0 0 8px rgba(255, 192, 203, 0.5);
 }
 
-/* 찜한 상태 */
-.liked {
-    background-color: #d6336c;
-    color: #ffffff;
-    border-color: #d6336c;
+/* 찜한 상태 스타일 (색상 제거) */
+.like-button.liked {
+    cursor: not-allowed;
 }
 
-.like-message {
-    color: red;
-    margin-top: 5px;
-    font-size: 0.9rem;
+/* 비활성화된 상태 흐림 제거하고 진하게 */
+.like-button:disabled {
+    cursor: not-allowed;
+    background-color: #ffe0e9;
+    box-shadow: 0 0 8px rgba(255, 192, 203, 0.5);
 }
-
 
 
 

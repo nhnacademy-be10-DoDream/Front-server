@@ -1,5 +1,6 @@
 package shop.dodream.front.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -11,8 +12,14 @@ import java.util.stream.Collectors;
 
 @Data
 public class ReviewUpdateRequest {
+    @NotNull
     private Long reviewId;
+    @NotNull
+    @Min(0)
+    @Max(5)
     private Integer rating;
+    @NotBlank
+    @Size(min = 5)
     private String content;
     private Set<String> originalImageSet = Set.of();
     private Set<String> deletedImageSet = Set.of();
