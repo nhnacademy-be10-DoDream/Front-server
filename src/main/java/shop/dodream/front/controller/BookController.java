@@ -78,15 +78,21 @@ public class BookController {
     public String bookDetail(@PathVariable("book-id") Long bookId,
                              @RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "5") int size,
-                             Model model) {
+                             Model model, HttpServletRequest request) {
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
         List<CategoryTreeResponse> bookCategories = bookClient.getCategoriesByBookId(bookId);
         BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
-        boolean isLiked = bookClient.bookLikeFindMe(bookId);
 
+
+        boolean isLiked = false;
+
+        String accessToken = cartController.getAccessTokenFromCookies(request.getCookies());
+        if (accessToken != null) {
+            isLiked = bookClient.bookLikeFindMe(bookId);
+        }
 
         model.addAttribute("book", bookDetailDto);
         model.addAttribute("reviews", reviewResponse);
@@ -94,8 +100,6 @@ public class BookController {
         model.addAttribute("reviewSummary", reviewSummaryResponse);
         model.addAttribute("bookCategories", bookCategories);
         model.addAttribute("bookTags", bookTag);
-
-
         model.addAttribute("isLiked", isLiked);
         return "book/detail";
     }
