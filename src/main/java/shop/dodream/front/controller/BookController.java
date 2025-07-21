@@ -15,10 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.client.CartClient;
-import shop.dodream.front.dto.BookDto;
-import shop.dodream.front.dto.BookTagInfo;
-import shop.dodream.front.dto.PageResponse;
-import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
 
 import java.util.*;
@@ -115,15 +111,19 @@ public class BookController {
     @PostMapping("/books/{book-id}/reviews")
     public String postReview(@PathVariable("book-id") Long bookId,
                              @ModelAttribute ReviewCreateRequest reviewCreateRequest,
-                             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                             RedirectAttributes redirectAttributes) {
 
 
         MultipartFile[] nonEmptyFiles = files.stream()
                 .filter(file -> !file.isEmpty())
                 .toList().toArray(MultipartFile[]::new);
 
-
-        bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
+        try {
+            bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
+        }catch (FeignException.Forbidden e) {
+            redirectAttributes.addFlashAttribute("error", "구매한 도서만 리뷰를 작성 가능합니다.");
+        }
 
 
         return "redirect:/books/" + bookId;
