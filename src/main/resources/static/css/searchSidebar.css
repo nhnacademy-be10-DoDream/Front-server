@@ -1,3 +1,39 @@
+.breadcrumb {
+    white-space: nowrap;
+    overflow-x: auto;
+    font-size: 13px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 4px;
+    text-align: left;
+    display: flex;         /* 플렉스박스 사용 */
+    align-items: center;   /* 수직 가운데 정렬 */
+    gap: 0;              /* 아이템 간격 */
+}
+
+.breadcrumb span {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb span + span::before {
+    content: ">";
+    margin: 0 -10px;
+    user-select: none;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    padding: 0; /* 패딩 없애기 */
+    display: inline; /* 인라인으로 */
+}
+.breadcrumb a:hover {
+    text-decoration: underline;
+    background-color: transparent; /* 배경색 없애기 */
+}
+
+
+
 .parent-category-search {
     font-weight: bold;
     color: #333;
@@ -95,7 +131,7 @@
     transition: background-color 0.2s;
 }
 
-.category-scroll-section a:hover {
+.category-list a:hover {
     background-color: #f0f7ff;
     color: #2c5aa0;
 }

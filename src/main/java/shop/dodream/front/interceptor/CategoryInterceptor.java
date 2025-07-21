@@ -8,6 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.dto.CategoryResponse;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,17 +23,21 @@ public class CategoryInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (cachedCategories == null) {
-            List<CategoryResponse> parentCategories = bookClient.getCategoriesByDepth(1L);
-            List<CategoryResponse> childCategories = bookClient.getCategoriesByDepth(2L);
+            try {
+                List<CategoryResponse> parentCategories = bookClient.getCategoriesByDepth(1L);
+                List<CategoryResponse> childCategories = bookClient.getCategoriesByDepth(2L);
 
-            Map<CategoryResponse, List<CategoryResponse>> categoryMap = new LinkedHashMap<>();
-            for (CategoryResponse parent : parentCategories) {
-                List<CategoryResponse> children = childCategories.stream()
-                        .filter(child -> child.getParentId().equals(parent.getCategoryId()))
-                        .toList();
-                categoryMap.put(parent, children);
+                Map<CategoryResponse, List<CategoryResponse>> categoryMap = new LinkedHashMap<>();
+                for (CategoryResponse parent : parentCategories) {
+                    List<CategoryResponse> children = childCategories.stream()
+                            .filter(child -> child.getParentId().equals(parent.getCategoryId()))
+                            .toList();
+                    categoryMap.put(parent, children);
+                }
+                cachedCategories = categoryMap;
+            } catch (Exception e) {
+                cachedCategories = Collections.emptyMap();
             }
-            cachedCategories = categoryMap;
         }
         request.setAttribute("categories", cachedCategories);
         return true;

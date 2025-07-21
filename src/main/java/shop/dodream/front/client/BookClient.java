@@ -47,6 +47,9 @@ public interface BookClient {
     @GetMapping("/public/categories/{category-id}/children")
     List<CategoryTreeResponse> getCategoriesChildren(@PathVariable("category-id") Long categoryId);
 
+    @GetMapping("/public/categories/{category-id}/path")
+    List<CategoryResponse> getCategoriesPath(@PathVariable("category-id") Long categoryId);
+
     @GetMapping("/public/categories/{category-id}")
     CategoryResponse getCategory(@PathVariable("category-id") Long categoryId);
 
@@ -138,11 +141,12 @@ public interface BookClient {
     ReviewSummaryResponse getReviewSummary(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/public/books/search")
-    PageResponse<BookItemResponse> searchBooks(@RequestParam String keyword,
+    SearchBookResponse searchBooks(@RequestParam String keyword,
                                                @RequestParam(value = "sort", required = false, defaultValue = "NONE") BookSortType sort,
-                                               @RequestParam("page") int page,
-                                               @RequestParam("size") int size,
-                                               @RequestParam(required = false) Long categoryId);
+                                               Pageable pageable,
+                                               @RequestParam(value = "categoryIds", required = false) List<Long> categoryIds,
+                                               @RequestParam(value = "minPrice", required = false) Integer minPrice,
+                                               @RequestParam(value = "maxPrice", required = false) Integer maxPrice);
 
     @PostMapping(value = "/books/{book-id}/reviews", consumes = MULTIPART_FORM_DATA_VALUE)
     void createReview(
@@ -185,12 +189,7 @@ public interface BookClient {
     void registerBookLike(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/likes/me/books/{book-id}")
-    Boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
-
-
-
-
-
+    boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
 
 
     @GetMapping("/reviews/me")

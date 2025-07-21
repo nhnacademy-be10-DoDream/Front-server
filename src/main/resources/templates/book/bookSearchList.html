@@ -6,7 +6,6 @@
 <head>
     <meta charset="UTF-8">
     <title>두드림 책방</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/searchSidebar.css}">
     <link rel="stylesheet" th:href="@{/css/paging.css}">
 </head>
@@ -15,11 +14,42 @@
 <div layout:fragment="content" class="booklist-container" style="display: flex; position: relative;">
     <form action="/search" method="get" id="searchFilterForm">
         <input type="hidden" name="keyword" th:value="${keyword}" />
+        <input type="hidden" name="categoryId" id="categoryIdInput" th:value="${categoryId}" />
         <input type="hidden" name="minPrice" id="minPriceInput" th:value="${minPrice}" />
         <input type="hidden" name="maxPrice" id="maxPriceInput" th:value="${maxPrice}" />
 
         <div class="search-sidebar">
             <h4>검색내 정렬</h4>
+
+            <div class="sidebar-section category-scroll-section">
+                <h5>분야별 보기</h5>
+                <div class="breadcrumb" th:if="${breadcrumb}">
+                    <span th:each="category, iterStat : ${breadcrumb}">
+                        <a th:href="@{|/search?keyword=${keyword}&categoryId=${category.categoryId}|}"
+                           th:text="${category.categoryName}"></a>
+                    </span>
+                </div>
+                <ul class="category-list">
+                    <li th:each="category : ${selectedCategoryTree}"
+                        th:if="${categoryCountMap[category.categoryId]} != null">
+                        <div class="parent-category">
+                            <a href="#" th:onclick="'event.preventDefault(); toggleSubcategories(' + ${category.categoryId} + ');'"
+                               th:text="${category.categoryName} + ' (' + ${categoryCountMap[category.categoryId]} + ')'"></a>
+                        </div>
+
+                        <!-- 하위 카테고리 목록 -->
+                        <ul th:id="'sub-' + ${category.categoryId}"
+                            class="sub-category" style="display:none; margin-left: 10px;">
+                            <li th:each="child : ${category.children}"
+                                th:if="${categoryCountMap[child.categoryId]} != null">
+                                <a th:href="@{|/search?keyword=${keyword}&categoryId=${child.categoryId}|}"
+                                   th:text="${child.categoryName} + ' (' + ${categoryCountMap[child.categoryId]} + ')'">
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
 
             <!-- 가격대별 보기 -->
             <div class="sidebar-section price-section">
@@ -71,20 +101,19 @@
                 </form>
             </div>
         </div>
-
         <!-- 페이지네이션 -->
         <ul class="pagination" th:if="${totalPages > 1}">
             <!-- 이전 버튼 -->
             <li>
                 <a th:if="${currentPage > 0}"
-                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage - 1}|}"
+                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage - 1}${categoryId != null ? '&categoryId=' + categoryId : ''}${minPrice != null ? '&minPrice=' + minPrice : ''}${maxPrice != null ? '&maxPrice=' + maxPrice : ''}|}"
                    class="page-link">«</a>
                 <span th:if="${currentPage == 0}" class="page-link disabled">«</span>
             </li>
 
             <!-- 페이지 번호 목록 -->
             <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
-                <a th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${pageNum}|}"
+                <a th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${pageNum}${categoryId != null ? '&categoryId=' + categoryId : ''}${minPrice != null ? '&minPrice=' + minPrice : ''}${maxPrice != null ? '&maxPrice=' + maxPrice : ''}|}"
                    th:text="${pageNum + 1}"
                    th:class="'page-link ' + (${pageNum} == ${currentPage} ? 'active' : '')"></a>
             </li>
@@ -92,14 +121,30 @@
             <!-- 다음 버튼 -->
             <li>
                 <a th:if="${currentPage + 1 < totalPages}"
-                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage + 1}|}"
+                   th:href="@{|/search?keyword=${keyword}&sort=${sort}&page=${currentPage + 1}${categoryId != null ? '&categoryId=' + categoryId : ''}${minPrice != null ? '&minPrice=' + minPrice : ''}${maxPrice != null ? '&maxPrice=' + maxPrice : ''}|}"
                    class="page-link">»</a>
                 <span th:if="${currentPage + 1 >= totalPages}" class="page-link disabled">»</span>
             </li>
         </ul>
+
     </div>
     <script>
+        function toggleSubcategories(categoryId) {
+            const el = document.getElementById('sub-' + categoryId);
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
+        }
+
         function setPriceAndSubmit(min, max) {
+            const categoryInput = document.getElementById("categoryIdInput");
+            if (categoryInput.value.trim() === "") {
+                categoryInput.removeAttribute("name"); // categoryId 파라미터 아예 안보내기
+            } else {
+                categoryInput.setAttribute("name", "categoryId"); // 혹시 다시 생겼으면 복구
+            }
             document.getElementById("minPriceInput").value = min != null ? min : '';
             document.getElementById("maxPriceInput").value = max != null ? max : '';
             document.getElementById("searchFilterForm").submit();

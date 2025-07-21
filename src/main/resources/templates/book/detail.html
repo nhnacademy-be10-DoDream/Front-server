@@ -45,23 +45,24 @@
                     </div>
 
                     <div class="like-container">
-                        <!-- 로그인 한 사용자 -->
                         <div th:if="${user != null}">
-                            <form th:action="@{'/books/' + ${book.bookId} + '/like'}" method="post">
+                            <form th:if="!${isLiked}" th:action="@{'/books/' + ${book.bookId} + '/like'}" method="post">
                                 <button class="like-button"
                                         type="submit"
-                                        th:classappend="${isLiked} ? ' liked' : ''"
                                         th:text="#{book.like.button}">
                                     ♡ 찜하기
                                 </button>
                             </form>
 
-                            <!-- 서버에서 전달한 메시지 출력 -->
-                            <div th:if="${likeMsg}" class="like-message" style="color: red; margin-top: 5px;">
-                                <p th:text="#{${likeMsg}}"></p>
-                            </div>
+                            <button class="like-button liked" disabled
+                                    th:if="${isLiked}"
+                                    th:text="#{book.liked.button}">
+                                ♥ 찜 완료
+                            </button>
+
                         </div>
                     </div>
+
 
                     <div>
                         <strong>ISBN:</strong>
@@ -352,7 +353,10 @@
                     });
             });
         });
+
+
     </script>
+
 </div>
 
 </body>
