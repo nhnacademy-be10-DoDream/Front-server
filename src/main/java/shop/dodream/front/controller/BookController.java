@@ -234,7 +234,7 @@ public class BookController {
     public String searchBooks(@RequestParam String keyword,
                               @RequestParam(defaultValue = "NONE") BookSortType sort,
                               @RequestParam(value = "page", defaultValue = "0") int page,
-                              @RequestParam(value = "size", defaultValue = "2") int size,
+                              @RequestParam(value = "size", defaultValue = "8") int size,
                               @RequestParam(required = false) Long categoryId,
                               @RequestParam(required = false) Integer minPrice,
                               @RequestParam(required = false) Integer maxPrice,
@@ -282,9 +282,6 @@ public class BookController {
         model.addAttribute("maxPrice", maxPrice);
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("categoryCountMap", categoryCountMap);
-        System.out.println("selectedCategoryTree = " + categoryTree);
-        System.out.println("categoryCountMap = " + categoryCountMap);
-
 
         return "book/bookSearchList";
     }
