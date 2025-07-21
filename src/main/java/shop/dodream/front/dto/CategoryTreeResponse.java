@@ -13,4 +13,5 @@ public class CategoryTreeResponse extends CategoryResponse {
     public CategoryTreeResponse(Long categoryId, String categoryName, Long depth, Long parentId) {
         super(categoryId, categoryName, depth, parentId);
     }
+
 }

@@ -27,7 +27,17 @@
                 <div class="subcategory-box" th:if="${child.children != null and !child.children.isEmpty()}">
                     <ul class="subcategory-list">
                         <li th:each="subChild : ${child.children}">
-                            <a th:text="${subChild.categoryName}" th:href="@{'/categories/' + ${subChild.categoryId}}"></a>
+                            <a th:text="${subChild.categoryName}" th:href="@{'/categories/' + ${subChild.categoryId}}">
+                                <div class="subcategory-box sub-sub">
+                                    <ul class="subcategory-list">
+                                        <li th:each="subSubChild : ${subChild.children}"
+                                            th:if="${subChild.children != null and !subChild.children.isEmpty()}">
+                                            <a th:text="${subSubChild.categoryName}"
+                                               th:href="@{'/categories/' + ${subSubChild.categoryId}}"></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </a>
                         </li>
                     </ul>
                 </div>
