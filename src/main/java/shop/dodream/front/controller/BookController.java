@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
@@ -237,39 +238,69 @@ public class BookController {
     @GetMapping("/search")
     public String searchBooks(@RequestParam String keyword,
                               @RequestParam(defaultValue = "NONE") BookSortType sort,
-                              @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "8") int size,
+                              @RequestParam(value = "page", defaultValue = "0") int page,
+                              @RequestParam(value = "size", defaultValue = "2") int size,
                               @RequestParam(required = false) Long categoryId,
                               @RequestParam(required = false) Integer minPrice,
                               @RequestParam(required = false) Integer maxPrice,
                               Model model) {
 
-        PageResponse<BookItemResponse> books;
-        try {
-            books = bookClient.searchBooks(keyword, sort, page, size, categoryId);
-        } catch (Exception e) {
-            model.addAttribute("books", Collections.emptyList());
-            model.addAttribute("totalPages", 0);
-            model.addAttribute("currentPage", 0);
-            return "book/bookSearchList";
+        Pageable pageable = PageRequest.of(page, size);
+        List<Long> categoryIds = null;
+        List<CategoryTreeResponse> categoryTree = null;
+
+
+        if (categoryId != null) {
+            categoryTree = bookClient.getCategoriesChildren(categoryId);
+            Set<Long> categoryIdSet = new HashSet<>();
+            categoryIdSet.add(categoryId);
+            collectCategoryIds(categoryTree, categoryIdSet);
+            categoryIds = new ArrayList<>(categoryIdSet);
         }
 
-        List<BookItemResponse> filteredBooks = books.getContent().stream()
-                .filter(book -> {
-                    if (minPrice != null && book.getSalePrice() < minPrice) return false;
-                    if (maxPrice != null && book.getSalePrice() > maxPrice) return false;
-                    return true;
-                })
-                .toList();
+        SearchBookResponse response = bookClient.searchBooks(keyword, sort, pageable, categoryIds, minPrice, maxPrice);
 
-        model.addAttribute("books", filteredBooks);
+        Map<Long, Integer> categoryCountMap = response.getCategoryCountMap();
+        PageResponse<BookItemResponse> books = response.getBooks();
+
+        if (categoryTree == null) {
+            List<CategoryResponse> depth1Categories = bookClient.getCategoriesByDepth(1L);
+            categoryTree = new ArrayList<>();
+            for (CategoryResponse parent : depth1Categories) {
+                List<CategoryTreeResponse> children = bookClient.getCategoriesChildren(parent.getCategoryId());
+                categoryTree.addAll(children);
+            }
+        }
+
+        if (categoryId != null) {
+            List<CategoryResponse> breadcrumb = bookClient.getCategoriesPath(categoryId);
+            model.addAttribute("breadcrumb", breadcrumb);
+        }
+
+        model.addAttribute("selectedCategoryTree", categoryTree);
+        model.addAttribute("books", books.getContent());
         model.addAttribute("keyword", keyword);
         model.addAttribute("totalPages", books.getTotalPages());
-        model.addAttribute("currentPage", books.getNumber());
+        model.addAttribute("currentPage", page);
         model.addAttribute("sort", sort);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("categoryCountMap", categoryCountMap);
+        System.out.println("selectedCategoryTree = " + categoryTree);
+        System.out.println("categoryCountMap = " + categoryCountMap);
+
+
         return "book/bookSearchList";
     }
+
+    private void collectCategoryIds(List<CategoryTreeResponse> nodes, Set<Long> idSet) {
+        if (nodes == null) return;
+        for (CategoryTreeResponse node : nodes) {
+            idSet.add(node.getCategoryId());
+            collectCategoryIds(node.getChildren(), idSet);
+        }
+    }
+
 
 }

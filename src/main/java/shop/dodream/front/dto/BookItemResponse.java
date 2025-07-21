@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -24,4 +23,5 @@ public class BookItemResponse {
     private Long regularPrice;
     private Long salePrice;
     private String imageUrl;
+    private List<Long> categoryIds;
 }
