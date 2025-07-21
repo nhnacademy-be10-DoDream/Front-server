@@ -28,8 +28,7 @@ public class PaymentController {
         return "order/payment/checkout";
     }
 
-    @RequestMapping(value = "/confirm")
-    @ResponseBody
+    @PostMapping("/confirm")
     public ResponseEntity<Map<String ,Object>> confirmPayment(@RequestBody String jsonBody,HttpServletRequest request,
                                                               @RequestHeader(value = "X-USER-ID", required = false) String userId,
                                                               @RequestHeader(value = "X-PAYMENT-PROVIDER", required = false) String paymentProvider) {
