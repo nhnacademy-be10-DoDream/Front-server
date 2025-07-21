@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import shop.dodream.front.dto.*;
+import shop.dodream.front.dto.CreateAccountRequest;
+import shop.dodream.front.dto.LoginRequest;
+import shop.dodream.front.dto.UserAddressDto;
 import shop.dodream.front.service.AuthService;
 
 import java.io.IOException;
@@ -63,7 +66,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public String signup(CreateAccountRequest request, UserAddressDto userAddressDto) {
+    public String signup(@Valid @ModelAttribute CreateAccountRequest request, @Valid @ModelAttribute UserAddressDto userAddressDto) {
         authService.signUp(request, userAddressDto);
         return "redirect:/";
     }
