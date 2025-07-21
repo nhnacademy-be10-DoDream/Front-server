@@ -85,11 +85,7 @@ public class BookController {
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
         List<CategoryTreeResponse> bookCategories = bookClient.getCategoriesByBookId(bookId);
         BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
-
-
-
-        // 컨트롤러에서 로그인 여부 조회 검증하는게 되면 가능
-//        boolean isLiked = bookClient.bookLikeFindMe(bookId);
+        boolean isLiked = bookClient.bookLikeFindMe(bookId);
 
 
         model.addAttribute("book", bookDetailDto);
@@ -100,18 +96,13 @@ public class BookController {
         model.addAttribute("bookTags", bookTag);
 
 
-//        model.addAttribute("isLiked", isLiked);
+        model.addAttribute("isLiked", isLiked);
         return "book/detail";
     }
 
     @PostMapping("/books/{bookId}/like")
-    public String likeBook(@PathVariable Long bookId, RedirectAttributes redirectAttributes) {
-        try {
+    public String likeBook(@PathVariable Long bookId) {
             bookClient.registerBookLike(bookId);
-            redirectAttributes.addFlashAttribute("likeMsg", "book.like.success");
-        } catch (FeignException.Conflict e) {
-            redirectAttributes.addFlashAttribute("likeMsg", "book.like.already");
-        }
         return "redirect:/books/" + bookId;
 
     }

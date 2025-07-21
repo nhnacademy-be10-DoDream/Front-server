@@ -189,7 +189,7 @@ public interface BookClient {
     void registerBookLike(@PathVariable("book-id") Long bookId);
 
     @GetMapping("/likes/me/books/{book-id}")
-    Boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
+    boolean bookLikeFindMe(@PathVariable("book-id") Long bookId);
 
 
     @GetMapping("/reviews/me")
