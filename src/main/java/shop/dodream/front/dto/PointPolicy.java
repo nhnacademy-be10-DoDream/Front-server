@@ -1,5 +1,7 @@
 package shop.dodream.front.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +14,15 @@ import java.math.RoundingMode;
 @NoArgsConstructor
 public class PointPolicy {
     private Long pointPolicyId;
+    @NotNull
     private PolicyType policyType;
-
+    @NotNull
+    @Min(0)
     private BigDecimal rate;
-
+    @NotNull
+    @Min(0)
     private long basePoint;
+    @NotNull
     private GradeType grade;
 
     public BigDecimal getDisplayRate() {

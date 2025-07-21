@@ -1,13 +1,26 @@
 package shop.dodream.front.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class UserAddressDto {
-    private String alias; // 주소별칭
-    private String zipcode; // 우편번호
-    private String roadAddress; // 도로명주소
-    private String jibunAddress; // 지번주소
-    private String extraAddress; // 참고항목
-    private String detailAddress; // 상세주소
+    @NotBlank
+    @Size(max = 50)
+    private String alias;
+    @NotBlank
+    @Size(min = 5, max = 5)
+    @Pattern(regexp = "\\d{5}")
+    private String zipcode;
+    @NotBlank
+    @Size(max = 255)
+    private String roadAddress;
+    @Size(max = 255)
+    private String jibunAddress;
+    @Size(max = 255)
+    private String extraAddress;
+    @Size(max = 255)
+    private String detailAddress;
 }
