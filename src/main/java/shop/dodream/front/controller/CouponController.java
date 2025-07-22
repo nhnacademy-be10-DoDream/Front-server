@@ -1,15 +1,16 @@
 package shop.dodream.front.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import shop.dodream.front.client.BookClient;
 import shop.dodream.front.client.CouponClient;
-import shop.dodream.front.dto.CreateCouponRequest;
-import shop.dodream.front.dto.CouponResponse;
+import shop.dodream.front.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import shop.dodream.front.dto.UserCouponResponse;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class CouponController {
 
     private final CouponClient couponClient;
+    private final BookClient bookClient;
 
     @GetMapping
     public String getCouponList(Model model, Pageable pageable) {
@@ -30,18 +32,34 @@ public class CouponController {
     }
 
     @GetMapping("/add")
-    public String addCouponForm(@RequestParam(value = "policyId", required = false) Long policyId, Model model) {
+    public String addCouponForm(@RequestParam(value = "policyId", required = false) Long policyId, Model model) throws JsonProcessingException {
         CreateCouponRequest request = new CreateCouponRequest();
         if (policyId != null) {
             request.setPolicyId(policyId);
         }
+
+        List<CategoryResponse> categories = bookClient.getAllCategories();
+        ObjectMapper mapper = new ObjectMapper();
+        String categoryJson = mapper.writeValueAsString(categories);
+
+        model.addAttribute("categoryList", categories);
+        model.addAttribute("categoryJson", categoryJson);
         model.addAttribute("createCouponRequest", request);
         model.addAttribute("couponPolicies", couponClient.getAllCouponPolicies());
         return "admin/coupon/add";
     }
 
     @PostMapping("/add")
-    public String createCoupon(@ModelAttribute CreateCouponRequest request) {
+    public String createCoupon(@RequestParam("policyId") Long policyId,
+                               @RequestParam(value = "isbn", required = false) String isbn,
+                               @RequestParam(value = "categoryId", required = false) Long categoryId){
+
+        Long bookId = null;
+        if (isbn != null && !isbn.trim().isEmpty()) {
+            BookItemResponse response = bookClient.getBookByIsbn(isbn);
+            bookId = response.getBookId();
+        }
+        CreateCouponRequest request = new CreateCouponRequest(policyId, bookId, categoryId);
         couponClient.createCoupon(request);
         return "redirect:/admin/coupons";
     }
