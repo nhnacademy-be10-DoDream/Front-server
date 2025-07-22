@@ -1,4 +1,4 @@
-package shop.dodream.front.controller;
+package shop.dodream.front.controller.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shop.dodream.front.dto.CreateAccountRequest;
 import shop.dodream.front.dto.LoginRequest;
 import shop.dodream.front.dto.UserAddressDto;
@@ -28,12 +29,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public String login(@ModelAttribute LoginRequest request, Model model,HttpServletResponse response) throws IOException {
+    public String login(@ModelAttribute LoginRequest request, Model model,HttpServletResponse response,RedirectAttributes redirectAttributes) throws IOException {
         try{
             authService.login(request,response);
             return "redirect:/";
         } catch (FeignException e) {
-            return handleAuthException(e, request.getUserId(), model);
+            return handleAuthException(e, request.getUserId(), model, redirectAttributes);
         }
     }
 
@@ -48,13 +49,14 @@ public class AuthController {
             @RequestParam("code") String code,
             @RequestParam("state") String state,
             HttpServletResponse response,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         try {
             authService.paycoLogin(code, state, response);
             return "redirect:/";
         }catch (FeignException e) {
-            return handleAuthException(e, null, model);
+            return handleAuthException(e, null, model, redirectAttributes);
         }
     }
 
@@ -71,12 +73,11 @@ public class AuthController {
         return "redirect:/";
     }
 
-    private String handleAuthException(FeignException e, String fallbackUserId, Model model) {
+    private String handleAuthException(FeignException e, String fallbackUserId, Model model, RedirectAttributes redirectAttributes) {
         try {
             int status = e.status();
             ObjectMapper mapper = new ObjectMapper();
 
-            // 응답 body 파싱 시도 (JSON이 아닐 경우 예외 발생)
             Map<String, Object> body = null;
             String errorMessage = null;
             try {
@@ -88,7 +89,8 @@ public class AuthController {
             if (status == HttpStatus.LOCKED.value() && body != null) {
                 if ("DORMANT".equalsIgnoreCase((String)body.get("status"))) {
                     String userId = body.get("userId") != null ? String.valueOf(body.get("userId")) : fallbackUserId;
-                    return "redirect:/auth/dormant/verify-form?userId=" + userId;
+                    redirectAttributes.addFlashAttribute("userId",userId);
+                    return "redirect:/auth/dormant/verify-form";
                 }
             }
             if(errorMessage != null && !errorMessage.isBlank()) {
