@@ -13,6 +13,12 @@
         <h1 class="display-4 fw-bold text-danger">400</h1>
         <p class="fs-4">잘못된 요청입니다.</p>
         <p class="text-muted">요청이 유효하지 않거나 잘못된 형식이에요.</p>
+        <div th:if="${errorMessages}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0">
+                <li th:each="msg : ${errorMessages}" th:text="${msg}"></li>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         <a href="/" class="btn btn-primary mt-3">홈으로 가기</a>
     </div>
 </main>

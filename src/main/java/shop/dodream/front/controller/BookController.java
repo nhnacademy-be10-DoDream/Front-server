@@ -15,10 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import shop.dodream.front.client.BookClient;
 import shop.dodream.front.client.CartClient;
-import shop.dodream.front.dto.BookDto;
-import shop.dodream.front.dto.BookTagInfo;
-import shop.dodream.front.dto.PageResponse;
-import shop.dodream.front.dto.TagResponse;
 import shop.dodream.front.dto.*;
 
 import java.util.*;
@@ -78,15 +74,21 @@ public class BookController {
     public String bookDetail(@PathVariable("book-id") Long bookId,
                              @RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "5") int size,
-                             Model model) {
+                             Model model, HttpServletRequest request) {
 
         BookDetailDto bookDetailDto = bookClient.getBookDetail(bookId);
         Page<ReviewResponse> reviewResponse = bookClient.getBooksReview(bookId, page, size);
         ReviewSummaryResponse reviewSummaryResponse = bookClient.getReviewSummary(bookId);
         List<CategoryTreeResponse> bookCategories = bookClient.getCategoriesByBookId(bookId);
         BookWithTagsResponse bookTag = bookClient.getTagsByBookId(bookId);
-        boolean isLiked = bookClient.bookLikeFindMe(bookId);
 
+
+        boolean isLiked = false;
+
+        String accessToken = cartController.getAccessTokenFromCookies(request.getCookies());
+        if (accessToken != null) {
+            isLiked = bookClient.bookLikeFindMe(bookId);
+        }
 
         model.addAttribute("book", bookDetailDto);
         model.addAttribute("reviews", reviewResponse);
@@ -94,8 +96,6 @@ public class BookController {
         model.addAttribute("reviewSummary", reviewSummaryResponse);
         model.addAttribute("bookCategories", bookCategories);
         model.addAttribute("bookTags", bookTag);
-
-
         model.addAttribute("isLiked", isLiked);
         return "book/detail";
     }
@@ -111,15 +111,19 @@ public class BookController {
     @PostMapping("/books/{book-id}/reviews")
     public String postReview(@PathVariable("book-id") Long bookId,
                              @ModelAttribute ReviewCreateRequest reviewCreateRequest,
-                             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+                             @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                             RedirectAttributes redirectAttributes) {
 
 
         MultipartFile[] nonEmptyFiles = files.stream()
                 .filter(file -> !file.isEmpty())
                 .toList().toArray(MultipartFile[]::new);
 
-
-        bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
+        try {
+            bookClient.createReview(bookId, reviewCreateRequest, nonEmptyFiles);
+        }catch (FeignException.Forbidden e) {
+            redirectAttributes.addFlashAttribute("error", "구매한 도서만 리뷰를 작성 가능합니다.");
+        }
 
 
         return "redirect:/books/" + bookId;
@@ -230,7 +234,7 @@ public class BookController {
     public String searchBooks(@RequestParam String keyword,
                               @RequestParam(defaultValue = "NONE") BookSortType sort,
                               @RequestParam(value = "page", defaultValue = "0") int page,
-                              @RequestParam(value = "size", defaultValue = "2") int size,
+                              @RequestParam(value = "size", defaultValue = "8") int size,
                               @RequestParam(required = false) Long categoryId,
                               @RequestParam(required = false) Integer minPrice,
                               @RequestParam(required = false) Integer maxPrice,
@@ -278,9 +282,6 @@ public class BookController {
         model.addAttribute("maxPrice", maxPrice);
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("categoryCountMap", categoryCountMap);
-        System.out.println("selectedCategoryTree = " + categoryTree);
-        System.out.println("categoryCountMap = " + categoryCountMap);
-
 
         return "book/bookSearchList";
     }
