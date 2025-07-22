@@ -61,11 +61,11 @@
         </tr>
         <tr>
             <th th:text="#{mypage.profile.joinDate}"></th>
-            <td th:text="${#temporals.format(currentUser.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${@dateUtil.toKst(currentUser.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         <tr>
             <th th:text="#{mypage.profile.lastLogin}"></th>
-            <td th:text="${#temporals.format(currentUser.lastLoginAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${@dateUtil.toKst(currentUser.lastLoginAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
     </table>
 

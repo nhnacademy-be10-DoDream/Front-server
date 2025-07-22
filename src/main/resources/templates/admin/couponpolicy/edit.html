@@ -100,7 +100,7 @@
                                 id="fixedDate"
                                 name="fixedDate"
                                 class="form-control"
-                                th:value="${#temporals.format(policy.fixedDate, 'yyyy-MM-dd''T''HH:mm')}" />
+                                th:value="${@dateUtil.toKst(policy.fixedDate, 'yyyy-MM-dd''T''HH:mm')}" />
                     </div>
 
                     <!-- 추가 일수 -->

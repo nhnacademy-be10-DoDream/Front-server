@@ -90,14 +90,14 @@
                 <div class="user-detail-field">
                     <label class="user-detail-label" th:text="#{admin.users.createdAt}"></label>
                     <div class="user-detail-value readonly">
-                        <span th:text="${#temporals.format(userDetail.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                        <span th:text="${@dateUtil.toKst(userDetail.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
                     </div>
                 </div>
 
                 <div class="user-detail-field">
                     <label class="user-detail-label" th:text="#{admin.users.lastLoginAt}"></label>
                     <div class="user-detail-value readonly">
-                        <span th:if="${userDetail.lastLoginAt != null}" th:text="${#temporals.format(userDetail.lastLoginAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                        <span th:if="${userDetail.lastLoginAt != null}" th:text="${@dateUtil.toKst(userDetail.lastLoginAt, 'yyyy-MM-dd HH:mm:ss')}"></span>
                         <span th:unless="${userDetail.lastLoginAt != null}" th:text="#{admin.users.lastLoginAt.empty}"></span>
                     </div>
                 </div>

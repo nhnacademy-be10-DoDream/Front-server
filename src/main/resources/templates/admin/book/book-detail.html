@@ -57,7 +57,7 @@
         </tr>
         <tr>
             <th>등록일</th>
-            <td th:text="${#temporals.format(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-10 10:00:00</td>
+            <td th:text="${@dateUtil.toKst(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-10 10:00:00</td>
         </tr>
         <tr>
             <th>조회수</th>
