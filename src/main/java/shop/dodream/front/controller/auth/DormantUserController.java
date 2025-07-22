@@ -1,4 +1,4 @@
-package shop.dodream.front.controller;
+package shop.dodream.front.controller.auth;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,11 @@ public class DormantUserController {
     private final AuthClient authClient;
 
     @GetMapping("/verify-form")
-    public String showVerifyForm(@RequestParam String userId, Model model){
+    public String showVerifyForm(@ModelAttribute("userId") String userId, Model model){
+        if(userId==null || userId.isEmpty()){
+            model.addAttribute("error","인증 정보가 없습니다. 다시 로그인 해주세요.");
+            return "auth/login";
+        }
         model.addAttribute("userId", userId);
         return "auth/verify";
     }
