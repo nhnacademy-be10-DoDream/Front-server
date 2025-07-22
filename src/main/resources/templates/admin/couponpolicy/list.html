@@ -46,7 +46,7 @@
                         <td th:text="${policy.discountValue}"></td>
                         <td th:text="${policy.minPurchaseAmount}"></td>
                         <td th:text="${policy.maxDiscountAmount}"></td>
-                        <td th:text="${policy.fixedDate != null ? #temporals.format(policy.fixedDate, 'yyyy-MM-dd') : '없음'}"></td>
+                        <td th:text="${policy.fixedDate != null ? @dateUtil.toKst(policy.fixedDate, 'yyyy-MM-dd') : '없음'}"></td>
                         <td th:text="${policy.plusDay != null ? policy.plusDay + '일' : '없음'}"></td>
                         <td>
                             <button type="button" class="btn-admin btn-info btn-sm" th:onclick="'location.href=\'/admin/policies/' + ${policy.id} + '\''">상세</button>

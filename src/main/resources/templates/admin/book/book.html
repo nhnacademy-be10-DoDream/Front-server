@@ -49,7 +49,7 @@
                         <td th:text="${book.author}">저자</td>
                         <td th:text="${#numbers.formatInteger(book.regularPrice, 0, 'COMMA')} + '원'">0원</td>
                         <td th:text="${#numbers.formatInteger(book.salePrice, 0, 'COMMA')} + '원'">0원</td>
-                        <td th:text="${#temporals.format(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">등록일</td>
+                        <td th:text="${@dateUtil.toKst(book.createdAt, 'yyyy-MM-dd HH:mm:ss')}">등록일</td>
                         <td th:text="${book.status}">상태</td>
                         <td>
                             <div class="d-flex flex-wrap gap-1">

@@ -53,7 +53,7 @@
                         <span th:text="#{mypage.review.content}"></span>
                         <div class="right-group">
                             <span th:text="#{mypage.review.writeDate}"></span>:
-                            <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                            <span th:text="${@dateUtil.toKst(review.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
                         </div>
                     </div>
                     <div class="info-card-value">
