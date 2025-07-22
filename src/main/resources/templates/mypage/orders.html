@@ -41,7 +41,7 @@
                     <span th:text="#{mypage.order.status} + ': ' + ${order.status}"></span>
                 </span>
                     <span th:text="#{mypage.order.orderDate}"></span>:
-                    <span th:text="${#temporals.format(order.orderAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    <span th:text="${@dateUtil.toKst(order.orderAt, 'yyyy-MM-dd HH:mm')}"></span>
                 </div>
             </div>
 

@@ -83,8 +83,8 @@
                     <tbody>
                     <tr th:each="point : ${points.content}">
                         <td class="text-center">
-                            <div th:text="${#temporals.format(point.createdAt, 'yyyy-MM-dd')}"></div>
-                            <small class="text-muted" th:text="${#temporals.format(point.createdAt, 'HH:mm')}"></small>
+                            <div th:text="${@dateUtil.toKst(point.createdAt, 'yyyy-MM-dd')}"></div>
+                            <small class="text-muted" th:text="${@dateUtil.toKst(point.createdAt, 'HH:mm')}"></small>
                         </td>
                         <td class="text-center">
                         <span class="mypage-badge"

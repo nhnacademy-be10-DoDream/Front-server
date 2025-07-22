@@ -86,12 +86,12 @@
                     </td>
 
                     <td class="text-center">
-                        <span th:if="${coupon.issuedAt != null}" th:text="${#temporals.format(coupon.issuedAt, 'yyyy-MM-dd')}"></span>
+                        <span th:if="${coupon.issuedAt != null}" th:text="${@dateUtil.toKst(coupon.issuedAt, 'yyyy-MM-dd')}"></span>
                         <span th:if="${coupon.issuedAt == null}" th:text="#{text.none}"></span>
                     </td>
 
                     <td class="text-center">
-                        <span th:if="${coupon.expiredAt != null}" th:text="${#temporals.format(coupon.expiredAt, 'yyyy-MM-dd')}"></span>
+                        <span th:if="${coupon.expiredAt != null}" th:text="${@dateUtil.toKst(coupon.expiredAt, 'yyyy-MM-dd')}"></span>
                         <span th:if="${coupon.expiredAt == null}" th:text="#{text.none}"></span>
                     </td>
                 </tr>

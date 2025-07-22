@@ -42,8 +42,8 @@
                             <span th:if="${userCoupon.usedAt == null and #temporals.createNow().isAfter(userCoupon.expiredAt.toLocalDateTime())}">만료됨</span>
                             <span th:if="${userCoupon.usedAt == null and !#temporals.createNow().isAfter(userCoupon.expiredAt.toLocalDateTime())}">발급됨</span>
                         </td>
-                        <td th:text="${userCoupon.usedAt != null ? #temporals.format(userCoupon.usedAt, 'yyyy-MM-dd HH:mm:ss') : '미사용'}"></td>
-                        <td th:text="${userCoupon.expiredAt != null ? #temporals.format(userCoupon.expiredAt, 'yyyy-MM-dd HH:mm:ss') : '만료일 없음'}"></td>
+                        <td th:text="${userCoupon.usedAt != null ? @dateUtil.toKst(userCoupon.usedAt, 'yyyy-MM-dd HH:mm:ss') : '미사용'}"></td>
+                        <td th:text="${userCoupon.expiredAt != null ? @dateUtil.toKst(userCoupon.expiredAt, 'yyyy-MM-dd HH:mm:ss') : '만료일 없음'}"></td>
                     </tr>
                     </tbody>
                 </table>
