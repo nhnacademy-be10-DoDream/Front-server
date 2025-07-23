@@ -99,8 +99,10 @@ public class UserProfileController {
     }
 
     @GetMapping("/orders")
-    public String getOrders(Model model) {
-        model.addAttribute("orders", orderClient.getOrders());
+    public String getOrders(Model model,
+                            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                            @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+        model.addAttribute("orders", orderClient.getOrders(page, size));
         model.addAttribute(LAYOUT_NAME, "orders");
         return "mypage/orders";
     }
