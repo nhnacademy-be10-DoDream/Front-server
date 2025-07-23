@@ -1,5 +1,6 @@
 package shop.dodream.front.controller;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -101,10 +102,21 @@ public class OrderController {
         return "redirect:/order/detail/%s".formatted(orderId);
     }
 
+    @GetMapping("/guest")
+    public String getGuestOrderPage(Model model, HttpSession session,
+                                    @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                    @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+        // 비회원 주문 페이지로 이동
+        GuestAuthRequest guestAuthRequest = (GuestAuthRequest) session.getAttribute("guestAuthRequest");
+        model.addAttribute("orders", orderClient.getOrdersForGuest(guestAuthRequest, page, size));
+        return "order/guest-orders"; // 비회원 주문 페이지로 이동
+    }
+
     @PostMapping("/guest")
-    public String getGuestOrders(Model model, GuestAuthRequest guestAuthRequest,
+    public String getGuestOrders(Model model, GuestAuthRequest guestAuthRequest, HttpSession session,
                                  @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                  @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+        session.setAttribute("guestAuthRequest", guestAuthRequest);
         model.addAttribute("orders", orderClient.getOrdersForGuest(guestAuthRequest, page, size));
         return "order/guest-orders"; // 비회원 주문 목록 페이지로 이동
     }
