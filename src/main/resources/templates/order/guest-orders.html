@@ -26,7 +26,7 @@
 
     <!-- 주문 내역 목록 -->
     <div th:if="${orders != null and not orders.isEmpty()}">
-        <div th:each="order : ${orders}" class="info-card">
+        <div th:each="order : ${orders.content}" class="info-card">
 
             <!-- 주문 헤더 -->
             <div class="info-card-header">
@@ -172,6 +172,38 @@
                 </button>
             </div>
         </div>
+    </div>
+    <!-- 페이지네이션 -->
+    <div th:if="${orders.totalPages > 1}" class="pagination justify-content-center mt-4">
+        <ul class="pagination">
+
+            <!-- 이전 페이지 -->
+            <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/order/guest(page=${orders.number - 1}, size=${orders.size})}"
+                   aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <!-- 페이지 번호들 -->
+            <li th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}"
+                class="page-item"
+                th:classappend="${i == orders.number} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/order/guest(page=${i}, size=${orders.size})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+
+            <!-- 다음 페이지 -->
+            <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/order/guest(page=${orders.number + 1}, size=${orders.size})}"
+                   aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
     </div>
 
 
