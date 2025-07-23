@@ -102,8 +102,10 @@ public class OrderController {
     }
 
     @PostMapping("/guest")
-    public String getGuestOrders(Model model, GuestAuthRequest guestAuthRequest) {
-        model.addAttribute("orders", orderClient.getOrdersForGuest(guestAuthRequest));
+    public String getGuestOrders(Model model, GuestAuthRequest guestAuthRequest,
+                                 @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+                                 @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+        model.addAttribute("orders", orderClient.getOrdersForGuest(guestAuthRequest, page, size));
         return "order/guest-orders"; // 비회원 주문 목록 페이지로 이동
     }
 }
