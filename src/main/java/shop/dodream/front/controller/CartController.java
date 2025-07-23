@@ -91,15 +91,23 @@ public class CartController {
 	}
 	
 	@PutMapping("/cart/{cartItemId}")
-	public String updateQuantity(@PathVariable Long cartItemId,
-	                             @RequestParam Long quantity) {
-		CartResponse cart = cartClient.getCart();
-		CartItemRequest request = new CartItemRequest();
-		request.setCartId(cart.getCartId());
-		request.setQuantity(quantity);
-		cartClient.updateCartItemQuantity(request, cartItemId, cart.getCartId());
-		return "redirect:/cart";
+	@ResponseBody // 이 어노테이션을 추가하여 view가 아닌 데이터를 반환하도록 설정
+	public ResponseEntity<Void> updateQuantity(@PathVariable Long cartItemId,
+	                                           @RequestParam("quantity") Long quantity) {
+		try {
+			CartResponse cart = cartClient.getCart();
+			CartItemRequest request = new CartItemRequest();
+			request.setCartId(cart.getCartId());
+			request.setQuantity(quantity);
+			cartClient.updateCartItemQuantity(request, cartItemId, cart.getCartId());
+			return ResponseEntity.ok().build(); // 성공 시 200 OK 응답
+		} catch (Exception e) {
+			log.error("장바구니 수량 변경 실패: cartItemId={}, quantity={}", cartItemId, quantity, e);
+			// 실패 시 서버 내부 오류(500) 응답
+			return ResponseEntity.internalServerError().build();
+		}
 	}
+	
 	
 	@PostMapping("/cart/{bookId}")
 	public String deleteCartItem(@PathVariable Long bookId) {
