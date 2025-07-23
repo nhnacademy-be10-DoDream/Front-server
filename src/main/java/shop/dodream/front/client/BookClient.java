@@ -24,6 +24,9 @@ public interface BookClient {
     @GetMapping("/public/books/all")
     List<BookDto> getAllBooks();
 
+    @GetMapping("/admin/books/isbn/{isbn}")
+    BookItemResponse getBookByIsbn(@PathVariable("isbn") String isbn);
+
     // aladdin api 도서 조회
     @GetMapping("/admin/books/aladdin-search")
     AladdinBookSearchResult getAladdinBookList(@RequestParam("query") String query,
