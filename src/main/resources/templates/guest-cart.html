@@ -80,7 +80,7 @@
   </div>
 
   <!-- 🧾 주문 요약 및 주문하기 버튼 -->
-  <form th:action="@{/order}" method="post" class="mt-5">
+  <form th:action="@{/order}" method="post" class="mt-5" id="guestOrderForm">
     <div class="card shadow-sm p-4">
       <div class="row align-items-center">
 
@@ -105,7 +105,7 @@
 
         <!-- 주문 버튼 -->
         <div class="col-md-4 text-md-end text-center mt-3 mt-md-0">
-          <button type="submit" class="btn btn-primary btn-lg px-5" th:text="#{cart.button.order}">주문하기</button>
+          <button type="button" onclick="submitGuestOrder()" class="btn btn-primary btn-lg px-5" th:text="#{cart.button.order}">주문하기</button>
         </div>
       </div>
 
