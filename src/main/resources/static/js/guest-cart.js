@@ -1,67 +1,75 @@
-
-    function formatPrice(value) {
+function formatPrice(value) {
     return value.toLocaleString() + '원';
 }
 
-    function recalculateGuestCartTotal() {
+function recalculateGuestCartTotal() {
     let totalProductPrice = 0;
     let totalWrappingPrice = 0;
-    const seenBookIds = new Set();
 
     document.querySelectorAll("tbody tr").forEach(row => {
-    const priceSpan = row.querySelector("td:nth-child(2) span");
-    const salePriceText = priceSpan ? priceSpan.textContent : '0';
-    const salePrice = Number(salePriceText.replace(/[^0-9]/g, "")) || 0;
 
-    const quantityInput = row.querySelector("input[type='number']");
-    let quantity = 1;
-    if (quantityInput && quantityInput.value !== "") {
-    quantity = Number(quantityInput.value);
-    if (isNaN(quantity) || quantity < 1) quantity = 1;
-}
+        const priceCell = row.querySelector("td:nth-child(2)");
+        const salePriceText = priceCell ? priceCell.textContent : '0';
+        const salePrice = Number(salePriceText.replace(/[^0-9]/g, "")) || 0;
 
-    // bookId 추출 (상품명 td의 a 태그에서 id 파싱)
-    const bookLink = row.querySelector("td:nth-child(1) a");
-    let bookId = null;
-    if (bookLink) {
-    const href = bookLink.getAttribute('href');
-    const match = href.match(/\/books\/(\d+)/);
-    if (match) bookId = match[1];
-}
+        const quantityInput = row.querySelector("input[type='number']");
+        let quantity = 1;
+        if (quantityInput && quantityInput.value !== "") {
+            quantity = Number(quantityInput.value);
+            if (isNaN(quantity) || quantity < 1) quantity = 1;
+        }
 
-    // 0원 행, 중복 bookId 행 제외
-    if (salePrice > 0 && bookId && !seenBookIds.has(bookId)) {
-    seenBookIds.add(bookId);
-    totalProductPrice += salePrice * quantity;
+        if (salePrice > 0) {
+            totalProductPrice += salePrice * quantity;
 
-    const wrappingSelect = row.querySelector('.wrapping-select');
-    const selectedOption = wrappingSelect?.selectedOptions[0];
-    const wrappingPrice = selectedOption ? Number(selectedOption.dataset.price || 0) : 0;
-    totalWrappingPrice += wrappingPrice;
+            const wrappingSelect = row.querySelector('.wrapping-select');
+            const selectedOption = wrappingSelect?.selectedOptions[0];
+            const wrappingPrice = selectedOption ? Number(selectedOption.dataset.price || 0) : 0;
+            totalWrappingPrice += wrappingPrice * quantity;
 
-    const index = wrappingSelect.getAttribute("data-index");
-    document.querySelector(`input[name='items[${index}].wrappingId']`).value = selectedOption?.value || "";
-}
-});
+            const index = wrappingSelect.getAttribute("data-index");
+            const wrappingIdInput = document.querySelector(`input[name='items[${index}].wrappingId']`);
+            const quantityInput = document.querySelector(`input[name='items[${index}].quantity']`);
+            if (wrappingIdInput) {
+                wrappingIdInput.value = selectedOption?.value || "";
+            }
+            if (quantityInput) {
+                quantityInput.value = quantity;
+            }
+        }
+    });
 
     const orderTotal = totalProductPrice + totalWrappingPrice;
-    const orderTotalInput = document.querySelector("input[name='orderTotal']");
-    if (orderTotalInput) {
-    orderTotalInput.value = orderTotal; // 값 반영
-}
+
     document.querySelector("input[name='totalProductPrice']").value = totalProductPrice;
     document.querySelector("input[name='totalWrappingPrice']").value = totalWrappingPrice;
+
     document.getElementById("totalProductPrice").innerText = formatPrice(totalProductPrice);
+    document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrappingPrice);
     document.getElementById("orderTotal").innerText = formatPrice(orderTotal);
-    document.getElementById("totalWrappingPrice").innerText = formatPrice(totalWrappingPrice)
 }
 
+function submitGuestOrder() {
 
-    window.onload = () => {
+    const cartItemRows = document.querySelectorAll("tbody tr");
+    if (cartItemRows.length === 0) {
+        alert("장바구니에 담긴 책이 없습니다. 상품을 추가해주세요.");
+        return;
+    }
 
     recalculateGuestCartTotal();
-    document.querySelectorAll("select").forEach(select => {
-    select.addEventListener("change", recalculateGuestCartTotal);
-});
 
+
+    const orderForm = document.getElementById("guestOrderForm");
+    if (orderForm) {
+        orderForm.submit();
+    }
+}
+
+window.onload = () => {
+    recalculateGuestCartTotal();
+
+    document.querySelectorAll(".wrapping-select, input[type='number']").forEach(element => {
+        element.addEventListener("change", recalculateGuestCartTotal);
+    });
 };

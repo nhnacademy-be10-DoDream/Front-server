@@ -68,7 +68,7 @@
                                     <div class="counter-text mb-2">
                                         <span th:text="#{mypage.order.quantity}"></span>:
                                         <span th:text="${item.quantity} + ' ' + #{mypage.text.items}"></span>
-                                        <span th:text="${#numbers.formatCurrency(item.price)}"></span>
+                                        <span th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}#{order.currency.unit}|"></span>
                                     </div>
 
                                     <!-- 포장 정보 -->
@@ -76,15 +76,15 @@
                                          class="counter-text text-success">
                                         <i class="bi bi-gift me-1"></i>
                                         <span th:text="${item.wrappingInfo.name}"></span>
-                                        <span th:text="'(+' + ${#numbers.formatCurrency(item.wrappingInfo.price)} + ')'"></span>
+                                        <span th:text="'(+' + |${#numbers.formatInteger(item.wrappingInfo.price, 0, 'COMMA')}#{order.currency.unit}| + ')'"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-4 text-md-end">
                                     <div class="section-title"
-                                         th:text="${#numbers.formatCurrency(item.price * item.quantity)}"></div>
+                                         th:text="|${#numbers.formatInteger((item.price * item.quantity), 0, 'COMMA')}#{order.currency.unit}|"></div>
                                     <div th:if="${item.wrappingInfo != null and item.wrappingInfo.price != null}"
                                          class="counter-text text-success">
-                                        <span th:text="#{mypage.order.wrappingFee} + ': ' + ${#numbers.formatCurrency(item.wrappingInfo.price)}"></span>
+                                        <span th:text="#{mypage.order.wrappingFee} + ': ' + |${#numbers.formatInteger(item.wrappingInfo.price, 0, 'COMMA')}#{order.currency.unit}|"></span>
                                     </div>
                                 </div>
                             </div>
@@ -115,19 +115,20 @@
                         <div class="info-card-item">
                             <div class="d-flex justify-content-between">
                                 <span th:text="#{mypage.order.subtotal}"></span>
-                                <span th:text="${#numbers.formatCurrency(order.totalPrice)}"></span>
+                                <span th:text="|${#numbers.formatInteger(order.totalPrice, 0, 'COMMA')}#{order.currency.unit}|"></span>
                             </div>
 
                             <div th:if="${order.pointUsed > 0}"
                                  class="d-flex justify-content-between text-danger mt-1">
                                 <span th:text="#{mypage.order.pointUsed}"></span>
-                                <span th:text="'-' + ${#numbers.formatCurrency(order.pointUsed)}"></span>
+                                <span th:text="'-' + |${#numbers.formatInteger(order.pointUsed, 0, 'COMMA')}#{order.currency.unit}|"></span>
                             </div>
 
                             <div th:if="${order.couponDiscount > 0}"
                                  class="d-flex justify-content-between text-danger mt-1">
                                 <span th:text="#{mypage.order.couponDiscount}"></span>
-                                <span th:text="'-' + ${#numbers.formatCurrency(order.couponDiscount)}"></span>
+                                <span th:text="'-' + |${#numbers.formatInteger(order.couponDiscount, 0, 'COMMA')}#{order.currency.unit}|"></span>
+
                             </div>
 
                             <hr class="my-2">
@@ -135,7 +136,7 @@
                             <div class="d-flex justify-content-between fw-bold">
                                 <span th:text="#{mypage.order.paymentAmount}"></span>
                                 <span class="point-amount"
-                                      th:text="${#numbers.formatCurrency(order.paymentAmount)}"></span>
+                                      th:text="|${#numbers.formatInteger(order.paymentAmount, 0, 'COMMA')}#{order.currency.unit}|"></span>
                             </div>
                         </div>
 
@@ -149,27 +150,6 @@
                    class="btn-mypage btn-outline-gray">
                     <i class="bi bi-eye me-1"></i><span th:text="#{mypage.button.detail}"></span>
                 </a>
-
-                <button th:if="${order.status == '배송완료'}"
-                        type="button"
-                        class="btn-mypage btn-outline-primary"
-                        th:onclick="'writeReview(''' + ${order.orderId} + ''')'">
-                    <i class="bi bi-star me-1"></i><span th:text="#{mypage.button.writeReview}"></span>
-                </button>
-
-                <button th:if="${order.status == '대기'}"
-                        type="button"
-                        class="btn-mypage btn-outline-danger"
-                        th:onclick="'cancelOrder(''' + ${order.orderId} + ''', this)'">
-                    <i class="bi bi-x-circle me-1"></i><span th:text="#{mypage.button.orderCancel}"></span>
-                </button>
-
-                <button th:if="${order.status == '배송완료'}"
-                        type="button"
-                        class="btn-mypage btn-outline-danger"
-                        th:onclick="'requestReturn(''' + ${order.orderId} + ''')'">
-                    <i class="bi bi-arrow-return-left me-1"></i><span th:text="#{mypage.button.orderReturn}"></span>
-                </button>
             </div>
         </div>
     </div>
