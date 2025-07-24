@@ -189,6 +189,12 @@ body {
 .btn-buy {
     background-color: #d32f2f;
     color: white;
+    width: 200px;
+    height: 60px;
+
+}
+.btn-buy:hover {
+    background-color: #b71c1c;
 }
 
 
