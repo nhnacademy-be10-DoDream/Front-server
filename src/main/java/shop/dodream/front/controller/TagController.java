@@ -20,7 +20,7 @@ public class TagController {
                                 @RequestParam(value = "page", defaultValue = "0") int page,
                                 Model model) {
 
-        int size  = 8;
+        int size  = 12;
         PageResponse<BookDto> bookPage = bookClient.getBooksByTagId(tagId, page, size);
 
         model.addAttribute("books", bookPage.getContent());
@@ -29,7 +29,7 @@ public class TagController {
         model.addAttribute("totalPages", bookPage.getTotalPages());
         model.addAttribute("tagId", tagId);
 
-        return "book/bookList";
+        return "book/bookListTag";
     }
 
     @GetMapping("/admin/tag/register")
@@ -69,7 +69,7 @@ public class TagController {
     }
 
     @PostMapping("/admin/tag/edit/{tag-id}")
-    public String EditTag(@PathVariable("tag-id") Long tagId, @RequestParam("tagName") String newTagName) {
+    public String editTag(@PathVariable("tag-id") Long tagId, @RequestParam("tagName") String newTagName) {
         bookClient.updateTag(tagId, newTagName);
         return "redirect:/admin/tags";
     }

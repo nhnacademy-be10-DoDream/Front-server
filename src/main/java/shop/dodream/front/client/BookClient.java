@@ -200,4 +200,7 @@ public interface BookClient {
 
     @GetMapping("/likes/me/books")
     Page<BookListResponse> getLikedBooks(Pageable pageable);
+
+    @DeleteMapping("/likes/me/books/{book-id}")
+    Page<BookListResponse> deleteLikedBooks(@PathVariable("book-id") Long bookId);
 }

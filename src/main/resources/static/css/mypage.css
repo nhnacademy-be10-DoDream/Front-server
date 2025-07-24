@@ -353,30 +353,28 @@
     border-color: #dc3545;
 }
 
-.btn-mypage-delete-overlay {
+
+.delete-overlay-btn {
     position: absolute;
     top: 5px;
     right: 5px;
     width: 20px;
     height: 20px;
     border: none;
-    background: black;
-    color: white;
+    color: grey;
     display: flex;
+    background: transparent;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
     transition: all 0.2s ease;
-    backdrop-filter: blur(2px);
 }
 
-.btn-mypage-delete-overlay:hover {
-    background: rgba(220, 53, 69, 1);
+.delete-overlay-btn:hover {
+    color: red;
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
 }
 
-.btn-mypage-delete-overlay i {
+.delete-overlay-btn i {
     font-size: 14px;
     font-weight: bold;
 }

@@ -5,7 +5,7 @@
       layout:decorate="~{layout/default}">
 <head>
   <meta charset="UTF-8">
-  <title>두드림 책방</title>
+  <title th:text ="#{site.name}"></title>
   <link rel="stylesheet" th:href="@{/css/searchSidebar.css}">
   <link rel="stylesheet" th:href="@{/css/paging.css}">
 </head>
@@ -24,7 +24,7 @@
           <form th:action="@{/cart/add}" method="post" class="mt-2">
             <input type="hidden" name="bookId" th:value="${book.bookId}" />
             <input type="hidden" name="quantity" value="1" />
-            <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+            <button type="submit" class="btn btn-primary btn-sm" th:text = "#{button.cart}">장바구니 담기</button>
           </form>
         </div>
       </div>
