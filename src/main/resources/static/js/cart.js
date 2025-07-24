@@ -249,6 +249,12 @@ function getSelectedCoupons() {
 }
 
 function submitOrder() {
+    const cartItemRows = document.querySelectorAll('tr[data-sale-price]');
+    if (cartItemRows.length === 0) {
+        alert("장바구니에 담긴 책이 없습니다. 상품을 추가해주세요.");
+        return;
+    }
+
     recalculateTotal();
 
     const selectedCoupons = getSelectedCoupons();
