@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
 <head>
-    <title>홈</title>
+    <title th:text ="#{nav.home}"></title>
     <meta charset="UTF-8" />
 
 </head>
@@ -58,7 +58,8 @@
                                 <form th:action="@{/cart/add}" method="post" class="mt-2">
                                     <input type="hidden" name="bookId" th:value="${book.bookId}" />
                                     <input type="hidden" name="quantity" value="1" />
-                                    <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+                                    <button type="submit" class="btn btn-primary btn-sm" th:text="#{button.cart}"></button>
+
                                 </form>
                             </div>
                         </div>

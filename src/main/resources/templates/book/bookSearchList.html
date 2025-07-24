@@ -5,7 +5,7 @@
       layout:decorate="~{layout/default}">
 <head>
     <meta charset="UTF-8">
-    <title>두드림 책방</title>
+    <title th:text ="#{site.name}"></title>
     <link rel="stylesheet" th:href="@{/css/searchSidebar.css}">
     <link rel="stylesheet" th:href="@{/css/paging.css}">
 </head>
@@ -19,7 +19,7 @@
         <input type="hidden" name="maxPrice" id="maxPriceInput" th:value="${maxPrice}" />
 
         <div class="search-sidebar">
-            <h4>검색내 정렬</h4>
+            <h4 th:text="#{search.sidebar.title}"></h4>
 
             <div class="sidebar-section category-scroll-section">
                 <h5>분야별 보기</h5>
@@ -55,11 +55,11 @@
             <div class="sidebar-section price-section">
                 <h5>가격대별 보기</h5>
                 <ul>
-                    <li><a href="#" onclick="setPriceAndSubmit(null, null)">전체</a></li>
-                    <li><a href="#" onclick="setPriceAndSubmit(0, 10000)">1만원 이하</a></li>
-                    <li><a href="#" onclick="setPriceAndSubmit(10000, 20000)">1만원 - 2만원</a></li>
-                    <li><a href="#" onclick="setPriceAndSubmit(20000, 30000)">2만원 - 3만원</a></li>
-                    <li><a href="#" onclick="setPriceAndSubmit(30000, null)">3만원 이상</a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(null, null)" th:text="#{search.sidebar.price.all}"></a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(0, 10000)" th:text="#{search.sidebar.price.under10000}"></a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(10000, 20000)" th:text="#{search.sidebar.price.10000to20000}"></a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(20000, 30000)" th:text="#{search.sidebar.price.20000to30000}"></a></li>
+                    <li><a href="#" onclick="setPriceAndSubmit(30000, null)" th:text="#{search.sidebar.price.over30000}"></a></li>
                 </ul>
             </div>
 
@@ -68,13 +68,13 @@
                 <h5>필터</h5>
                 <div class="filter-item">
                     <select id="sortSelect" name="sort" onchange="this.form.submit()">
-                        <option value="NONE" th:selected="${sort.name() == 'NONE'}">정확도순</option>
-                        <option value="POPULARITY" th:selected="${sort.name() == 'POPULARITY'}">인기순</option>
-                        <option value="RECENT" th:selected="${sort.name() == 'RECENT'}">최신순</option>
-                        <option value="HIGH_PRICE" th:selected="${sort.name() == 'HIGH_PRICE'}">최고가순</option>
-                        <option value="LOW_PRICE" th:selected="${sort.name() == 'LOW_PRICE'}">최저가순</option>
-                        <option value="RATING" th:selected="${sort.name() == 'RATING'}">평점순</option>
-                        <option value="REVIEW" th:selected="${sort.name() == 'REVIEW'}">리뷰순</option>
+                        <option value="NONE" th:selected="${sort.name() == 'NONE'}" th:text="#{search.sidebar.filter.none}"></option>
+                        <option value="POPULARITY" th:selected="${sort.name() == 'POPULARITY'}" th:text="#{search.sidebar.filter.popularity}"></option>
+                        <option value="RECENT" th:selected="${sort.name() == 'RECENT'}" th:text="#{search.sidebar.filter.recent}"></option>
+                        <option value="HIGH_PRICE" th:selected="${sort.name() == 'HIGH_PRICE'}" th:text="#{search.sidebar.filter.high_price}"></option>
+                        <option value="LOW_PRICE" th:selected="${sort.name() == 'LOW_PRICE'}" th:text="#{search.sidebar.filter.low_price}"></option>
+                        <option value="RATING" th:selected="${sort.name() == 'RATING'}" th:text="#{search.sidebar.filter.rating}"></option>
+                        <option value="REVIEW" th:selected="${sort.name() == 'REVIEW'}" th:text="#{search.sidebar.filter.review}"></option>
                     </select>
                 </div>
             </div>
@@ -83,7 +83,7 @@
 
     <div class="booklist-content" style="flex: 1; padding: 20px;">
         <div th:if="${#lists.isEmpty(books)}">
-            <p style="font-size: 18px; color: gray;">검색 결과가 없습니다.</p>
+            <p style="font-size: 18px; color: gray;" th:text="#{search.none}"></p>
         </div>
 
         <div class="book-grid" th:if="${not #lists.isEmpty(books)}">
@@ -97,7 +97,7 @@
                 <form th:action="@{/cart/add}" method="post" class="mt-2">
                     <input type="hidden" name="bookId" th:value="${book.bookId}" />
                     <input type="hidden" name="quantity" value="1" />
-                    <button type="submit" class="btn btn-primary btn-sm">장바구니 담기</button>
+                    <button type="submit" class="btn btn-primary btn-sm" th:text ="#{button.cart}"></button>
                 </form>
             </div>
         </div>
@@ -141,9 +141,9 @@
         function setPriceAndSubmit(min, max) {
             const categoryInput = document.getElementById("categoryIdInput");
             if (categoryInput.value.trim() === "") {
-                categoryInput.removeAttribute("name"); // categoryId 파라미터 아예 안보내기
+                categoryInput.removeAttribute("name");
             } else {
-                categoryInput.setAttribute("name", "categoryId"); // 혹시 다시 생겼으면 복구
+                categoryInput.setAttribute("name", "categoryId");
             }
             document.getElementById("minPriceInput").value = min != null ? min : '';
             document.getElementById("maxPriceInput").value = max != null ? max : '';

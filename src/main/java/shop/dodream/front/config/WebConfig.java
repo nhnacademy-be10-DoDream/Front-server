@@ -54,8 +54,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(requestInterceptor);
         registry.addInterceptor(new LocaleChangeInterceptor());
         registry.addInterceptor(categoryInterceptor)
-                .addPathPatterns("/**")
-                .addPathPatterns("/search/**");
+                .addPathPatterns("/**");
 
     }
 
