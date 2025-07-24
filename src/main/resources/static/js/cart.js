@@ -4,7 +4,6 @@ let pointPolicy = {
     rate: 0
 };
 
-
 function formatPrice(val) {
     return val.toLocaleString() + '원';
 }
@@ -13,8 +12,11 @@ function recalculateTotal() {
     let totalProductPrice = 0;
     let totalDiscount = 0;
     let totalWrapping = 0;
+    const currentWrappings = {}; // 현재 선택된 포장 정보를 담을 객체
 
     document.querySelectorAll('tr[data-sale-price]').forEach(row => {
+        const cartItemId = row.querySelector('[id^="priceDisplay-"]')?.id.split('-').pop();
+
         const quantityInput = row.querySelector('.quantity-input');
         const quantity = parseInt(quantityInput?.value || 1);
         const index = quantityInput.getAttribute("data-index");
@@ -35,17 +37,23 @@ function recalculateTotal() {
         const wrappingSelect = row.querySelector('.wrapping-select');
         const selectedOption = wrappingSelect?.selectedOptions[0];
         const wrappingPrice = selectedOption ? parseInt(selectedOption.dataset.price || 0) : 0;
+        const wrappingId = selectedOption?.value || "";
         totalWrapping += wrappingPrice * quantity;
+
+        if (cartItemId) {
+            currentWrappings[cartItemId] = wrappingId;
+        }
 
         const wrappingHiddenInput = document.querySelector(`input[name='items[${index}].wrappingId']`);
         if(wrappingHiddenInput) {
-            wrappingHiddenInput.value = selectedOption?.value || "";
+            wrappingHiddenInput.value = wrappingId;
         }
     });
 
+    sessionStorage.setItem('memberCartWrappings', JSON.stringify(currentWrappings));
+
     const discountedPrice = totalProductPrice - totalDiscount;
     const orderTotal = discountedPrice + totalWrapping;
-
     const rewardPoint = Math.floor((orderTotal * pointPolicy.rate) + pointPolicy.basePoint);
 
     document.querySelector("input[name='orderTotal']").value = orderTotal;
@@ -72,9 +80,7 @@ function updateQuantity(button) {
 
     fetch(`/cart/${cartItemId}?quantity=${newQuantity}`, {
         method: 'PUT',
-        headers: {
-            'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' }
     })
         .then(response => {
             if (!response.ok) {
@@ -115,13 +121,8 @@ function openCouponModal(button) {
                 filteredCoupons.forEach(coupon => {
                     const couponDiv = document.createElement("div");
                     couponDiv.className = "border rounded p-3 mb-2";
-
-                    const discountText = coupon.discountValue <= 100 ?
-                        `${coupon.discountValue}%` :
-                        `${coupon.discountValue.toLocaleString()}원`;
-
+                    const discountText = coupon.discountValue <= 100 ? `${coupon.discountValue}%` : `${coupon.discountValue.toLocaleString()}원`;
                     const safePolicyName = coupon.policyName.replace(/'/g, "\\'");
-
                     couponDiv.innerHTML = `
                         <h6>${coupon.policyName}</h6>
                         <small>
@@ -146,7 +147,6 @@ function openCouponModal(button) {
 }
 
 function selectCoupon(cartItemId, couponId, finalPrice, policyName) {
-
     if (selectedCouponIds.has(couponId)) {
         alert("이미 다른 상품에 적용된 쿠폰입니다.");
         return;
@@ -156,7 +156,6 @@ function selectCoupon(cartItemId, couponId, finalPrice, policyName) {
     if (oldCouponInput && oldCouponInput.value) {
         selectedCouponIds.delete(parseInt(oldCouponInput.value));
     }
-
     selectedCouponIds.add(couponId);
 
     const priceSpan = document.getElementById("priceDisplay-" + cartItemId);
@@ -202,14 +201,13 @@ function cancelCoupon(cartItemId, originalPrice) {
     if (cartItemRow) {
         const index = cartItemRow.querySelector(".quantity-input")?.getAttribute("data-index");
         document.getElementById(`couponId-${index}`).value = "";
-        document.getElementById(`finalPrice-${index}`).value = ""; // 최종 가격도 원래 판매가로 되돌려야 함
+        document.getElementById(`finalPrice-${index}`).value = "";
     }
 
     const couponCell = document.getElementById('coupon-cell-' + cartItemId);
     if (couponCell) {
         const bookId = cartItemRow.querySelector('a[href*="/books/"]').href.split('/').pop();
         const salePrice = priceSpan.dataset.originalPrice;
-
         couponCell.innerHTML = `
             <button type="button" class="btn btn-sm btn-outline-primary"
                     data-cart-item-id="${cartItemId}" 
@@ -219,7 +217,6 @@ function cancelCoupon(cartItemId, originalPrice) {
             <input type="hidden" id="selectedCouponId-${cartItemId}" value="" />
         `;
     }
-
     recalculateTotal();
 }
 
@@ -282,17 +279,27 @@ function submitOrder() {
 
 window.onload = () => {
 
+    const savedWrappings = JSON.parse(sessionStorage.getItem('memberCartWrappings') || '{}');
+    document.querySelectorAll('tr[data-sale-price]').forEach(row => {
+        const cartItemId = row.querySelector('[id^="priceDisplay-"]')?.id.split('-').pop();
+        if (cartItemId && savedWrappings[cartItemId]) {
+            const wrappingSelect = row.querySelector('.wrapping-select');
+            if (wrappingSelect) {
+                wrappingSelect.value = savedWrappings[cartItemId];
+            }
+        }
+    });
+
     document.querySelectorAll('[id^="priceDisplay-"]').forEach(span => {
         const rawPrice = span.textContent.replace(/[^0-9]/g, '');
         span.dataset.originalPrice = rawPrice;
     });
 
-
     fetch("/cart/point-rate")
         .then(res => res.json())
         .then(data => {
             pointPolicy.basePoint = data.basePoint || 0;
-            pointPolicy.rate = data.rate || 0; // 예: 0.05 (5%)
+            pointPolicy.rate = data.rate || 0;
         })
         .catch(err => {
             console.error("적립 정책 로딩 실패:", err);
@@ -301,7 +308,7 @@ window.onload = () => {
             recalculateTotal();
         });
 
-    document.querySelectorAll('.quantity-input').forEach(input => {
+    document.querySelectorAll('.quantity-input, .wrapping-select').forEach(input => {
         input.addEventListener('change', recalculateTotal);
     });
 };
