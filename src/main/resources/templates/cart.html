@@ -46,13 +46,22 @@
           </span>
                 </td>
                 <td>
-                    <form th:action="@{/cart/{cartItemId}(cartItemId=${item.cartItemId})}" method="post" class="d-flex align-items-center justify-content-center gap-2">
-                        <input type="hidden" name="_method" value="put" />
-                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="form-control form-control-sm quantity-input text-center" style="width: 80px;">
-                        <button type="submit" class="btn btn-outline-secondary btn-sm" th:text="#{cart.button.change}">변경</button>
-                    </form>
+                    <!-- <form> 태그를 제거하고 div로 감쌉니다. -->
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                        <!-- quantity-input에 data-index 속성을 추가합니다. -->
+                        <input type="number" name="quantity" th:value="${item.quantity}" min="1"
+                               class="form-control form-control-sm quantity-input text-center"
+                               style="width: 80px;"
+                               th:attr="data-index=${stat.index}">
+
+                        <!-- 버튼 타입을 'submit'에서 'button'으로 변경하고 onclick 이벤트를 추가합니다. -->
+                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                th:attr="data-cart-item-id=${item.cartItemId}, data-index=${stat.index}"
+                                onclick="updateQuantity(this)"
+                                th:text="#{cart.button.change}">변경</button>
+                    </div>
                 </td>
-                <td>
+                <td th:id="'coupon-cell-' + ${item.cartItemId}">
                     <button type="button" class="btn btn-sm btn-outline-primary"
                             th:attr="data-cart-item-id=${item.cartItemId}, data-book-id=${item.bookId}, data-sale-price=${item.salePrice}"
                             onclick="openCouponModal(this)"

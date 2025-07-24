@@ -146,4 +146,10 @@ public class UserProfileController {
         return "mypage/liked-books";
     }
 
+    @DeleteMapping("/liked-books/{book-id}")
+    public String deleteLikedBook(@PathVariable("book-id") Long bookId) {
+        bookClient.deleteLikedBooks(bookId);
+        return "redirect:/mypage/liked-books";
+    }
+
 }

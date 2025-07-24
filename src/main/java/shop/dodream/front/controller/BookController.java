@@ -3,6 +3,7 @@ package shop.dodream.front.controller;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -110,7 +111,7 @@ public class BookController {
 
     @PostMapping("/books/{book-id}/reviews")
     public String postReview(@PathVariable("book-id") Long bookId,
-                             @ModelAttribute ReviewCreateRequest reviewCreateRequest,
+                             @Valid @ModelAttribute ReviewCreateRequest reviewCreateRequest,
                              @RequestParam(value = "files", required = false) List<MultipartFile> files,
                              RedirectAttributes redirectAttributes) {
 
