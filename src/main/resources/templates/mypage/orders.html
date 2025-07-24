@@ -147,27 +147,6 @@
                    class="btn-mypage btn-outline-gray">
                     <i class="bi bi-eye me-1"></i><span th:text="#{mypage.button.detail}"></span>
                 </a>
-
-                <button th:if="${order.status == '배송완료'}"
-                        type="button"
-                        class="btn-mypage btn-outline-primary"
-                    th:onclick="'writeReview(''' + ${order.orderId} + ''')'">
-                    <i class="bi bi-star me-1"></i><span th:text="#{mypage.button.writeReview}"></span>
-                </button>
-
-                <button th:if="${order.status == '대기'}"
-                        type="button"
-                        class="btn-mypage btn-outline-danger"
-                    th:onclick="'cancelOrder(''' + ${order.orderId} + ''', this)'">
-                    <i class="bi bi-x-circle me-1"></i><span th:text="#{mypage.button.orderCancel}"></span>
-                </button>
-
-                <button th:if="${order.status == '배송완료'}"
-                        type="button"
-                        class="btn-mypage btn-outline-danger"
-                    th:onclick="'requestReturn(''' + ${order.orderId} + ''')'">
-                    <i class="bi bi-arrow-return-left me-1"></i><span th:text="#{mypage.button.orderReturn}"></span>
-                </button>
             </div>
         </div>
     </div>
