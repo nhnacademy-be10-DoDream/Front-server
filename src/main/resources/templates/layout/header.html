@@ -12,19 +12,20 @@
         </div>
 
         <nav class="menu d-flex align-items-center gap-4">
-            <a th:href="@{/auth/guest}" class="nav-item" sec:authorize="isAnonymous()">비회원 주문 목록</a>
-            <a th:href="@{/mypage}" class="nav-item" sec:authorize="isAuthenticated()">마이페이지</a>
-            <a th:href="@{/admin}" class="nav-item" sec:authorize="hasRole('ADMIN')">관리자</a>
+            <a th:href="@{/auth/guest}" class="nav-item" sec:authorize="isAnonymous()" th:text="#{nav.guest.order}">비회원 주문 목록</a>
+            <a th:href="@{/mypage}" class="nav-item" sec:authorize="isAuthenticated()" th:text="#{nav.mypage}">마이페이지</a>
+            <a th:href="@{/admin}" class="nav-item" sec:authorize="hasRole('ADMIN')" th:text="#{nav.admin}">관리자</a>
             <th:block sec:authorize="isAuthenticated()">
-                <span class="username" th:if="${user != null}" th:text="|${user.name}님 반갑습니다!|"></span>
+                <span class="username" th:if="${user != null}" th:text="#{nav.welcome(${user.name})}">홍길동님 반갑습니다!</span>
 
-                <a href="#" class="nav-item" onclick="document.getElementById('logoutForm').submit(); return false;">로그아웃</a>
+                <a href="#" class="nav-item" onclick="document.getElementById('logoutForm').submit(); return false;"
+                   th:text="#{nav.logout}">로그아웃</a>
 
                 <form id="logoutForm" th:action="@{/auth/logout}" method="post" style="display: none;"></form>
             </th:block>
-            <a th:href="@{/auth/signup-form}" class="nav-item" sec:authorize="isAnonymous()">회원가입</a>
-            <a th:href="@{/auth/login-form}" class="nav-item" sec:authorize="isAnonymous()">로그인</a>
-            <a th:href="@{/cart}" class="nav-item">장바구니</a>
+            <a th:href="@{/auth/signup-form}" class="nav-item" sec:authorize="isAnonymous()" th:text="#{nav.signup}">회원가입</a>
+            <a th:href="@{/auth/login-form}" class="nav-item" sec:authorize="isAnonymous()" th:text="#{nav.login}">로그인</a>
+            <a th:href="@{/cart}" class="nav-item" th:text="#{nav.cart}">장바구니</a>
         </nav>
     </header>
     <nav class="navbar navbar-expand-lg " style="background-color: #ffffff;" data-bs-theme="light">
@@ -37,10 +38,10 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav  me-auto mb-2 mb-lg-0 ">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/}" th:text="#{nav.home}">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link">분야보기</a>
+                        <a class="nav-link" th:text="#{nav.categories}">분야보기</a>
                         <ul class="dropdown-menu">
                             <li th:each="entry : ${categories}">
                                 <div class="p-3">
@@ -61,13 +62,13 @@
 
 
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/tags/1}" role="button" aria-disabled="true">베스트</a>
+                        <a class="nav-link active" th:href="@{/tags/1}" role="button" aria-disabled="true" th:text="#{nav.best}">베스트</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/tags/2}" role="button" aria-disabled="true">신상품</a>
+                        <a class="nav-link active" th:href="@{/tags/2}" role="button" aria-disabled="true" th:text="#{nav.new}">신상품</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/tags/3}" role="button" aria-disabled="true">추천도서</a>
+                        <a class="nav-link active" th:href="@{/tags/3}" role="button" aria-disabled="true" th:text="#{nav.recommend}">추천도서</a>
                     </li>
                 </ul>
                 <form class="d-flex" role="search" method="get" action="/search">

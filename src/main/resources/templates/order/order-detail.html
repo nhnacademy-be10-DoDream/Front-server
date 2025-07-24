@@ -5,39 +5,44 @@
       layout:decorate="~{layout/default}">
 <head>
     <meta charset="UTF-8">
-    <title>주문 상세</title>
+    <title th:text="#{order.detail.title}">주문 상세</title>
     <link rel="stylesheet" href="/css/mypage.css">
 </head>
 <body>
 <div layout:fragment="content" class="mypage-content-area" style="max-width: 1300px; margin: 0 auto;">
     <div class="mypage-content-header">
-        <h2 class="mypage-section-title">주문 상세</h2>
+        <h2 class="mypage-section-title" th:text="#{order.detail.title}">주문 상세</h2>
     </div>
 
     <!-- 주문 상품 -->
     <div class="info-card">
         <div class="info-card-header">
-            <h3 class="mypage-subtitle">주문 상품</h3>
+            <h3 class="mypage-subtitle" th:text="#{order.product.title}">주문 상품</h3>
         </div>
         <div class="info-card-body">
             <table class="info-table">
                 <thead>
                 <tr>
-                    <th style="width: 30%;">책 제목</th>
-                    <th style="width: 15%;">수량</th>
-                    <th style="width: 20%;">가격</th>
-                    <th style="width: 35%;">포장</th>
+                    <th th:text="#{order.table.bookTitle}">책 제목</th>
+                    <th th:text="#{order.table.quantity}">수량</th>
+                    <th th:text="#{order.table.price}">가격</th>
+                    <th th:text="#{order.table.wrapping}">포장</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="item : ${order.items}">
-                    <td th:text="${item.title != null ? item.title : 'N/A'}"></td>
+                    <td th:text="${item.title != null ? item.title : #messages.get('order.no.title')}"></td>
                     <td th:text="${item.quantity}"></td>
                     <td th:text="|${#numbers.formatInteger(item.price, 0, 'COMMA')}원|"></td>
                     <td>
-                        <span th:text="${item.wrappingInfo == null || item.wrappingInfo.name == null ? '없음' : item.wrappingInfo.name}"></span>
+                        <span th:if="${item.wrappingInfo == null or item.wrappingInfo.name == null}" th:text="#{order.no.wrapping}">없음</span>
+                        <span th:if="${item.wrappingInfo != null and item.wrappingInfo.name != null}" th:text="${item.wrappingInfo.name}">포장명</span>
+
                         <span th:if="${item.wrappingInfo != null and item.wrappingInfo.price != 0}"
-                              th:text="|(+${#numbers.formatInteger(item.wrappingInfo.price, 0, 'COMMA')}원)|"></span>
+                              th:with="formattedPrice=${#numbers.formatInteger(item.wrappingInfo.price, 0, 'COMMA')}"
+                              th:text="${#messages.msg('order.wrapping.plus', formattedPrice)}">
+
+                        </span>
                     </td>
                 </tr>
                 </tbody>
@@ -48,17 +53,17 @@
     <!-- 주문 정보 -->
     <div class="info-card">
         <div class="info-card-header">
-            <h3 class="mypage-subtitle">주문 정보</h3>
+            <h3 class="mypage-subtitle" th:text="#{order.info.title}">주문 정보</h3>
         </div>
         <div class="info-card-body">
             <table class="info-table">
-                <tr><th>주문번호</th><td th:text="${order.orderId}"></td></tr>
-                <tr><th>주문일시</th><td th:text="${@dateUtil.toKst(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td></tr>
-                <tr><th>주문자명</th><td th:text="${order.guestName != null ? order.guestName : user.name}"></td></tr>
-                <tr><th>전화번호</th><td th:text="${order.guestPhone != null ? order.guestPhone : user.phone}"></td></tr>
-                <tr><th>우편번호</th><td th:text="${order.address.zipcode}"></td></tr>
-                <tr><th>주소</th><td th:text="${order.address.roadAddress}"></td></tr>
-                <tr><th>상세 주소</th><td th:text="${order.address.detailAddress}"></td></tr>
+                <tr><th th:text="#{order.number}">주문번호</th><td th:text="${order.orderId}"></td></tr>
+                <tr><th th:text="#{order.payment.date}">주문일시</th><td th:text="${@dateUtil.toKst(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td></tr>
+                <tr><th th:text="#{order.name}">주문자명</th><td th:text="${order.guestName != null ? order.guestName : user.name}"></td></tr>
+                <tr><th th:text="#{order.phone}">전화번호</th><td th:text="${order.guestPhone != null ? order.guestPhone : user.phone}"></td></tr>
+                <tr><th th:text="#{order.zip}">우편번호</th><td th:text="${order.address.zipcode}"></td></tr>
+                <tr><th th:text="#{order.address}">주소</th><td th:text="${order.address.roadAddress}"></td></tr>
+                <tr><th th:text="#{order.address.detail}">상세 주소</th><td th:text="${order.address.detailAddress}"></td></tr>
             </table>
         </div>
     </div>
@@ -66,13 +71,13 @@
     <!-- 결제 정보 -->
     <div class="info-card">
         <div class="info-card-header">
-            <h3 class="mypage-subtitle">결제 정보</h3>
+            <h3 class="mypage-subtitle" th:text="#{order.payment.title}">결제 정보</h3>
         </div>
         <div class="info-card-body">
             <table class="info-table">
-                <tr><th>결제 수단</th><td th:text="${order.payment.method}"></td></tr>
-                <tr><th>결제 금액</th><td th:text="|${#numbers.formatInteger(order.payment.amount, 0, 'COMMA')}원|"></td></tr>
-                <tr><th>결제일시</th><td th:text="${@dateUtil.toKst(order.payment.paidAt, 'yyyy-MM-dd HH:mm')}"></td></tr>
+                <tr><th th:text="#{order.payment.method}">결제 수단</th><td th:text="${order.payment.method}"></td></tr>
+                <tr><th th:text="#{order.payment.amount}">결제 금액</th><td th:text="|${#numbers.formatInteger(order.payment.amount, 0, 'COMMA')}원|"></td></tr>
+                <tr><th th:text="#{order.payment.date}">결제일시</th><td th:text="${@dateUtil.toKst(order.payment.paidAt, 'yyyy-MM-dd HH:mm')}"></td></tr>
             </table>
         </div>
     </div>
@@ -80,38 +85,38 @@
     <!-- 주문 상태 -->
     <div class="info-card">
         <div class="info-card-header">
-            <h3 class="mypage-subtitle">주문 상태</h3>
+            <h3 class="mypage-subtitle" th:text="#{order.status.title}">주문 상태</h3>
         </div>
         <div class="info-card-body">
             <table class="info-table">
-                <tr><th>상태</th><td th:text="${order.status}"></td></tr>
-                <tr><th>배송 요청 날짜</th><td th:text="${@dateUtil.toKst(order.wantedDate, 'yyyy-MM-dd')}"></td></tr>
+                <tr><th th:text="#{order.status.label}">상태</th><td th:text="${order.status}"></td></tr>
+                <tr><th th:text="#{order.wanted.date}">배송 요청 날짜</th><td th:text="${@dateUtil.toKst(order.wantedDate, 'yyyy-MM-dd')}"></td></tr>
             </table>
         </div>
     </div>
 
     <!-- 버튼 -->
     <div class="mypage-form-group text-center mt-4">
-        <a class="btn-mypage btn-outline-gray" href="/">홈으로</a>
+        <a class="btn-mypage btn-outline-gray" th:text="#{button.home}" href="/">홈으로</a>
 
         <a th:if="${order.status == '대기'}" href="#" class="btn-mypage btn-outline-danger"
            data-bs-toggle="modal"
            data-bs-target="#cancelReasonModal"
            data-type="cancel"
-           th:attr="data-order-id=${order.orderId}">
-            주문 취소
-        </a>
+           th:attr="data-order-id=${order.orderId}"
+           th:text="#{button.cancel}">주문 취소</a>
 
         <a th:if="${order.status == '배송완료' || order.status == '배송중'}" href="#" class="btn-mypage btn-outline-primary"
            data-bs-toggle="modal"
            data-bs-target="#cancelReasonModal"
            data-type="refund"
-           th:attr="data-order-id=${order.orderId}">
-            반품 요청
-        </a>
+           th:attr="data-order-id=${order.orderId}"
+           th:text="#{button.refund}">반품 요청</a>
     </div>
+
     <div th:replace="~{order/cancel-sheet :: cancel-modal}"></div>
 </div>
+
 <th:block layout:fragment="scripts">
     <script src="/js/cancelOrder.js"></script>
 </th:block>
