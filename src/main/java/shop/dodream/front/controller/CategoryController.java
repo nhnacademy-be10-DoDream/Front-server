@@ -23,7 +23,7 @@ public class CategoryController {
     public String getBooksByCategory(@PathVariable("category-id") Long categoryId,
                                      @RequestParam(value = "page", defaultValue = "0") int page,
                                      Model model) {
-        int size  = 8;
+        int size  = 10;
         PageResponse<BookDto> bookPage = bookClient.getBooksByCategoryId(categoryId, page, size);
         model.addAttribute("books", bookPage.getContent());
 
