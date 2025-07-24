@@ -74,6 +74,14 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="isGiftable" class="form-label">포장 여부</label>
+                        <select class="form-select" id="isGiftable" name="isGiftable" required>
+                            <option th:value="true" th:selected="${book.isGiftable} == true">가능</option>
+                            <option th:value="false" th:selected="${book.isGiftable} == false">불가능</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="description" class="form-label">도서 설명</label>
                         <textarea class="form-control" id="description" name="description" rows="4"
                                   th:text="${book.description}"></textarea>
