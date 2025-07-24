@@ -19,7 +19,7 @@ public class BookDetailDto {
     private Long regularPrice;
     private List<String> bookUrls;
     private Long discountRate;
-
+    private Boolean isGiftable;
     // 관리자 조회 필드임 추가
     private String status;
     private ZonedDateTime createdAt;

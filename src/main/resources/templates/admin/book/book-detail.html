@@ -68,6 +68,10 @@
             <td th:text="${book.bookCount}">50</td>
         </tr>
         <tr>
+            <th>포장 여부</th>
+            <td th:text="${book.isGiftable} ? '가능' : '불가능'">???</td>
+        </tr>
+        <tr>
             <th>도서 설명</th>
             <td th:text="${#strings.isEmpty(book.description) ? '도서 설명이 존재하지 않습니다.' : book.description}"></td>
         </tr>
