@@ -104,14 +104,14 @@
            data-bs-target="#cancelReasonModal"
            data-type="cancel"
            th:attr="data-order-id=${order.orderId}"
-           th:text="#{button.cancel}">주문 취소</a>
+           th:text="#{button.order.cancel}">주문 취소</a>
 
         <a th:if="${order.status == '배송완료' || order.status == '배송중'}" href="#" class="btn-mypage btn-outline-primary"
            data-bs-toggle="modal"
            data-bs-target="#cancelReasonModal"
            data-type="refund"
            th:attr="data-order-id=${order.orderId}"
-           th:text="#{button.refund}">반품 요청</a>
+           th:text="#{button.order.refund}">반품 요청</a>
     </div>
 
     <div th:replace="~{order/cancel-sheet :: cancel-modal}"></div>
